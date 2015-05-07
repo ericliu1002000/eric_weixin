@@ -28,8 +28,8 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
     # ====返回
     # 正常情况下返回当前微信用户 <tt>::EricWeixin::WeixinUser</tt>，抛出异常时错误查看异常信息。
     def create_weixin_user(secret_key, openid)
-      public_account = ::Weixin::PublicAccount.find_by_weixin_secret_key(secret_key)
-      ::Weixin::ReplyMessageRule.transaction do
+      public_account = ::EricWeixin::PublicAccount.find_by_weixin_secret_key(secret_key)
+      ::EricWeixin::ReplyMessageRule.transaction do
         weixin_user = ::EricWeixin::WeixinUser.where(openid: openid, weixin_secret_key: secret_key).first
         if weixin_user.blank?
           weixin_user = ::EricWeixin::WeixinUser.new openid: openid,
