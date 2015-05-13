@@ -18,9 +18,20 @@ module EricWeixin
       render xml: message
     end
 
+    def snsapi_api
+      require "base64"
+      weixin_public_account = EricWeixin::PublicAccount.where(name: params["public_account_name"]).first
+      response = RestClient.get "https://api.weixin.qq.com/sns/oauth2/access_token?appid=#{weixin_public_account.weixin_app_id}&secret=#{weixin_public_account.weixin_secret_key}&code=#{params[:code]}&grant_type=authorization_code"
+      result_hash = JSON.parse(response.body)
+      url = "#{Base64.decode64(params["url"])}&openid=#{result_hash['openid']}"
+      redirect_to url
+    end
+
     def aa
       @ee = 12
     end
+
+
 
   end
 end

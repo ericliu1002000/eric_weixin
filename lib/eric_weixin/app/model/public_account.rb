@@ -46,7 +46,7 @@ module EricWeixin
     #     "url":"http://m.wsq.qq.com/264164362"
     # },
     #     {
-    #         "name":"辣妈奶爸",
+    #         "name":"辣妈奶爸",   13818518038 余老师
     #     "sub_button":[
     #     {
     #         "type":"click",

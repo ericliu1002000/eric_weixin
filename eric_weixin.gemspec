@@ -27,7 +27,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'actionpack', '~> 4.1', '>= 4.1.4'
   spec.add_development_dependency 'activesupport', '~> 4.1', '>= 4.1.4'
   spec.add_development_dependency 'actionview', '~> 4.1', '>= 4.1.4'
-
   spec.add_development_dependency 'eric_tools', '~> 0.0.4'
 
 end

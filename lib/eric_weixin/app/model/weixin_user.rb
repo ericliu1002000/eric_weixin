@@ -38,7 +38,7 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
           weixin_user.save!
         end
         wx_user_data = public_account.get_user_data_from_weixin_api openid
-        weixin_user.update_attributes(wx_user_data)
+        weixin_user.update_attributes(wx_user_data.select{|k,v| ["subscribe", "openid", "nickname", "sex", "language", "city", "province", "country", "headimgurl", "subscribe_time", "remark"].include? k })
         weixin_user
       end
     end
