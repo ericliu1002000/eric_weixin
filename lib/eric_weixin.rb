@@ -16,7 +16,7 @@ module EricWeixin
   ActionController::Base.append_view_path(File.dirname(__FILE__) + '/eric_weixin/app/views')
 
   #获取重定向的URI
-  #参数1:   url      #业务URL，即最终需要跳转到的url。
+  #参数1:   url      #业务URL，即最终需要跳转到的url,域名中的主机名称可选，可以写 'www.baidu.com/xxx', 也可以写 '/xxx'。 这里主要用于重定向。
   #参数2:   app_id   #公众账号app_id
   #参数3:   schema_host 当前项目的域名(包含http://)：如http://www.baidu.com
   #可选参数4: state
