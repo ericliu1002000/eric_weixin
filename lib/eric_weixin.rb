@@ -1,4 +1,5 @@
 require "eric_weixin/version"
+require "rest-client"
 
 require File.dirname(__FILE__) + '/eric_weixin/app/model/access_token.rb'
 require File.dirname(__FILE__) + '/eric_weixin/app/model/article.rb'
@@ -6,7 +7,10 @@ require File.dirname(__FILE__) + '/eric_weixin/app/model/article_news.rb'
 require File.dirname(__FILE__) + '/eric_weixin/app/model/news.rb'
 require File.dirname(__FILE__) + '/eric_weixin/app/model/public_account.rb'
 require File.dirname(__FILE__) + '/eric_weixin/app/model/reply_message_rule.rb'
+# require File.dirname(__FILE__) + '/eric_weixin/app/model/template_message_log.rb'
 require File.dirname(__FILE__) + '/eric_weixin/app/model/weixin_user.rb'
+require 'eric_weixin/app/model/template_message_log'
+
 require File.dirname(__FILE__) + '/eric_weixin/reply_message.rb'
 require File.dirname(__FILE__) + '/eric_weixin/app/controllers/weixin/weixin_controller'
 
@@ -21,7 +25,7 @@ module EricWeixin
   #参数3:   schema_host 当前项目的域名(包含http://)：如http://www.baidu.com
   #可选参数4: state
   #示例：get_snsapi_uri url:'/weixin/service1/ddd?a=1', app_id: 'wx4564afc37fac0ebf', schema_host: "http://lxq.mdcc.com"
-  def get_snsapi_url options
+  def self.get_snsapi_url options
     require 'base64'
     p_zhongzhuan = []
     p_zhongzhuan_host_path = "#{options[:schema_host]}/weixin/snsapi"

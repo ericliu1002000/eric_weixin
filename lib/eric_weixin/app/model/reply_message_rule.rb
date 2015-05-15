@@ -48,6 +48,8 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
                           else
                             result
                           end
+
+                        #取消订阅
                         when /event~unsubscribe/
                           result = ::Weixin::Process.unsubscribe receive_message
                           if result == true
@@ -56,6 +58,8 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
                           else
                             result
                           end
+
+                        #点击消息
                         when /event~CLICK/
                           result = ::Weixin::Process.click_event receive_message[:EventKey], receive_message
                           if result == true
@@ -63,6 +67,14 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
                           else
                             result
                           end
+
+                        #模板发送完毕通知消息
+                        when /event~TEMPLATESENDJOBFINISH/
+                          EricWeixin::update_template_message_status receive_message[:ToUserName], receive_message[:MsgID], receive_message[:Status]
+                          ::Weixin::Process.template_send_job_finish receive_message
+                          ''
+
+                        #文本消息
                         when /text~/
                           result = ::Weixin::Process.text_event receive_message[:Content], receive_message
                           if result == true
@@ -70,6 +82,8 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
                           else
                             result
                           end
+
+                        #暂时识别不了的消息
                         else
                           result = ::Weixin::Process.another_event receive_message
                           if result == true

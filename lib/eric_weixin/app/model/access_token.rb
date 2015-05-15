@@ -1,6 +1,6 @@
 module EricWeixin
   class AccessToken < ActiveRecord::Base
-    require "rest-client"
+
     self.table_name = "weixin_access_tokens"
 
 
