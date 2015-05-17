@@ -37,6 +37,15 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
     def process_rule(receive_message, secret_key)
       business_type = "#{receive_message[:MsgType]}~#{receive_message[:Event]}"
 
+      pa = EricWeixin::PublicAccount.find_by_weixin_number receive_message[:ToUserName]
+      log = ::EricWeixin::MessageLog.create_public_account_receive_message_log openid: receive_message[:FromUserName],
+                                                                         app_id: pa.weixin_app_id,
+                                                                         message_type: receive_message[:MsgType],
+                                                                         message_id: receive_message[:MsgId],
+                                                                         data: receive_message.to_json,
+                                                                         process_status: 0, #在这里假设都处理完毕，由业务引起的更新请在工程的Process中进行修改。
+                                                                         event_name: receive_message[:Event],
+                                                                         create_time: receive_message[:CreateTime]
 
       reply_message = case business_type
                         #订阅
@@ -68,9 +77,27 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
                             result
                           end
 
+                        #查看网页事件
+                        when /event~VIEW/
+                          result = ::Weixin::Process.view_event receive_message[:EventKey], receive_message
+                          if result == true
+                            ''
+                          else
+                            result
+                          end
+
+                        #用户上报地理位置
+                        when /location/
+                          result = ::Weixin::Process.location_event receive_message
+                          if result == true
+                            ''
+                          else
+                            result
+                          end
+
                         #模板发送完毕通知消息
                         when /event~TEMPLATESENDJOBFINISH/
-                          EricWeixin::update_template_message_status receive_message[:ToUserName], receive_message[:MsgID], receive_message[:Status]
+                          ::EricWeixin::TemplateMessageLog.update_template_message_status receive_message[:FromUserName], receive_message[:MsgID], receive_message[:Status]
                           ::Weixin::Process.template_send_job_finish receive_message
                           ''
 
@@ -94,6 +121,8 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
                       end
       "message_to_wechat:".to_logger
       reply_message.to_logger
+      log.passive_reply_message = reply_message.to_s
+      log.save!
       reply_message
     end
 

@@ -3,6 +3,11 @@ module EricWeixin
 
     self.table_name = "weixin_access_tokens"
 
+    def self.get_valid_access_token_by_app_id options
+      secret_key = ::EricWeixin::PublicAccount.get_secret options[:app_id]
+      ::EricWeixin::AccessToken.get_valid_access_token weixin_secret_key: secret_key
+    end
+
 
     # 获取有效的Token
     # 参数为： weixin_secret_key

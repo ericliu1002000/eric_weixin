@@ -1,23 +1,16 @@
 module EricWeixin
+  #用于给普通用户回复消息。
   module ReplyMessage
-    ##
-    #根据from_user, to_user等信息来获取<em>多客服</em>的数据格式
-    #===参数说明
-    # #
-    def self.get_customer_service_message options
-
-    end
-
-    # 获取<b>被动回复</b>消息的数据格式--类型为：<b>图文消息</b>
+    # 获取<b>被动回复</b>消息的数据格式。类型为：<b>图文消息</b>。
     # 一般用于用户发消息后，使用返回消息的方式向用户进行图文回复。
     # ===参数说明
     # * ToUserName: 收取方的账号
     # * FromUserName: 开发者账号
     # * news: 文章列表，EricWeixin::Article 的实例数组
     # ===示例
-    #  Tools::EricWeixin::ReplyMessage::get_reply_user_message_image_text ToUserName: 'xx',
-    #                                                                 FromUserName: 'yy',
-    #                                                                 news:[EricWeixin::ArticleData.new]
+    # Tools::EricWeixin::ReplyMessage::get_reply_user_message_image_text ToUserName: 'xx',
+    #                                                                    FromUserName: 'yy',
+    #                                                                    news:[EricWeixin::ArticleData.new]
     def self.get_reply_user_message_image_text options
       xml = Nokogiri::XML::Builder.new(:encoding => 'utf-8') do |xml|
         xml.send(:xml) {
@@ -29,10 +22,10 @@ module EricWeixin
           xml.Articles {
             options[:news].each do |news|
               xml.item {
-                xml.Title{xml.cdata news.title}
-                xml.Description{xml.cdata news.desc}
-                xml.PicUrl{xml.cdata news.pic_url}
-                xml.Url{xml.cdata news.link_url}
+                xml.Title { xml.cdata news.title }
+                xml.Description { xml.cdata news.desc }
+                xml.PicUrl { xml.cdata news.pic_url }
+                xml.Url { xml.cdata news.link_url }
               }
             end
           }
@@ -42,16 +35,17 @@ module EricWeixin
     end
 
 
-    # 获取<b>被动回复</b>消息的数据格式--类型为：<b>文本消息</b>
+    # 获取<b>被动回复</b>消息的数据格式。类型为：<b>文本消息</b>
     # 一般用于用户发消息后，使用返回消息的方式向用户进行图文回复。
     # ===参数说明
     # * ToUserName: 收取方的账号
     # * FromUserName: 开发者账号
     # * Content: 回复的消息内容
     # ===示例
-    #  Tools::EricWeixin::ReplyMessage.get_reply_user_message_text ToUserName: 'xx',
-    #                                                          FromUserName: 'yy',
-    #                                                          Content: 'haha'
+    # Tools::EricWeixin::ReplyMessage.get_reply_user_message_text ToUserName: 'xx',
+    #                                                             FromUserName: 'yy',
+    #                                                             Content: 'haha'
+
     def self.get_reply_user_message_text options
       xml = Nokogiri::XML::Builder.new(:encoding => 'utf-8') do |xml|
         xml.send(:xml) {
@@ -65,13 +59,14 @@ module EricWeixin
       xml.to_xml
     end
 
-    # 用于将消息转发至多客户客户端。
+    # 用于将消息转发至多客服客户端。
     # ===参数说明
     # * ToUserName: 收取方的账号
     # * FromUserName: 开发者账号
     # ===示例
-    #  EricWeixin::ReplyMessage::transfer_mult_customer_service ToUserName: 'xxx',
-    #                                                              FromUserName: 'yyyy',
+    # EricWeixin::ReplyMessage::transfer_mult_customer_service ToUserName: 'xxx',
+    #                                                          FromUserName: 'yyyy'
+
     def self.transfer_mult_customer_service options
       xml = Nokogiri::XML::Builder.new(:encoding => 'utf-8') do |xml|
         xml.send(:xml) {

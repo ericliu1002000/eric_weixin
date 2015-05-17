@@ -1,8 +1,8 @@
 class EricWeixin::TemplateMessageLog < ActiveRecord::Base
   self.table_name = "weixin_template_message_logs"
   class << self
-    #发送模板消息
-    #参数说明：
+    # 发送模板消息
+    # 参数说明：
     #    openid： 收取消息用户的openid， 必填
     #    template_id: 模板id， 必填
     #    data: 根据模板不同，给出不同的hash参数
@@ -11,6 +11,8 @@ class EricWeixin::TemplateMessageLog < ActiveRecord::Base
     #    app_id: 微信appid
     # EricWeixin::TemplateMessageLog.send_template_message openid: "osyUtswoeJ9d7p16RdpC5grOeukQ",
     #                                                      template_id: "WdYZPTwhAMc59aKGs5SUCxRw9xqOM-eOkvGJlZpQahk",
+    #                                                      topcolor: '#00FF00',
+    #                                                      url: 'www.baidu.com',
     #                                                      data: {
     #                                                          first: {value: 'xx'},
     #                                                          keyword1: {value: '王小明'},
@@ -47,12 +49,17 @@ class EricWeixin::TemplateMessageLog < ActiveRecord::Base
       log.save!
     end
 
+
     def update_template_message_status openid, message_id, status
+
       log= EricWeixin::TemplateMessageLog.where openid: openid,
                                                 message_id: message_id
+      pp log
       return if log.blank?
-      log.status = status
+      log = log.first
+      log.status=status
       log.save!
+      log
     end
   end
 end

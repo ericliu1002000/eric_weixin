@@ -1,13 +1,17 @@
 class EricWeixin::WeixinUser < ActiveRecord::Base
+  SEX = {1=>'男' , 2=>'女', 0=>'未知'}
   belongs_to :member_info
   belongs_to :weixin_public_account, :class_name => '::EricWeixin::PublicAccount', :foreign_key => 'weixin_public_account_id'
   validates_uniqueness_of :openid, scope: :weixin_secret_key
   validates_presence_of :openid, :weixin_secret_key, :weixin_public_account
 
+
   def nickname
     CGI::unescape(self.attributes["nickname"])
   end
 
+  ##
+  # 关注状态，关注返回true， 否则返回false.
   def follow_status
     self.subscribe.to_i == 1
   end
@@ -18,7 +22,7 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
     # ===业务说明：创建、更新微信用户
     # * 微信用户在关注、取消关注时更新用户信息。
     # * 当用户关注微信时，创建用户。
-    # * 当用户取消关注时，把用户标记为取消关注，同时更新用户的最新信息（包含用户名等）
+    # * 当用户取消关注时，把用户标记为取消关注
     # ===参数说明
     # * secret_key::公众账号的secret_key,其值取决于公众账号的设置。
     # * openid::用户的openid,微信服务器传送过来。

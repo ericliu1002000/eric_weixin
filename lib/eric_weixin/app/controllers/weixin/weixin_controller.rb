@@ -23,12 +23,52 @@ module EricWeixin
       weixin_public_account = EricWeixin::PublicAccount.where(weixin_app_id: params["weixin_app_id"]).first
       response = RestClient.get "https://api.weixin.qq.com/sns/oauth2/access_token?appid=#{weixin_public_account.weixin_app_id}&secret=#{weixin_public_account.weixin_secret_key}&code=#{params[:code]}&grant_type=authorization_code"
       result_hash = JSON.parse(response.body)
-      u = URI(Base64.decode64(params["url"]))
-      p = URI.decode_www_form u.query||''
-      p << ["openid", result_hash['openid']]
-      p << ["state", params["state"]]
-      p = URI.encode_www_form p
-      url = [u.to_s.split('?')[0], p].join '?'
+      url = URI(Base64.decode64(params["url"]))
+      query_array = URI.decode_www_form url.query||''
+      query_array << ["openid", result_hash['openid']]
+      query_array << ["state", params["state"]]
+      query_str = URI.encode_www_form query_array
+      url = [url.to_s.split('?')[0], query_str].join '?'
+      redirect_to url
+    end
+
+    def snsapi_userinfo
+      require "base64"
+      weixin_public_account = EricWeixin::PublicAccount.where(weixin_app_id: params["weixin_app_id"]).first
+      url = URI(Base64.decode64(params["url"]))
+      query_array = URI.decode_www_form url.query||''
+      query_array << ["state", params["state"]]
+      if params[:code].blank?
+        #先处理用户不同意的情况下，直接跳转到业务页面，agree参数为no
+        query_array << ["agree", 'no']
+        query_str = URI.encode_www_form query_array
+        url = [url.to_s.split('?')[0], query_str].join '?'
+        redirect_to url
+        return
+      end
+
+      pp '111111'
+      response = RestClient.get "https://api.weixin.qq.com/sns/oauth2/access_token?appid=#{weixin_public_account.weixin_app_id}&secret=#{weixin_public_account.weixin_secret_key}&code=#{params[:code]}&grant_type=authorization_code"
+      result_hash = JSON.parse(response.body)
+
+      query_array << ["openid", result_hash['openid']]
+      query_array << ["access_token", result_hash['access_token']]
+      query_array << ["expires_in", result_hash['expires_in']]
+      query_array << ['refresh_token', result_hash['refresh_token']]
+      query_array << ['scope', result_hash['scope']]
+      query_array << ['agree', 'yes']
+      pp '3333333'
+      response = RestClient.get "https://api.weixin.qq.com/sns/userinfo?access_token=#{result_hash['access_token']}&openid=#{result_hash['openid']}&lang=zh_CN"
+      user_info_hash = JSON.parse(response.body)
+      query_array << ["nickname", user_info_hash['nickname']]
+      query_array << ["sex", EricWeixin::WeixinUser::SEX[user_info_hash['nickname'].to_i]]
+      query_array << ["province", user_info_hash['province']]
+      query_array << ["city", user_info_hash['city']]
+      query_array << ["country", user_info_hash['country']]
+      query_array << ["headimgurl", user_info_hash['headimgurl']]
+
+      query_str = URI.encode_www_form query_array
+      url = [url.to_s.split('?')[0], query_str].join '?'
       redirect_to url
     end
 
