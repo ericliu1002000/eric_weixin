@@ -11,12 +11,13 @@ require File.dirname(__FILE__) + '/eric_weixin/app/model/reply_message_rule.rb'
 require File.dirname(__FILE__) + '/eric_weixin/app/model/template_message_log.rb'
 require File.dirname(__FILE__) + '/eric_weixin/app/model/weixin_user.rb'
 require File.dirname(__FILE__) + '/eric_weixin/app/model/message_log.rb'
+require File.dirname(__FILE__) + '/eric_weixin/app/model/two_dimension_code.rb'
 
 #加载moudle
 require File.dirname(__FILE__) + '/eric_weixin/app/moudles/reply_message.rb'
 require File.dirname(__FILE__) + '/eric_weixin/app/moudles/mult_customer.rb'
 require File.dirname(__FILE__) + '/eric_weixin/app/moudles/snsapi.rb'
-require File.dirname(__FILE__) + '/eric_weixin/app/moudles/two_dimension_code.rb'
+
 
 #加载controller
 require File.dirname(__FILE__) + '/eric_weixin/app/controllers/weixin/weixin_controller'

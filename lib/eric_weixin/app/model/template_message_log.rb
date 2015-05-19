@@ -13,6 +13,7 @@ class EricWeixin::TemplateMessageLog < ActiveRecord::Base
     #                                                      template_id: "WdYZPTwhAMc59aKGs5SUCxRw9xqOM-eOkvGJlZpQahk",
     #                                                      topcolor: '#00FF00',
     #                                                      url: 'www.baidu.com',
+    #                                                      public_account_id: 1,
     #                                                      data: {
     #                                                          first: {value: 'xx'},
     #                                                          keyword1: {value: '王小明'},
@@ -21,8 +22,8 @@ class EricWeixin::TemplateMessageLog < ActiveRecord::Base
     #                                                          keyword4: {value: '小明同学今天上课表现很别棒，很认真。手工都自己做的，依恋家长比较严重。'},
     #                                                          keyword5: {value: '总体来讲还很不错，心理上缺乏安全感，需要家长多陪同。'},
     #                                                          remark: {value: ''}
-    #                                                      },
-    #                                                      app_id: "wx4564afc37fac0ebf"
+    #                                                      }
+
     def send_template_message options
       BusinessException.raise '没有接收对象' if options[:openid].blank?
       BusinessException.raise '模板未指定' if options[:template_id].blank?
@@ -35,9 +36,14 @@ class EricWeixin::TemplateMessageLog < ActiveRecord::Base
           :topcolor => options[:topcolor],
           :data => options[:data]
       }.to_json
-      token = EricWeixin::AccessToken.get_valid_access_token(:weixin_secret_key => EricWeixin::PublicAccount.get_secret(options[:app_id]))
+
+      public_account = ::EricWeixin::PublicAccount.find_by_id options[:public_account_id]
+      token = EricWeixin::AccessToken.get_valid_access_token_by_app_id app_id: public_account.weixin_app_id
+
+
       response = RestClient.post "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=#{token}", message_json
       response = JSON.parse response.body
+      pp response
       log = EricWeixin::TemplateMessageLog.new openid: options[:openid],
                                                url: options[:url],
                                                template_id: options[:template_id],
@@ -45,7 +51,7 @@ class EricWeixin::TemplateMessageLog < ActiveRecord::Base
                                                data: options[:data].to_json,
                                                message_id: response["msgid"],
                                                error_code: response["errcode"],
-                                               app_id: options[:app_id]
+                                               weixin_public_account_id: options[:public_account_id]
       log.save!
     end
 

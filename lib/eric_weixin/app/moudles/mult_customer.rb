@@ -39,11 +39,11 @@ module EricWeixin::MultCustomer
     response = RestClient.post url, post_data.to_json
     response = JSON.parse response.body
     ::EricWeixin::MessageLog.transaction do
-      message = ::EricWeixin::MessageLog.where(message_id: options[:message_id])
+      message = ::EricWeixin::MessageLog.where(message_id: options[:message_id]).first
       message_id = if message.blank? then
                      nil
                    else
-                     message.first.id
+                     message.id
                    end
       ::EricWeixin::MessageLog.create_public_account_send_message_log openid: options[:openid],
                                                                       app_id: options[:app_id],

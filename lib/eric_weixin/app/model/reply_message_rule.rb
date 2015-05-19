@@ -13,9 +13,6 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
       options = get_arguments_options options, [:weixin_public_account_id, :key_word, :reply_message, :key_word_type, :order, :reply_type], is_valid: true
       ::EricWeixin::ReplyMessageRule.transaction do
         reply_message_rule = ::EricWeixin::ReplyMessageRule.new options
-        public_account = ::EricWeixin::PublicAccount.find(options[:weixin_public_account_id])
-        reply_message_rule.weixin_app_id = public_account.weixin_app_id
-        reply_message_rule.weixin_secret_key = public_account.weixin_secret_key
         reply_message_rule.save!
         reply_message_rule
       end
@@ -26,34 +23,34 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
       EricWeixin::ReplyMessageRule.transaction do
         rule = EricWeixin::ReplyMessageRule.find(rule_id)
         rule.update_attributes(options)
-        public_account = ::EricWeixin::PublicAccount.find(options[:weixin_public_account_id])
-        rule.weixin_app_id = public_account.weixin_app_id
-        rule.weixin_secret_key = public_account.weixin_secret_key
         rule.save!
         rule
       end
     end
 
-    def process_rule(receive_message, secret_key)
+    def process_rule(receive_message, public_account)
       business_type = "#{receive_message[:MsgType]}~#{receive_message[:Event]}"
-
-      pa = EricWeixin::PublicAccount.find_by_weixin_number receive_message[:ToUserName]
+      pp 'xxxx'*20
+      pp receive_message
+      pp ".."*20
+      pa = ::EricWeixin::PublicAccount.find_by_weixin_number receive_message[:ToUserName]
       log = ::EricWeixin::MessageLog.create_public_account_receive_message_log openid: receive_message[:FromUserName],
-                                                                         app_id: pa.weixin_app_id,
-                                                                         message_type: receive_message[:MsgType],
-                                                                         message_id: receive_message[:MsgId],
-                                                                         data: receive_message.to_json,
-                                                                         process_status: 0, #在这里假设都处理完毕，由业务引起的更新请在工程的Process中进行修改。
-                                                                         event_name: receive_message[:Event],
-                                                                         create_time: receive_message[:CreateTime]
+                                                                               weixin_public_account_id: pa.id,
+                                                                               message_type: receive_message[:MsgType],
+                                                                               message_id: receive_message[:MsgId],
+                                                                               data: receive_message.to_json,
+                                                                               process_status: 0, #在这里假设都处理完毕，由业务引起的更新请在工程的Process中进行修改。
+                                                                               event_name: receive_message[:Event],
+                                                                               event_key: receive_message[:EventKey], #事件值
+                                                                               create_time: receive_message[:CreateTime]
 
       reply_message = case business_type
                         #订阅
                         when /event~subscribe/
                           result = ::Weixin::Process.subscribe receive_message
                           if result == true
-                            ::EricWeixin::WeixinUser.create_weixin_user secret_key, receive_message[:FromUserName]
-                            match_key_words 'subscribe', secret_key, receive_message
+                            ::EricWeixin::WeixinUser.create_weixin_user public_account.id, receive_message[:FromUserName]
+                            match_key_words 'subscribe', public_account.id, receive_message
                           else
                             result
                           end
@@ -62,8 +59,8 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
                         when /event~unsubscribe/
                           result = ::Weixin::Process.unsubscribe receive_message
                           if result == true
-                            ::EricWeixin::WeixinUser.create_weixin_user secret_key, receive_message[:FromUserName]
-                            match_key_words 'unsubscribe', secret_key, receive_message
+                            ::EricWeixin::WeixinUser.create_weixin_user public_account.id, receive_message[:FromUserName]
+                            match_key_words 'unsubscribe', public_account.id, receive_message
                           else
                             result
                           end
@@ -72,7 +69,16 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
                         when /event~CLICK/
                           result = ::Weixin::Process.click_event receive_message[:EventKey], receive_message
                           if result == true
-                            match_key_words receive_message[:EventKey], secret_key, receive_message
+                            match_key_words receive_message[:EventKey], public_account.id, receive_message
+                          else
+                            result
+                          end
+
+                        #点击消息
+                        when /event~SCAN/
+                          result = ::Weixin::Process.scan_event receive_message[:EventKey], receive_message
+                          if result == true
+                            match_key_words "scan_#{receive_message[:EventKey]}", public_account.id, receive_message, false
                           else
                             result
                           end
@@ -105,7 +111,7 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
                         when /text~/
                           result = ::Weixin::Process.text_event receive_message[:Content], receive_message
                           if result == true
-                            match_key_words receive_message[:Content], secret_key, receive_message
+                            match_key_words receive_message[:Content], public_account.id, receive_message
                           else
                             result
                           end
@@ -114,24 +120,32 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
                         else
                           result = ::Weixin::Process.another_event receive_message
                           if result == true
-                            match_key_words 'unknow~words', secret_key, receive_message
+                            match_key_words 'unknow~words', public_account.id, receive_message
                           else
                             result
                           end
                       end
       "message_to_wechat:".to_logger
       reply_message.to_logger
-      log.passive_reply_message = reply_message.to_s
-      log.save!
+      unless receive_message.to_s.blank?
+        log.passive_reply_message = reply_message.to_s
+        log.save!
+      end
+
       reply_message
     end
 
-    def match_key_words wx_key_word, secret_key, receive_message
+    def match_key_words wx_key_word, public_account_id, receive_message,need_to_mult_service=true
       matched_rule = EricWeixin::ReplyMessageRule.order(order: :desc).
-          where(:key_word => wx_key_word, :weixin_secret_key => secret_key).first
+          where(:key_word => wx_key_word, :weixin_public_account_id => public_account_id, :key_word_type=>(receive_message[:MsgType]||"keyword")).first
       if matched_rule.nil?
-        return EricWeixin::ReplyMessage::transfer_mult_customer_service ToUserName: receive_message[:FromUserName],
-                                                                        FromUserName: receive_message[:ToUserName]
+        if need_to_mult_service
+          return EricWeixin::ReplyMessage::transfer_mult_customer_service ToUserName: receive_message[:FromUserName],
+                                                                          FromUserName: receive_message[:ToUserName]
+        else
+          return '' #当匹配不上，也不需要去多客服的时候，就直接返回。
+        end
+
       end
       reply_msg = case matched_rule.reply_type
                     when "text"
@@ -144,7 +158,7 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
                                                                                   FromUserName: receive_message[:ToUserName],
                                                                                   news: weixin_news.weixin_articles
                     when "wx_function"
-                      Weixin::WeixinAutoReplyFunctions.send(matched_rule.reply_message, {:key_word => wx_key_word, :receive_message => receive_message})
+                      ::Weixin::WeixinAutoReplyFunctions.send(matched_rule.reply_message, ({:key_word => wx_key_word, :receive_message => receive_message}))
                   end
       reply_msg
     end

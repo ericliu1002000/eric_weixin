@@ -8,13 +8,14 @@ module EricWeixin
 
     def reply
       request_body = request.body.read
-      weixin_secret_key = ::EricWeixin::PublicAccount.get_secret params[:app_id]
+
+      public_account = ::EricWeixin::PublicAccount.find_by_weixin_app_id params[:app_id]
 
       "message from wechat: ".to_logger
       request_body.to_logger
       weixin_message = MultiXml.parse(request_body).deep_symbolize_keys[:xml]
 
-      message = ::EricWeixin::ReplyMessageRule.process_rule(weixin_message, weixin_secret_key)
+      message = ::EricWeixin::ReplyMessageRule.process_rule(weixin_message, public_account)
       render xml: message
     end
 

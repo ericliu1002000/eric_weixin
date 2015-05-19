@@ -2,8 +2,8 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
   SEX = {1=>'男' , 2=>'女', 0=>'未知'}
   belongs_to :member_info
   belongs_to :weixin_public_account, :class_name => '::EricWeixin::PublicAccount', :foreign_key => 'weixin_public_account_id'
-  validates_uniqueness_of :openid, scope: :weixin_secret_key
-  validates_presence_of :openid, :weixin_secret_key, :weixin_public_account
+  validates_uniqueness_of :openid, scope: :weixin_public_account_id
+  validates_presence_of :openid, :weixin_public_account_id
 
 
   def nickname
@@ -18,26 +18,24 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
 
   class << self
 
-    ##
     # ===业务说明：创建、更新微信用户
     # * 微信用户在关注、取消关注时更新用户信息。
     # * 当用户关注微信时，创建用户。
     # * 当用户取消关注时，把用户标记为取消关注
     # ===参数说明
-    # * secret_key::公众账号的secret_key,其值取决于公众账号的设置。
+    # * public_account_id::公众账号的数据库存储id
     # * openid::用户的openid,微信服务器传送过来。
     # ===调用方法
     #  EricWeixin::WeixinUser.create_weixin_user 'adsfkj', 'sdfdf'
     #  EricWeixin::WeixinUser.create_weixin_user 'adsfkj', 'sdfdf'
     # ====返回
     # 正常情况下返回当前微信用户 <tt>::EricWeixin::WeixinUser</tt>，抛出异常时错误查看异常信息。
-    def create_weixin_user(secret_key, openid)
-      public_account = ::EricWeixin::PublicAccount.find_by_weixin_secret_key(secret_key)
+    def create_weixin_user(public_account_id, openid)
+      public_account = ::EricWeixin::PublicAccount.find_by_id(public_account_id)
       ::EricWeixin::ReplyMessageRule.transaction do
-        weixin_user = ::EricWeixin::WeixinUser.where(openid: openid, weixin_secret_key: secret_key).first
+        weixin_user = ::EricWeixin::WeixinUser.where(openid: openid, weixin_public_account_id: public_account.id).first
         if weixin_user.blank?
           weixin_user = ::EricWeixin::WeixinUser.new openid: openid,
-                                       weixin_secret_key: secret_key,
                                        weixin_public_account_id: public_account.id
           weixin_user.save!
         end
@@ -48,9 +46,9 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
     end
 
 
-    def export_users_to_csv(weixin_secret_key)
+    def export_users_to_csv(public_account_id)
       require 'csv'
-      weixin_users = ::EricWeixin::WeixinUser.where(weixin_secret_key: weixin_secret_key)
+      weixin_users = ::EricWeixin::WeixinUser.where(weixin_public_account_id: public_account_id)
       CSV.generate do |csv|
         csv << ["订阅状态", "openid", "昵称", "性别", "语言", "城市", "省份", "国家", "订阅时间"]
         weixin_users.each do |weixin_user|
