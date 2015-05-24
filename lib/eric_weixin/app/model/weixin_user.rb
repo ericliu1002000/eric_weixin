@@ -30,7 +30,7 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
     #  EricWeixin::WeixinUser.create_weixin_user 'adsfkj', 'sdfdf'
     # ====返回
     # 正常情况下返回当前微信用户 <tt>::EricWeixin::WeixinUser</tt>，抛出异常时错误查看异常信息。
-    def create_weixin_user(public_account_id, openid)
+    def create_weixin_user(public_account_id, openid, channel=nil)
       public_account = ::EricWeixin::PublicAccount.find_by_id(public_account_id)
       ::EricWeixin::ReplyMessageRule.transaction do
         weixin_user = ::EricWeixin::WeixinUser.where(openid: openid, weixin_public_account_id: public_account.id).first
@@ -41,6 +41,11 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
         end
         wx_user_data = public_account.get_user_data_from_weixin_api openid
         weixin_user.update_attributes(wx_user_data.select{|k,v| ["subscribe", "openid", "nickname", "sex", "language", "city", "province", "country", "headimgurl", "subscribe_time", "remark"].include? k })
+        if not channel.blank?
+          weixin_user.first_register_channel = channel if weixin_user.first_register_channel.blank?
+          weixin_user.last_register_channel = channel
+          weixin_user.save!
+        end
         weixin_user
       end
     end

@@ -1,6 +1,7 @@
 module EricWeixin
   class AccessToken < ActiveRecord::Base
-    belongs_to :public_account, :class_name => 'EricWeixin::PublicAccount', foreign_key: :experience_center_id
+
+    belongs_to :public_account, :class_name => '::EricWeixin::PublicAccount', foreign_key: :experience_center_id
 
     self.table_name = "weixin_access_tokens"
 
@@ -15,9 +16,7 @@ module EricWeixin
     #  ::EricWeixin::AccessToken.get_valid_access_token public_account_id: 1
     def self.get_valid_access_token options
       ::EricWeixin::AccessToken.transaction do
-
         access_token = ::EricWeixin::AccessToken.find_by_public_account_id options[:public_account_id]
-
         if access_token.blank?
           public_account = ::EricWeixin::PublicAccount.find_by_id options[:public_account_id]
           access_token = ::EricWeixin::AccessToken.new :access_token => get_new_token(options[:public_account_id]),
@@ -41,9 +40,8 @@ module EricWeixin
     def self.get_new_token public_account_id
       account = ::EricWeixin::PublicAccount.find_by_id public_account_id
       BusinessException.raise 'account 不存在' if account.blank?
-      url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=#{'wx51729870d9012531'||account.weixin_app_id}&secret=#{account.weixin_secret_key}"
+      url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=#{account.weixin_app_id}&secret=#{account.weixin_secret_key}"
       response = RestClient.get url
-
       pp '.........'
       pp response
       JSON.parse(response)["access_token"]

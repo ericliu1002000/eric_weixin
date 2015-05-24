@@ -8,13 +8,10 @@ module EricWeixin
 
     def reply
       request_body = request.body.read
-
       public_account = ::EricWeixin::PublicAccount.find_by_weixin_app_id params[:app_id]
-
       "message from wechat: ".to_logger
       request_body.to_logger
       weixin_message = MultiXml.parse(request_body).deep_symbolize_keys[:xml]
-
       message = ::EricWeixin::ReplyMessageRule.process_rule(weixin_message, public_account)
       render xml: message
     end
@@ -48,17 +45,16 @@ module EricWeixin
         return
       end
 
-      pp '111111'
+
       response = RestClient.get "https://api.weixin.qq.com/sns/oauth2/access_token?appid=#{weixin_public_account.weixin_app_id}&secret=#{weixin_public_account.weixin_secret_key}&code=#{params[:code]}&grant_type=authorization_code"
       result_hash = JSON.parse(response.body)
-
       query_array << ["openid", result_hash['openid']]
       query_array << ["access_token", result_hash['access_token']]
       query_array << ["expires_in", result_hash['expires_in']]
       query_array << ['refresh_token', result_hash['refresh_token']]
       query_array << ['scope', result_hash['scope']]
       query_array << ['agree', 'yes']
-      pp '3333333'
+
       response = RestClient.get "https://api.weixin.qq.com/sns/userinfo?access_token=#{result_hash['access_token']}&openid=#{result_hash['openid']}&lang=zh_CN"
       user_info_hash = JSON.parse(response.body)
       query_array << ["nickname", user_info_hash['nickname']]

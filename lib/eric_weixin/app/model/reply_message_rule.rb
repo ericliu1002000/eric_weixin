@@ -30,9 +30,9 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
 
     def process_rule(receive_message, public_account)
       business_type = "#{receive_message[:MsgType]}~#{receive_message[:Event]}"
-      pp 'xxxx'*20
-      pp receive_message
-      pp ".."*20
+      # pp 'xxxx'*20
+      # pp receive_message
+      # pp ".."*20
       pa = ::EricWeixin::PublicAccount.find_by_weixin_number receive_message[:ToUserName]
       log = ::EricWeixin::MessageLog.create_public_account_receive_message_log openid: receive_message[:FromUserName],
                                                                                weixin_public_account_id: pa.id,
@@ -49,7 +49,7 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
                         when /event~subscribe/
                           result = ::Weixin::Process.subscribe receive_message
                           if result == true
-                            ::EricWeixin::WeixinUser.create_weixin_user public_account.id, receive_message[:FromUserName]
+                            ::EricWeixin::WeixinUser.create_weixin_user public_account.id, receive_message[:FromUserName],receive_message[:EventKey]
                             match_key_words 'subscribe', public_account.id, receive_message
                           else
                             result
@@ -60,7 +60,7 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
                           result = ::Weixin::Process.unsubscribe receive_message
                           if result == true
                             ::EricWeixin::WeixinUser.create_weixin_user public_account.id, receive_message[:FromUserName]
-                            match_key_words 'unsubscribe', public_account.id, receive_message
+                            ''
                           else
                             result
                           end
@@ -92,7 +92,16 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
                             result
                           end
 
-                        #用户上报地理位置
+                        #用户自动上报地理位置信息
+                        when /event~LOCATION/
+                          result = ::Weixin::Process.auto_location_event receive_message
+                          if result == true
+                            ''
+                          else
+                            result
+                          end
+
+                        #用户共享地理位置信息
                         when /location/
                           result = ::Weixin::Process.location_event receive_message
                           if result == true
