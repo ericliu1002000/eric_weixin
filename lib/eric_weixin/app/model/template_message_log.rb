@@ -8,9 +8,9 @@ class EricWeixin::TemplateMessageLog < ActiveRecord::Base
     #    data: 根据模板不同，给出不同的hash参数
     #    url: 点击模板要去的链接，可以为空
     #    topcolor: 颜色设置, 默认为 #FF0000
-    #    app_id: 微信appid
-    # EricWeixin::TemplateMessageLog.send_template_message openid: "osyUtswoeJ9d7p16RdpC5grOeukQ",
-    #                                                      template_id: "WdYZPTwhAMc59aKGs5SUCxRw9xqOM-eOkvGJlZpQahk",
+    #    public_account_id: 微信公众账号id
+    # EricWeixin::TemplateMessageLog.send_template_message openid: "oE46Bjg-vnjzkkGvA_cr7VO-VD9s",
+    #                                                      template_id: "fz50PHl9P6lGU0Ow5FY2RMX1WukEsX2DaCDgMbmnmeg",
     #                                                      topcolor: '#00FF00',
     #                                                      url: 'www.baidu.com',
     #                                                      public_account_id: 1,
@@ -25,36 +25,46 @@ class EricWeixin::TemplateMessageLog < ActiveRecord::Base
     #                                                      }
 
     def send_template_message options
-      BusinessException.raise '没有接收对象' if options[:openid].blank?
-      BusinessException.raise '模板未指定' if options[:template_id].blank?
-      BusinessException.raise '数据未指定' if options[:data].blank?
-      options[:topcolor] = '#FF0000' if options[:topcolor].blank?
-      message_json = {
-          :touser => options[:openid],
-          :template_id => options[:template_id],
-          :url => options[:url],
-          :topcolor => options[:topcolor],
-          :data => options[:data]
-      }.to_json
+      ::EricWeixin::TemplateMessageLog.transaction do
+        BusinessException.raise '没有接收对象' if options[:openid].blank?
+        BusinessException.raise '模板未指定' if options[:template_id].blank?
+        BusinessException.raise '数据未指定' if options[:data].blank?
+        options[:topcolor] = '#FF0000' if options[:topcolor].blank?
+        message_json = {
+            :touser => options[:openid],
+            :template_id => options[:template_id],
+            :url => options[:url],
+            :topcolor => options[:topcolor],
+            :data => options[:data]
+        }.to_json
 
-      #todo 在日志表中补充模板信息
-
-      public_account = ::EricWeixin::PublicAccount.find_by_id options[:public_account_id]
-      token = EricWeixin::AccessToken.get_valid_access_token_by_app_id app_id: public_account.weixin_app_id
+        public_account = ::EricWeixin::PublicAccount.find_by_id options[:public_account_id]
+        token = EricWeixin::AccessToken.get_valid_access_token_by_app_id app_id: public_account.weixin_app_id
 
 
-      response = RestClient.post "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=#{token}", message_json
-      response = JSON.parse response.body
-      pp response
-      log = EricWeixin::TemplateMessageLog.new openid: options[:openid],
-                                               url: options[:url],
-                                               template_id: options[:template_id],
-                                               topcolor: options[:topcolor],
-                                               data: options[:data].to_json,
-                                               message_id: response["msgid"],
-                                               error_code: response["errcode"],
-                                               weixin_public_account_id: options[:public_account_id]
-      log.save!
+        response = RestClient.post "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=#{token}", message_json
+        response = JSON.parse response.body
+        pp response
+        log = ::EricWeixin::TemplateMessageLog.new openid: options[:openid],
+                                                   url: options[:url],
+                                                   template_id: options[:template_id],
+                                                   topcolor: options[:topcolor],
+                                                   data: options[:data].to_json,
+                                                   message_id: response["msgid"],
+                                                   error_code: response["errcode"],
+                                                   weixin_public_account_id: options[:public_account_id]
+        log.save!
+
+        message_log = ::EricWeixin::MessageLog.create_public_account_send_message_log openid: options[:openid],
+                                                                                      weixin_public_account_id: options[:public_account_id],
+                                                                                      message_type: 'template_message',
+                                                                                      message_id: response["msgid"],
+                                                                                      data: message_json,
+                                                                                      process_status: 0
+        log
+      end
+
+
     end
 
 

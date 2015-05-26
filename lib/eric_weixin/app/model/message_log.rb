@@ -1,4 +1,5 @@
 class EricWeixin::MessageLog < ActiveRecord::Base
+  STATUS = {0 => '正常', 1 => '待处理'}
   self.table_name = "weixin_message_logs"
   class << self
 
