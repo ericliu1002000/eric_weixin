@@ -30,9 +30,6 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
 
     def process_rule(receive_message, public_account)
       business_type = "#{receive_message[:MsgType]}~#{receive_message[:Event]}"
-      # pp 'xxxx'*20
-      # pp receive_message
-      # pp ".."*20
       pa = ::EricWeixin::PublicAccount.find_by_weixin_number receive_message[:ToUserName]
       log = ::EricWeixin::MessageLog.create_public_account_receive_message_log openid: receive_message[:FromUserName],
                                                                                weixin_public_account_id: pa.id,

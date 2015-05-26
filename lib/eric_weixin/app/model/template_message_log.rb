@@ -37,6 +37,8 @@ class EricWeixin::TemplateMessageLog < ActiveRecord::Base
           :data => options[:data]
       }.to_json
 
+      #todo 在日志表中补充模板信息
+
       public_account = ::EricWeixin::PublicAccount.find_by_id options[:public_account_id]
       token = EricWeixin::AccessToken.get_valid_access_token_by_app_id app_id: public_account.weixin_app_id
 
