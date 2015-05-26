@@ -1,6 +1,12 @@
 class EricWeixin::MessageLog < ActiveRecord::Base
+
   STATUS = {0 => '正常', 1 => '待处理'}
   self.table_name = "weixin_message_logs"
+  belongs_to :public_account, class_name: "EricWeixin::PublicAccount", foreign_key: "weixin_public_account_id"
+  validates_presence_of :public_account,
+                        message: '公众账号必须存在',
+                        if: Proc.new { |user| user.device_id.blank? }
+
   class << self
 
     def create_public_account_receive_message_log options

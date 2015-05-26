@@ -25,11 +25,15 @@ module EricWeixin::MultCustomer
 
   # #
   def self.send_customer_service_message options
+    pa = nil
     if options[:app_id].blank?
       pa = ::EricWeixin::PublicAccount.find_by_weixin_number options[:weixin_number]
       options[:app_id] = pa.weixin_app_id
     end
+    BusinessException.raise '公众账号未查询到'
     token = ::EricWeixin::AccessToken.get_valid_access_token_by_app_id app_id: options[:app_id]
+
+
     post_data = {
         :touser => options[:openid],
         :msgtype => options[:message_type],
