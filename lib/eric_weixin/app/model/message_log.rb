@@ -4,8 +4,7 @@ class EricWeixin::MessageLog < ActiveRecord::Base
   self.table_name = "weixin_message_logs"
   belongs_to :public_account, class_name: "EricWeixin::PublicAccount", foreign_key: "weixin_public_account_id"
   validates_presence_of :public_account,
-                        message: '公众账号必须存在',
-                        if: Proc.new { |user| user.device_id.blank? }
+                        message: '公众账号必须存在'
 
   class << self
 

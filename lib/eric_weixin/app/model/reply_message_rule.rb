@@ -44,6 +44,7 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
                                                                                event_name: receive_message[:Event],
                                                                                event_key: receive_message[:EventKey], #事件值
                                                                                create_time: receive_message[:CreateTime]
+      business_type.to_debug
 
       reply_message = case business_type
                         #订阅
@@ -93,6 +94,25 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
                             result
                           end
 
+                        when /event~kf_close_session/
+                          result = ::Weixin::Process.kv_close_session receive_message
+                          if result == true
+                            ''
+                          else
+                            result
+                          end
+
+                        when /event~kf_create_session/
+                          #待取回客服聊天列表，所以标记为待处理
+                          log.process_status = 1
+                          log.save!
+                          result = ::Weixin::Process.kv_create_session receive_message
+                          if result == true
+                            ''
+                          else
+                            result
+                          end
+
                         #用户自动上报地理位置信息
                         when /event~LOCATION/
                           result = ::Weixin::Process.auto_location_event receive_message
@@ -103,7 +123,7 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
                           end
 
                         #用户共享地理位置信息
-                        when /location/
+                        when /location~/
                           result = ::Weixin::Process.location_event receive_message
                           if result == true
                             ''
@@ -126,8 +146,18 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
                             result
                           end
 
+                        when /link~/
+                          result = ::Weixin::Process.link_event receive_message
+                          if result == true
+                            ''
+                          else
+                            result
+                          end
+
                         #暂时识别不了的消息
                         else
+                          "暂时未处理的场景".to_logger
+                          receive_message.to_logger
                           result = ::Weixin::Process.another_event receive_message
                           if result == true
                             match_key_words 'unknow~words', public_account.id, receive_message
@@ -137,6 +167,7 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
                       end
       "message_to_wechat:".to_logger
       reply_message.to_logger
+
       unless receive_message.to_s.blank?
         log.passive_reply_message = reply_message.to_s
         log.save!

@@ -14,11 +14,7 @@ class EricWeixin::PublicAccount < ActiveRecord::Base
   #::EricWeixin::PublicAccount.first.get_user_data_from_weixin_api 'osyUtswoeJ9d7p16RdpC5grOeukQ'
   #返回Hash信息
   def get_user_data_from_weixin_api openid
-    token = ::EricWeixin::AccessToken.get_valid_access_token public_account_id: self.id
-    response = RestClient.get "https://api.weixin.qq.com/cgi-bin/user/info?access_token=#{token}&openid=#{openid}&lang=zh_CN"
-    response = JSON.parse response.body
-    response["nickname"] = CGI::escape(response["nickname"]) if not response["nickname"].blank?
-    response
+    ::EricWeixin::WeixinUser.get_user_data_from_weixin_api self.id, openid
   end
 
   #::EricWeixin::PublicAccount.first.weixin_menus

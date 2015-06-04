@@ -16,6 +16,21 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
     self.subscribe.to_i == 1
   end
 
+  #设置备注名
+  def set_remark name
+    token = ::EricWeixin::AccessToken.get_valid_access_token public_account_id: self.weixin_public_account_id
+    url = "https://api.weixin.qq.com/cgi-bin/user/info/updateremark?access_token=#{token}"
+    response = RestClient.post url, {:openid => self.openid, :remark => name}.to_json
+    response.to_debug
+    response = JSON.parse response.body
+    if response["errcode"].to_i == 0
+      response = ::EricWeixin::WeixinUser.create_weixin_user self.weixin_public_account_id, self.openid
+
+    else
+      BusinessException.raise "设置备注名报错，错误代码为#{response["errcode"]}"
+    end
+  end
+
   class << self
 
     # ===业务说明：创建、更新微信用户
@@ -50,6 +65,20 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
       end
     end
 
+    # ===获取用户详情
+    # 根据公众账号id和openid获取公众账号详细信息，最后返回json。
+    # ===输入参数说明
+    # * public_account_id 公众账号的id，你懂得，就是public_accounts表中的id。
+    # * openid WX分配给用户的id
+    # ===返回
+    # WX返回的用户详细信息，以json格式返回。#
+    def get_user_data_from_weixin_api public_account_id, openid
+      token = ::EricWeixin::AccessToken.get_valid_access_token public_account_id: public_account_id
+      response = RestClient.get "https://api.weixin.qq.com/cgi-bin/user/info?access_token=#{token}&openid=#{openid}&lang=zh_CN"
+      response = JSON.parse response.body
+      response["nickname"] = CGI::escape(response["nickname"]) if not response["nickname"].blank?
+      response
+    end
 
     def export_users_to_csv(public_account_id)
       require 'csv'

@@ -21,6 +21,7 @@ module EricWeixin::MultCustomer
   # EricWeixin::MultCustomer.send_customer_service_message app_id: 'wx4564afc37fac0ebf',
   #                                                        openid: 'osyUtswoeJ9d7p16RdpC5grOeukQ',
   #                                                        message_type: 'text',
+  #                                                        weixin_number: 'xxx'
   #                                                        data: {:content => 'hi, 客服消息来了'},
 
   # #
@@ -30,7 +31,7 @@ module EricWeixin::MultCustomer
       pa = ::EricWeixin::PublicAccount.find_by_weixin_number options[:weixin_number]
       options[:app_id] = pa.weixin_app_id
     end
-    BusinessException.raise '公众账号未查询到'
+    BusinessException.raise '公众账号未查询到' if pa.blank?
     token = ::EricWeixin::AccessToken.get_valid_access_token_by_app_id app_id: options[:app_id]
 
 
@@ -50,11 +51,11 @@ module EricWeixin::MultCustomer
                      message.id
                    end
       ::EricWeixin::MessageLog.create_public_account_send_message_log openid: options[:openid],
-                                                                      app_id: options[:app_id],
                                                                       message_type: options[:message_type],
                                                                       data: options[:data].to_json,
                                                                       process_status: 0,
-                                                                      parent_id: message_id
+                                                                      parent_id: message_id,
+                                                                      weixin_public_account_id: pa.id
     end
     ''
   end

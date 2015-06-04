@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="RUBY_MODULE" version="4">
-  <component name="CompassSettings">
-    <option name="compassSupportEnabled" value="true" />
-  </component>
   <component name="FacetManager">
     <facet type="gem" name="Ruby Gem">
       <configuration>
@@ -17,6 +14,6 @@
     <orderEntry type="jdk" jdkName="RVM: ruby-2.0.0-p481 [eric_tools]" jdkType="RUBY_SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" scope="PROVIDED" name="bundler (v1.6.2, RVM: ruby-2.0.0-p481 [eric_tools]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="rake (v0.9.6, RVM: ruby-2.0.0-p481 [eric_tools]) [gem]" level="application" />
   </component>
 </module>
-
