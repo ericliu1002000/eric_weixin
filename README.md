@@ -1,3 +1,5 @@
+`我是中国人啊`
+
 # EricWeixin
 
 TODO: Write a gem description
