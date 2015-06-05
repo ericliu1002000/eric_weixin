@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["刘晓琦"]
   spec.email         = ["ericliu@ikidstv.com"]
   spec.summary       = %q{微信插件}
-  spec.description   = %q{微信插件}
+  spec.description   = %q{快速开发微信公众账号}
   spec.homepage      = ""
   spec.license       = "MIT"
 
