@@ -13,11 +13,13 @@ class EricWeixin::PublicAccount < ActiveRecord::Base
 
   #::EricWeixin::PublicAccount.first.get_user_data_from_weixin_api 'osyUtswoeJ9d7p16RdpC5grOeukQ'
   #返回Hash信息
+  #todo xiameng 注释
   def get_user_data_from_weixin_api openid
     ::EricWeixin::WeixinUser.get_user_data_from_weixin_api self.id, openid
   end
 
   #::EricWeixin::PublicAccount.first.weixin_menus
+  #todo xiameng 注释
   def weixin_menus
     token = ::EricWeixin::AccessToken.get_valid_access_token public_account_id: self.id
     response = RestClient.get "https://api.weixin.qq.com/cgi-bin/menu/get?access_token=#{token}"
@@ -63,6 +65,7 @@ class EricWeixin::PublicAccount < ActiveRecord::Base
   # }]
   # }]
   # }'
+  #todo xiameng 注释
   def create_menu menu_json
     ::EricWeixin::PublicAccount.transaction do
       self.menu_json = menu_json
@@ -77,6 +80,7 @@ class EricWeixin::PublicAccount < ActiveRecord::Base
   end
 
   # ::EricWeixin::PublicAccount.first.rebuild_users
+  #todo xiameng 注释
   def rebuild_users next_openid = nil
     token = ::EricWeixin::AccessToken.get_valid_access_token public_account_id: self.id
     response = if next_openid.blank?

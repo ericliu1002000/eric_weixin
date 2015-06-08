@@ -67,7 +67,7 @@ class EricWeixin::TemplateMessageLog < ActiveRecord::Base
 
     end
 
-
+#todo xiameng 注释
     def update_template_message_status openid, message_id, status
 
       log= EricWeixin::TemplateMessageLog.where openid: openid,
