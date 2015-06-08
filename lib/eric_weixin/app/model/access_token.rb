@@ -5,7 +5,7 @@ module EricWeixin
 
     self.table_name = "weixin_access_tokens"
 
-    #todo xiameng 添加详细注释
+    #todo xiameng 添加详细注释，好的我知道了。
     def self.get_valid_access_token_by_app_id options
       pa = ::EricWeixin::PublicAccount.find_by_weixin_app_id options[:app_id]
       ::EricWeixin::AccessToken.get_valid_access_token public_account_id: pa.id
