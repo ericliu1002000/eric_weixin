@@ -11,15 +11,20 @@ class EricWeixin::PublicAccount < ActiveRecord::Base
   #   account.weixin_secret_key
   # end
 
-  #::EricWeixin::PublicAccount.first.get_user_data_from_weixin_api 'osyUtswoeJ9d7p16RdpC5grOeukQ'
-  #返回Hash信息
-  #todo xiameng 注释
+  # 根据 OpenID 和公众号 ID 通过调用 WeixinUser 同名类方法实现，获取用户基本信息并返回.
+  # ===参数说明
+  # * openid   #加密后的微信号，每个用户对每个公众号的OpenID是唯一的。
+  # ===调用示例
+  # ::EricWeixin::PublicAccount.first.get_user_data_from_weixin_api 'osyUtswoeJ9d7p16RdpC5grOeukQ'
   def get_user_data_from_weixin_api openid
     ::EricWeixin::WeixinUser.get_user_data_from_weixin_api self.id, openid
   end
 
-  #::EricWeixin::PublicAccount.first.weixin_menus
-  #todo xiameng 注释
+  # 获取微信菜单.
+  # ===参数说明
+  # * 无。
+  # ===调用示例
+  # ::EricWeixin::PublicAccount.first.weixin_menus
   def weixin_menus
     token = ::EricWeixin::AccessToken.get_valid_access_token public_account_id: self.id
     response = RestClient.get "https://api.weixin.qq.com/cgi-bin/menu/get?access_token=#{token}"
@@ -27,7 +32,10 @@ class EricWeixin::PublicAccount < ActiveRecord::Base
     response['menu']
   end
 
-  #
+  # 创建新的公众号菜单.
+  # ===参数说明
+  # * menu_json   #要添加的公众号菜单 json 内容
+  # ===调用示例
   # ::EricWeixin::PublicAccount.first.create_menu '{
   # "button":[
   #     {
@@ -65,7 +73,6 @@ class EricWeixin::PublicAccount < ActiveRecord::Base
   # }]
   # }]
   # }'
-  #todo xiameng 注释
   def create_menu menu_json
     ::EricWeixin::PublicAccount.transaction do
       self.menu_json = menu_json
@@ -79,8 +86,11 @@ class EricWeixin::PublicAccount < ActiveRecord::Base
     end
   end
 
+  # 获取用户列表，并把最新的用户信息存到数据库.
+  # ===参数说明
+  # * next_openid   #拉取列表的后一个用户的 next_openid，用户列表未拉取完时存在。
+  # ===调用示例
   # ::EricWeixin::PublicAccount.first.rebuild_users
-  #todo xiameng 注释
   def rebuild_users next_openid = nil
     token = ::EricWeixin::AccessToken.get_valid_access_token public_account_id: self.id
     response = if next_openid.blank?

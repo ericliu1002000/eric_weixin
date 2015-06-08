@@ -13,7 +13,11 @@ class EricWeixin::TwoDimensionCode < ActiveRecord::Base
     CGI::escape(self.ticket)
   end
 
-  #todo xiameng 注释
+  # 获取二维码网址.
+  # ===参数说明
+  # * 无。
+  # ===调用示例
+  # EricWeixin::TwoDimensionCode.image_url
   def image_url
     "https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=#{self.encode_ticket}"
   end
