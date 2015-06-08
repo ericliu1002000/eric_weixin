@@ -13,6 +13,7 @@ class EricWeixin::TwoDimensionCode < ActiveRecord::Base
     CGI::escape(self.ticket)
   end
 
+  #todo xiameng 注释
   def image_url
     "https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=#{self.encode_ticket}"
   end

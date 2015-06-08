@@ -28,15 +28,17 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
       end
     end
 
+
+    #todo xiameng 注释  勾子使用方法
     def process_rule(receive_message, public_account)
       business_type = "#{receive_message[:MsgType]}~#{receive_message[:Event]}"
 
       #兼容腾讯的一个坑....有的是MsgId， 有的是MsgID
       receive_message[:MsgId] = receive_message[:MsgID] if (!receive_message[:MsgID].blank? and receive_message[:MsgId].blank?)
 
-      pa = ::EricWeixin::PublicAccount.find_by_weixin_number receive_message[:ToUserName]
+
       log = ::EricWeixin::MessageLog.create_public_account_receive_message_log openid: receive_message[:FromUserName],
-                                                                               weixin_public_account_id: pa.id,
+                                                                               weixin_public_account_id: public_account.id,
                                                                                message_type: receive_message[:MsgType],
                                                                                message_id: receive_message[:MsgId] || receive_message[:MsgID],
                                                                                data: receive_message.to_json,
@@ -49,9 +51,9 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
       reply_message = case business_type
                         #订阅
                         when /event~subscribe/
+                          ::EricWeixin::WeixinUser.create_weixin_user public_account.id, receive_message[:FromUserName],receive_message[:EventKey]
                           result = ::Weixin::Process.subscribe receive_message
                           if result == true
-                            ::EricWeixin::WeixinUser.create_weixin_user public_account.id, receive_message[:FromUserName],receive_message[:EventKey]
                             match_key_words 'subscribe', public_account.id, receive_message
                           else
                             result
