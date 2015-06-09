@@ -33,7 +33,7 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
 
   class << self
 
-    # ===业务说明：创建、更新微信用户
+    # ===业务说明：创建、更新微信用户.
     # * 微信用户在关注、取消关注时更新用户信息。
     # * 当用户关注微信时，创建用户。
     # * 当用户取消关注时，把用户标记为取消关注
@@ -65,7 +65,7 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
       end
     end
 
-    # ===获取用户详情
+    # ===获取用户详情.
     # 根据公众账号id和openid获取公众账号详细信息，最后返回json。
     # ===输入参数说明
     # * public_account_id 公众账号的id，你懂得，就是public_accounts表中的id。

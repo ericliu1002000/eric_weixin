@@ -1,7 +1,7 @@
 class EricWeixin::TemplateMessageLog < ActiveRecord::Base
   self.table_name = "weixin_template_message_logs"
   class << self
-    # 发送模板消息
+    # 发送模板消息.
     # 参数说明：
     #    openid： 收取消息用户的openid， 必填
     #    template_id: 模板id， 必填
@@ -23,7 +23,6 @@ class EricWeixin::TemplateMessageLog < ActiveRecord::Base
     #                                                          keyword5: {value: '总体来讲还很不错，心理上缺乏安全感，需要家长多陪同。'},
     #                                                          remark: {value: ''}
     #                                                      }
-
     def send_template_message options
       ::EricWeixin::TemplateMessageLog.transaction do
         BusinessException.raise '没有接收对象' if options[:openid].blank?
@@ -63,19 +62,22 @@ class EricWeixin::TemplateMessageLog < ActiveRecord::Base
                                                                                       process_status: 0
         log
       end
-
-
     end
 
-#todo xiameng 注释
+    # 更新模板信息状态.
+    # ===参数说明
+    # * openid   #openid： 收取消息用户的openid， 必填
+    # * message_id   #消息id
+    # * status   #消息状态：可能的值有 成功， 用户拒绝， 其它错误
+    # ===调用示例
+    # ::EricWeixin::TemplateMessageLog.update_template_message_status
     def update_template_message_status openid, message_id, status
-
       log= EricWeixin::TemplateMessageLog.where openid: openid,
                                                 message_id: message_id
       pp log
       return if log.blank?
       log = log.first
-      log.status=status
+      log.status = status
       log.save!
       log
     end

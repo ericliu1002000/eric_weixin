@@ -1,4 +1,5 @@
-class EricWeixin::PublicAccount < ActiveRecord::Base
+class EricWeixin::PublicAccount < ActiveRecord::Baseuto-merging app/models/eric_weixin/access_token.rb
+
   require "rest-client"
   self.table_name = "weixin_public_accounts"
   has_many :weixin_users, :class_name => 'WeixinUser', foreign_key: "weixin_public_account_id"
@@ -11,15 +12,20 @@ class EricWeixin::PublicAccount < ActiveRecord::Base
   #   account.weixin_secret_key
   # end
 
-  #::EricWeixin::PublicAccount.first.get_user_data_from_weixin_api 'osyUtswoeJ9d7p16RdpC5grOeukQ'
-  #返回Hash信息
-  #todo xiameng 注释
+  # 获取用户基本信息.
+  # ===参数说明
+  # * openid   #用户openid
+  # ===调用示例
+  # ::EricWeixin::PublicAccount.first.get_user_data_from_weixin_api 'osyUtswoeJ9d7p16RdpC5grOeukQ'
   def get_user_data_from_weixin_api openid
     WeixinUser.get_user_data_from_weixin_api self.id, openid
   end
 
-  #::EricWeixin::PublicAccount.first.weixin_menus
-  #todo xiameng 注释
+  # 获取微信菜单.
+  # ===参数说明
+  # * 无。
+  # ===调用示例
+  # ::EricWeixin::PublicAccount.first.weixin_menus
   def weixin_menus
     token = AccessToken.get_valid_access_token public_account_id: self.id
     response = RestClient.get "https://api.weixin.qq.com/cgi-bin/menu/get?access_token=#{token}"
@@ -27,7 +33,10 @@ class EricWeixin::PublicAccount < ActiveRecord::Base
     response['menu']
   end
 
-  #
+  # 创建新的公众号菜单.
+  # ===参数说明
+  # * menu_json   #要添加的公众号菜单 json 内容
+  # ===调用示例
   # ::EricWeixin::PublicAccount.first.create_menu '{
   # "button":[
   #     {
@@ -65,7 +74,6 @@ class EricWeixin::PublicAccount < ActiveRecord::Base
   # }]
   # }]
   # }'
-  #todo xiameng 注释
   def create_menu menu_json
     PublicAccount.transaction do
       self.menu_json = menu_json
@@ -79,8 +87,11 @@ class EricWeixin::PublicAccount < ActiveRecord::Base
     end
   end
 
+  # 获取用户列表，并把最新的用户信息存到数据库.
+  # ===参数说明
+  # * next_openid   #拉取列表的后一个用户的 next_openid，用户列表未拉取完时存在。
+  # ===调用示例
   # ::EricWeixin::PublicAccount.first.rebuild_users
-  #todo xiameng 注释
   def rebuild_users next_openid = nil
     token = AccessToken.get_valid_access_token public_account_id: self.id
     response = if next_openid.blank?
