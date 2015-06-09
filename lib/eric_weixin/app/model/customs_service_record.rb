@@ -25,7 +25,7 @@ class EricWeixin::CustomsServiceRecord < ActiveRecord::Base
       start_time_unix = chat_date.change(hour: 0, min: 0, sec: 0).to_i
       end_time_unix = chat_date.change(hour: 23, min:59, sec: 59).to_i
       message_logs = ::EricWeixin::MessageLog.where("create_time between ? and ? ", start_time_unix, end_time_unix)
-      message_logs = message_logs.where(event_name: 'kf_create_session', process_status: 1).group(:openid)
+      message_logs = message_logs.where(event_name: 'kf_create_session', process_status: 1).group(:openid, :weixin_public_account_id)
       message_logs.each do |message_log|
         options = {
             :weixin_public_account_id=>message_log.weixin_public_account_id,
@@ -43,7 +43,9 @@ class EricWeixin::CustomsServiceRecord < ActiveRecord::Base
           i += 1
           BusinessException.raise '此人聊天记录竟然上了5000条！' if i >= 100
         end
-        message_log.update_attribute :process_status, 0
+        all_message_logs = ::EricWeixin::MessageLog.where("create_time between ? and ? ", start_time_unix, end_time_unix)
+        all_message_logs = all_message_logs.where(event_name: 'kf_create_session', process_status: 1, openid: message_log.openid, weixin_public_account_id: message_log.weixin_public_account_id)
+        all_message_logs.each{ |ml| ml.update_attribute :process_status, 0 }
       end
     end
   end
