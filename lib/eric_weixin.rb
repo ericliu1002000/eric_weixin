@@ -7,7 +7,8 @@ require 'eric_weixin/modules/snsapi'
 
 
 
-# require '../app/controllers/wz/weixin_controller'
+
+
 
 module EricWeixin
 
