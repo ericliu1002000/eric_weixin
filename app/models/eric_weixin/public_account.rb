@@ -1,4 +1,4 @@
-class EricWeixin::PublicAccount < ActiveRecord::Baseuto-merging app/models/eric_weixin/access_token.rb
+class EricWeixin::PublicAccount < ActiveRecord::Base
 
   require "rest-client"
   self.table_name = "weixin_public_accounts"
