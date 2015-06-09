@@ -4,6 +4,7 @@ class EricWeixin::PublicAccount < ActiveRecord::Base
   has_many :weixin_users, :class_name => '::EricWeixin::WeixinUser', foreign_key: "weixin_public_account_id"
   has_many :two_dimension_codes, :class_name => '::EricWeixin::TwoDimensionCode', foreign_key: "weixin_public_account_id"
   has_one :access_token, :class_name => '::EricWeixin::AccessToken', foreign_key: "public_account_id"
+  has_many :ip
 
   #
   # def self.get_secret app_id
@@ -11,9 +12,9 @@ class EricWeixin::PublicAccount < ActiveRecord::Base
   #   account.weixin_secret_key
   # end
 
-  # 根据 OpenID 和公众号 ID 通过调用 WeixinUser 同名类方法实现，获取用户基本信息并返回.
+  # 获取用户基本信息.
   # ===参数说明
-  # * openid   #加密后的微信号，每个用户对每个公众号的OpenID是唯一的。
+  # * openid   #用户openid
   # ===调用示例
   # ::EricWeixin::PublicAccount.first.get_user_data_from_weixin_api 'osyUtswoeJ9d7p16RdpC5grOeukQ'
   def get_user_data_from_weixin_api openid

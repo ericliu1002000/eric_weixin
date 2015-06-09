@@ -22,7 +22,7 @@ class EricWeixin::TwoDimensionCode < ActiveRecord::Base
     "https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=#{self.encode_ticket}"
   end
 
-  # 获取永久性二维码对象。
+  # 获取永久性二维码对象.
   # 典型使用场景如下：
   # 1.第一步调用此方法先创建/获取二维码对象。
   # 2.使用二维码对象获取二维码下载、展示链接。 如：two_dimension_code.image_url
@@ -75,7 +75,7 @@ class EricWeixin::TwoDimensionCode < ActiveRecord::Base
   end
 
 
-  # 获取临时二维码对象。
+  # 获取临时二维码对象.
   # 典型使用场景如下：
   # 1.第一步调用此方法先创建/获取二维码对象。
   # 2.使用二维码对象获取二维码下载、展示链接。 如：two_dimension_code.image_url
@@ -132,7 +132,7 @@ class EricWeixin::TwoDimensionCode < ActiveRecord::Base
     end
   end
 
-  # 长URL转短URL
+  # 长URL转短URL.
   # ===参数说明：
   # * app_id 微信公众账号的app_id
   # * url 需要转短url的链接

@@ -5,11 +5,14 @@ module EricWeixin
 
     self.table_name = "weixin_access_tokens"
 
+    #设定最初的腾讯微信服务器列表
+    $ip_list = {"no-ip" => true}
+
     
-    # 从 APPID 获取合法的 AccessToken.
-    # 流程：使用 APPID 查到 公众号 ID，然后用这个公众号获取合法的 AccessToken 并作为返回值返回。
+    # 获取 AccessToken 方法一。根据 APPID 查到微信公众号 PublicAccount.id ，然后
+    # 调用 ::EricWeixin::AccessToken.get_valid_access_token 获取 AccessToken 并作为返回值返回.
     # ===参数说明
-    # * app_id   #公众账号app_id
+    # * app_id   #微信公众号的 app_id
     # ===调用示例
     #  ::EricWeixin::AccessToken.get_valid_access_token_by_app_id app_id: 'wx51729870d9012531'
     def self.get_valid_access_token_by_app_id options
@@ -17,8 +20,8 @@ module EricWeixin
       ::EricWeixin::AccessToken.get_valid_access_token public_account_id: pa.id
     end
     
-    # 从微信公众号 PublicAccount 获取 AccessToken 返回到 get_valid_access_token_by_app_id 函数.
-    # 流程：微信公众号未存在 AccessToken 或者 AccessToken 过期都立即获取新的并返回。
+    # 获取 AccessToken 方法二。根据微信公众号 PublicAccount.id 获取 AccessToken.
+    # 若微信公众号未存在 AccessToken 或者 AccessToken 过期都立即获取新的并返回。
     # ===参数说明
     # * public_account_id   #公众账号 ID
     # ===调用示例
