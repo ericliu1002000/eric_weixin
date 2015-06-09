@@ -5,7 +5,48 @@ module EricWeixin::MultCustomer
   # ===参数说明
   # ===调用说明
   def self.get_customer_service_messages options
-
+    pa = if options[:weixin_public_account_id].blank?
+           if options[:app_id].blank?
+             pa = ::EricWeixin::PublicAccount.find_by_weixin_number options[:weixin_number]
+             options[:app_id] = pa.weixin_app_id
+             pa
+           else
+             ::EricWeixin::PublicAccount.find_by_weixin_app_id options[:app_id]
+           end
+         else
+           ::EricWeixin::PublicAccount.find(options[:weixin_public_account_id])
+         end
+    BusinessException.raise '公众账号未查询到' if pa.blank?
+    BusinessException.raise '没有指定用户。' if options[:openid].blank?
+    endtime = options[:endtime].to_i
+    openid = options[:openid]
+    pageindex = options[:pageindex]
+    pagesize = options[:pagesize].to_i
+    pagesize = pagesize <= 0 ? 50 : pagesize > 50 ? 50 :pagesize
+    starttime = options[:starttime].to_i
+    post_data = {
+        :endtime => endtime,
+        :openid => openid,
+        :pageindex => pageindex,
+        :pagesize => pagesize,
+        :starttime => starttime
+    }
+    token = ::EricWeixin::AccessToken.get_valid_access_token_by_app_id app_id: pa.weixin_app_id
+    url = "https://api.weixin.qq.com/customservice/msgrecord/getrecord?access_token=#{token}"
+    response = RestClient.post url, post_data.to_json
+    response = JSON.parse response.body
+    if response['errcode'] == 0
+      record_list = response["recordlist"]
+      unless record_list.blank?
+        record_list.each do |record|
+          record = record.merge(weixin_public_account_id: pa.id)
+          ::EricWeixin::CustomsServiceRecord.create_one record unless ::EricWeixin::CustomsServiceRecord.exist_one record
+        end
+      else
+        return response['errcode'], false
+      end
+    end
+    return response['errcode'], true
   end
 
 
