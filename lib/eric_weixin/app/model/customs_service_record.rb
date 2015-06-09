@@ -19,6 +19,12 @@ class EricWeixin::CustomsServiceRecord < ActiveRecord::Base
     self.where( options ).count >= 1
   end
 
+
+  # 批量获取用户与客服的聊天记录保存到数据库.
+  # ===参数说明
+  # * chat_date  #聊天日期
+  # ===调用说明
+  #  ::EricWeixin::CustomsServiceRecord.batch_get_customs_records '2015-6-9'.to_time
   def self.batch_get_customs_records chat_date
     self.transaction do
       chat_date = chat_date.to_time
