@@ -1,0 +1,14 @@
+PATH
+  remote: .
+  specs:
+    eric_weixin (0.0.1)
+
+GEM
+  remote: http://ruby.taobao.org/
+  specs:
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  eric_weixin!

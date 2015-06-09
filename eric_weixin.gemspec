@@ -1,8 +1,9 @@
-# coding: utf-8
-lib = File.expand_path('../lib', __FILE__)
-$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'eric_weixin/version'
+$:.push File.expand_path("../lib", __FILE__)
 
+# Maintain your gem's version:
+require "eric_weixin/version"
+
+# Describe your gem and declare its dependencies:
 Gem::Specification.new do |spec|
   spec.name          = "eric_weixin"
   spec.version       = EricWeixin::VERSION
@@ -13,20 +14,11 @@ Gem::Specification.new do |spec|
   spec.homepage      = ""
   spec.license       = "MIT"
 
-  spec.files         = `git ls-files -z`.split("\x0")
-  spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
-  spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
-  spec.require_paths = ["lib"]
 
-  spec.add_development_dependency "bundler", "~> 1.6"
-  spec.add_development_dependency "rake", '~> 0'
-  spec.add_development_dependency 'nokogiri', '~> 0'
-  spec.add_development_dependency 'rest-client', '~> 0'
-  spec.add_development_dependency 'activerecord', '~> 4.1', '>= 4.1.4'
-  spec.add_development_dependency 'rails', '~> 4.1', '>= 4.1.4'
-  spec.add_development_dependency 'actionpack', '~> 4.1', '>= 4.1.4'
-  spec.add_development_dependency 'activesupport', '~> 4.1', '>= 4.1.4'
-  spec.add_development_dependency 'actionview', '~> 4.1', '>= 4.1.4'
-  spec.add_development_dependency 'eric_tools', '~> 0.0', '>= 0.0.4'
+  spec.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]
+  spec.test_files = Dir["test/**/*"]
+
+  spec.add_dependency "rails", "~> 4.1.4"
+
 
 end
