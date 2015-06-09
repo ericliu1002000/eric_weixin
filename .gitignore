@@ -1,3 +1,7 @@
+.rvmrc
+*.gem
+*.rbc
+.bundle
 .idea/*
 .bundle/
 log/*.log
