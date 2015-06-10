@@ -1,3 +1,18 @@
-= EricWeixin
+= EricWeixin--提升微信项目的研发效率
 
-This project rocks and uses MIT-LICENSE.
+目前EricWeixin已封装了认证服务号80%以上的接口，并且有一套后台管理界面与功能自成体系。
+* 官网暂无。
+* 大部分功能正在研发中。
+
+== requirements
+从大的情况来看，基本上适用于rails4.1.4及以上版本。我自己则是在4.1.4版本上进行研发。
+细节待更新。
+
+==使用方式
+===路由（Routes）
+* 首先在自己的Application的 /config/routes 中添加以下代码，以便在应用中使用Gem提供的一系列功能：
+
+  mount EricWeixin::Engine, at: "eric_weixin"
+* 在微信管理界面的配置地址：http://#{host_name}/eric_weixin/weixin/service/#{app_id},如下：
+
+  http://www.xxx.com/eric_weixin/weixin/service/wx51729870d9092531
