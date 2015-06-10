@@ -3,12 +3,14 @@ module EricWeixin
   class Wz::WeixinController < ApplicationController
     # 第一次接入时，用于微信服务器验证开者服务器的真实性。
     def index
-      render  :text => params[:echostr]
+      render :text => params[:echostr]
     end
 
     def reply
       request_body = request.body.read
       public_account = PublicAccount.find_by_weixin_app_id params[:app_id]
+      BusinessException.raise 'ip不正确' unless Ip.is_ip_exist? public_account_id: public_account.id,
+                                ip: get_ip
       "message from wechat: ".to_logger
       request_body.to_logger
       weixin_message = MultiXml.parse(request_body).deep_symbolize_keys[:xml]
