@@ -56,9 +56,7 @@ module EricWeixin
       account = ::EricWeixin::PublicAccount.find_by_id public_account_id
       BusinessException.raise 'account 不存在' if account.blank?
       url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=#{account.weixin_app_id}&secret=#{account.weixin_secret_key}"
-      pp url
       response = RestClient.get url
-      pp '.........'
       pp response
       JSON.parse(response)["access_token"]
     end

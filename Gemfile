@@ -13,3 +13,4 @@ gemspec :name => 'eric_weixin'
 
 # To use debugger
 # gem 'debugger'
+gem 'rails', '4.1.4'

@@ -18,7 +18,7 @@ class EricWeixin::PublicAccount < ActiveRecord::Base
   # ===调用示例
   # ::EricWeixin::PublicAccount.first.get_user_data_from_weixin_api 'osyUtswoeJ9d7p16RdpC5grOeukQ'
   def get_user_data_from_weixin_api openid
-    WeixinUser.get_user_data_from_weixin_api self.id, openid
+    ::EricWeixin::WeixinUser.get_user_data_from_weixin_api self.id, openid
   end
 
   # 获取微信菜单.
@@ -27,7 +27,7 @@ class EricWeixin::PublicAccount < ActiveRecord::Base
   # ===调用示例
   # ::EricWeixin::PublicAccount.first.weixin_menus
   def weixin_menus
-    token = AccessToken.get_valid_access_token public_account_id: self.id
+    token = ::EricWeixin::AccessToken.get_valid_access_token public_account_id: self.id
     response = RestClient.get "https://api.weixin.qq.com/cgi-bin/menu/get?access_token=#{token}"
     response = JSON.parse response.body
     response['menu']
@@ -75,10 +75,10 @@ class EricWeixin::PublicAccount < ActiveRecord::Base
   # }]
   # }'
   def create_menu menu_json
-    PublicAccount.transaction do
+    ::EricWeixin::PublicAccount.transaction do
       self.menu_json = menu_json
       self.save!
-      token = AccessToken.get_valid_access_token public_account_id: self.id
+      token = ::EricWeixin::AccessToken.get_valid_access_token public_account_id: self.id
       response = RestClient.post "https://api.weixin.qq.com/cgi-bin/menu/create?access_token=#{token}", menu_json
       response = JSON.parse response.body
       BusinessException.raise response["errmsg"] if response["errcode"].to_i!=0
@@ -93,7 +93,7 @@ class EricWeixin::PublicAccount < ActiveRecord::Base
   # ===调用示例
   # ::EricWeixin::PublicAccount.first.rebuild_users
   def rebuild_users next_openid = nil
-    token = AccessToken.get_valid_access_token public_account_id: self.id
+    token = ::EricWeixin::AccessToken.get_valid_access_token public_account_id: self.id
     response = if next_openid.blank?
                  RestClient.get "https://api.weixin.qq.com/cgi-bin/user/get?access_token=#{token}"
                else
@@ -102,7 +102,7 @@ class EricWeixin::PublicAccount < ActiveRecord::Base
     response = JSON.parse response.body
     if response["count"].to_i > 0
       response["data"]["openid"].each do |openid|
-        WeixinUser.create_weixin_user self.id, openid
+        ::EricWeixin::WeixinUser.create_weixin_user self.id, openid
       end
       tmp_next_openid = response["next_openid"]
       self.rebuild_users tmp_next_openid unless tmp_next_openid.blank?

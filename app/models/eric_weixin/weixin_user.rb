@@ -1,5 +1,6 @@
 class EricWeixin::WeixinUser < ActiveRecord::Base
   SEX = {1=>'男' , 2=>'女', 0=>'未知'}
+  self.table_name = 'weixin_users'
   belongs_to :member_info
   belongs_to :weixin_public_account, :class_name => '::EricWeixin::PublicAccount', :foreign_key => 'weixin_public_account_id'
   validates_uniqueness_of :openid, scope: :weixin_public_account_id
@@ -41,8 +42,8 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
     # * public_account_id::公众账号的数据库存储id
     # * openid::用户的openid,微信服务器传送过来。
     # ===调用方法
-    #  EricWeixin::WeixinUser.create_weixin_user 'adsfkj', 'sdfdf'
-    #  EricWeixin::WeixinUser.create_weixin_user 'adsfkj', 'sdfdf'
+    #  ::EricWeixin::WeixinUser.create_weixin_user 'adsfkj', 'sdfdf'
+    #  ::EricWeixin::WeixinUser.create_weixin_user 'adsfkj', 'sdfdf'
     # ====返回
     # 正常情况下返回当前微信用户 <tt>::EricWeixin::WeixinUser</tt>，抛出异常时错误查看异常信息。
     def create_weixin_user(public_account_id, openid, channel=nil)

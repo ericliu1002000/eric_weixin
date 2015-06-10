@@ -38,7 +38,7 @@ class EricWeixin::TemplateMessageLog < ActiveRecord::Base
         }.to_json
 
         public_account = ::EricWeixin::PublicAccount.find_by_id options[:public_account_id]
-        token = EricWeixin::AccessToken.get_valid_access_token_by_app_id app_id: public_account.weixin_app_id
+        token = ::EricWeixin::AccessToken.get_valid_access_token_by_app_id app_id: public_account.weixin_app_id
 
 
         response = RestClient.post "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=#{token}", message_json
@@ -72,7 +72,7 @@ class EricWeixin::TemplateMessageLog < ActiveRecord::Base
     # ===调用示例
     # ::EricWeixin::TemplateMessageLog.update_template_message_status
     def update_template_message_status openid, message_id, status
-      log= EricWeixin::TemplateMessageLog.where openid: openid,
+      log= ::EricWeixin::TemplateMessageLog.where openid: openid,
                                                 message_id: message_id
       pp log
       return if log.blank?

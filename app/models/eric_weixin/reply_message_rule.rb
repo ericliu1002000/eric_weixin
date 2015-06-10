@@ -20,8 +20,8 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
 
     def update_reply_message_rule(rule_id, options)
       options = get_arguments_options options, [:weixin_public_account_id, :key_word, :reply_message, :key_word_type, :order, :reply_type, :is_valid]
-      EricWeixin::ReplyMessageRule.transaction do
-        rule = EricWeixin::ReplyMessageRule.find(rule_id)
+      ::EricWeixin::ReplyMessageRule.transaction do
+        rule = ::EricWeixin::ReplyMessageRule.find(rule_id)
         rule.update_attributes(options)
         rule.save!
         rule
@@ -179,11 +179,11 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
     end
 
     def match_key_words wx_key_word, public_account_id, receive_message,need_to_mult_service=true
-      matched_rule = EricWeixin::ReplyMessageRule.order(order: :desc).
+      matched_rule = ::EricWeixin::ReplyMessageRule.order(order: :desc).
           where(:key_word => wx_key_word, :weixin_public_account_id => public_account_id, :key_word_type=>(receive_message[:MsgType]||"keyword")).first
       if matched_rule.nil?
         if need_to_mult_service
-          return EricWeixin::ReplyMessage::transfer_mult_customer_service ToUserName: receive_message[:FromUserName],
+          return ::EricWeixin::ReplyMessage::transfer_mult_customer_service ToUserName: receive_message[:FromUserName],
                                                                           FromUserName: receive_message[:ToUserName]
         else
           return '' #当匹配不上，也不需要去多客服的时候，就直接返回。
@@ -192,12 +192,12 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
       end
       reply_msg = case matched_rule.reply_type
                     when "text"
-                      EricWeixin::ReplyMessage.get_reply_user_message_text ToUserName: receive_message[:FromUserName],
+                      ::EricWeixin::ReplyMessage.get_reply_user_message_text ToUserName: receive_message[:FromUserName],
                                                                            FromUserName: receive_message[:ToUserName],
                                                                            Content: matched_rule.reply_message
                     when "news"
                       weixin_news = ::EricWeixin::News.find_by_match_key matched_rule.reply_message
-                      EricWeixin::ReplyMessage::get_reply_user_message_image_text ToUserName: receive_message[:FromUserName],
+                      ::EricWeixin::ReplyMessage::get_reply_user_message_image_text ToUserName: receive_message[:FromUserName],
                                                                                   FromUserName: receive_message[:ToUserName],
                                                                                   news: weixin_news.weixin_articles
                     when "wx_function"
