@@ -1,0 +1,143 @@
+<style>
+    .white_content {
+        display: none;
+        position: absolute;
+        top: 10%;
+        left: 10%;
+        width: 80%;
+        height: 60%;
+        padding: 16px;
+        border: 2px solid orange;
+        background-color: white;
+        z-index:1002;
+        overflow: auto;
+    }
+</style>
+<h1>微信关键字列表</h1>
+<a href="javascript:openWindow()"  data-reveal-id="create-new-resource" class="tiny button">新建</a>
+<table role="gridcell">
+  <thead>
+  <tr>
+    <th width="50">微信公众号</th></th><th>关键字</th><th>回复</th><th width="50">类型</th><th width="90">处理方式</th><th width="50">权重</th><th width="50">删除</th><th width="50">修改</th>
+  </tr>
+  </thead>
+  <tbody>
+  <% @reply_message_rules.each do |rule|%>
+  <tr data-id="<%=rule.id%>">
+    <td>
+      <%= rule.weixin_public_account_name %>
+    </td>
+    <td>
+      <%= rule.key_word %>
+    </td>
+    <td>
+      <%= rule.reply_message %>
+    </td>
+    <td>
+      <%= ::EricWeixin::ReplyMessageRule::KEY_WORD_TYPE_LABEL[rule.key_word_type] %>
+    </td>
+    <td>
+      <%= ::EricWeixin::ReplyMessageRule::REPLY_TYPE_LABEL[rule.reply_type] %>
+    </td>
+    <td><%=rule.order %></td>
+    <td><%=link_to"删除",  cms_weixin_reply_message_rule_path(rule), :remote =>true, method: :delete%></td>
+    <td><%= link_to "修改", edit_cms_weixin_reply_message_rule_path(rule), :remote => true %></td>
+  </tr>
+
+  <% end %>
+  </tbody>
+</table>
+
+<div id="light" class="white_content">
+  <div class="row">
+    <div class="columns small-12 text-right">
+      <%= link_to '关闭',"javascript:closeWindow()" %>
+    </div>
+  </div>
+  <h1>新建微信消息匹配规则</h1>
+  <%= form_tag("/cms/weixin/reply_message_rules", remote: true, method: :post) do%>
+      <div class="row">
+        <div class="large-6 columns">
+          <div class="row">
+            <div class="large-3 columns">
+              <label class="string required text-right inline">关联公众号</label>
+            </div>
+            <div class="large-9 columns">
+              <%=
+                  select_tag "weixin_public_account_id",
+                             options_from_collection_for_select(@public_accounts, "id", "name")
+              %>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="large-3 columns">
+              <label class="string required text-right inline">关键字</label>
+            </div>
+            <div class="large-9 columns">
+              <input name="key_word" type="text">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="large-3 columns">
+              <label class="string required text-right inline">
+                类型
+              </label>
+            </div>
+            <div class="large-9 columns">
+              <select name="key_word_type">
+                <option value="">请选择</option>
+                <option value="keyword">字符</option>
+                <option value="regularexpr">正则表达式</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="large-3 columns">
+              <label class="string required text-right inline">
+                权重
+              </label>
+            </div>
+            <div class="large-9 columns">
+              <input name="order" type="text">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="large-3 columns">
+              <label class="string required text-right inline">
+                回复消息
+              </label>
+            </div>
+            <div class="large-9 columns">
+              <textarea name="reply_message"></textarea>
+            </div>
+          </div>
+          <div class="row">
+            <div class="large-3 columns">
+              <label class="string required text-right inline">
+                处理方式
+              </label>
+            </div>
+            <div class="large-9 columns">
+              <select name="reply_type">
+                <option value="">请选择</option>
+                <option value="text">静态字符串</option>
+                <option value="regularexpr">动态运行</option>
+                <option value="news">多图文</option>
+              </select>
+            </div>
+          </div>
+
+          <input class="button" name="commit" type="submit" value="保存">
+        </div>
+      </div>
+  <% end %>
+</div>
+<div id="fade" class="black_overlay"></div>
+<div id="edit-resource" class="reveal-modal" data-reveal>
+
+</div>
+

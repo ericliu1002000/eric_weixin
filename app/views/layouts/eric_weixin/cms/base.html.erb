@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <title><%= content_for?(:title) ? yield(:title) : "小神龙后台管理" %></title>
+  <%= javascript_include_tag "cms/base" %>
+  <%= stylesheet_link_tag "cms/base" %>
+  <!--<javascript_include_tag "vendor/modernizr" -->
+  <%= csrf_meta_tags %>
+</head>
+
+
+<body>
+
+<script>
+    <% if @is_popup.blank? || @is_popup == true %>
+    <% notice = get_notice_str %>
+    <% unless notice.blank? %>
+    $(document).ready(
+            function () {
+                $('#NoticeModal').foundation('reveal', 'open');
+            }
+    );
+    <% end %>
+    <% end %>
+</script>
+
+
+<div id="NoticeModal" class="reveal-modal" data-reveal>
+  <div class="row">
+    <%= notice %>
+  </div>
+  <a class="close-reveal-modal">&#215;</a>
+</div>
+<section role="main">
+  <div class="row">
+    <div class="small-11 columns">
+      <br/>
+      <div class="row right">
+        <div class="small-12 columns">
+          <%= '你好!    ' + begin current_employee.real_name rescue '' end%>
+        </div>
+      </div>
+      <div class="row">
+        <div class="small-12 columns">
+          <% flash.each do |key, value| %>
+              <div data-alert class="alert-box <%= key %> radius" id="alert-box-div">
+                <%= value %>
+                <a href="javascript:alert_box_close()" class="close" id="alert-box-div-close">&times;</a>
+              </div>
+          <% end %>
+        </div>
+      </div>
+      <%= yield %>
+    </div>
+  </div>
+</section>
+</body>
+</html>
+<script language="javascript">
+    function alert_box_close(){
+        $("#alert-box-div").remove();
+    }
+</script>

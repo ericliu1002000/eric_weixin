@@ -1,0 +1,45 @@
+<h1>编辑多图文</h1>
+<%= form_for @news_data, url: cms_weixin_news_data_path(@news_data), method: :put  do |f| %>
+    <div class="row">
+      <div class="large-3 columns">
+        <%= f.label "标题" %>
+      </div>
+      <div class="large-9 columns">
+        <%= f.text_field :title %>
+      </div>
+    </div>
+    <div class="row">
+        <div class="large-3 columns">
+            <%= f.label "关键字" %>
+        </div>
+        <div class="large-9 columns">
+            <%= f.text_field :match_key %>
+        </div>
+    </div>
+    <h2>图文列表：</h2>
+    <div style="margin-left: 30px">
+      <table class="" role="grid">
+        <thead>
+            <th>可选素材</th><th>排序</th>
+        </thead>
+        <% ::EricWeixin::Article.all.each do |article| %>
+        <tbody>
+                <tr>
+                  <td>
+                      <%= check_box_tag :weixin_article_data_ids,
+                                        article.id,
+                                        @news_data.weixin_articles.include?(article),
+                                        :name => 'weixin_news[weixin_article_data_ids][]' %>
+                      <%= article.title %>
+                  </td>
+                  <td>
+                    <% w_a_d = @news_data.weixin_article_newses.where(weixin_article_id: article.id).first %>
+                    <%= text_field_tag "weixin_news[weixin_article_data_sort][#{article.id}][]", w_a_d.blank? ? '' : w_a_d.sort %>
+                  </td>
+                </tr>
+        </tbody>
+        <% end %>
+      </table>
+    </div>
+    <input type="submit" name="commit" class="button" value="保存">
+<% end %>

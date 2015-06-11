@@ -1,0 +1,7 @@
+<h3>
+  weixin app id: <%=@public_account.weixin_app_id %>
+</h3>
+<h3>
+  weixin app secret: <%=@public_account.weixin_app_id %>
+</h3>
+<%=render :partial => "/weixin/public_accounts/weixin_user", collection: @public_account.weixin_users %>

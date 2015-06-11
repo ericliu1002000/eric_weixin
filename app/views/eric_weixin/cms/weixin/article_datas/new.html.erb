@@ -1,0 +1,36 @@
+<h1>编辑微信图文</h1>
+<%=form_for @article_data, url: cms_weixin_article_datas_path(@article_data) do |f| %>
+    <div class="row">
+      <div class="large-4 columns">
+        <label class="text-right inline">名称</label>
+      </div>
+      <div class="large-8 columns">
+        <%= f.text_field :title %>
+      </div>
+    </div>
+    <div class="row">
+      <div class="large-4 columns">
+        <label class="text-right inline">desc</label>
+      </div>
+      <div class="large-8 columns">
+        <%= f.text_field :desc %>
+      </div>
+    </div>
+    <div class="row">
+      <div class="large-4 columns">
+        <label class="text-right inline">pic_url</label>
+      </div>
+      <div class="large-8 columns">
+        <%= f.text_field :pic_url %>
+      </div>
+    </div>
+    <div class="row">
+      <div class="large-4 columns">
+        <label class="text-right inline">link_url</label>
+      </div>
+      <div class="large-8 columns">
+        <%= f.text_field :link_url %>
+      </div>
+    </div>
+    <input type="submit" name="commit" class="button" value="保存">
+<% end %>
