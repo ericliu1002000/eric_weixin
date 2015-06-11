@@ -1,0 +1,19 @@
+<tr>
+  <td>
+    <%=public_account.weixin_app_id %>
+  </td>
+  <td>
+    <%=public_account.weixin_secret_key %>
+  </td>
+  <td>
+    <%= link_to "菜单详情", cms_weixin_public_account_path(public_account)%>
+  </td>
+  <td>
+    <%= link_to "导出用户", export_cms_weixin_public_account_path(public_account)%>
+  </td>
+
+  <td>
+    <%= link_to "更新用户列表", rebuild_weixin_users_cms_weixin_public_account_path(public_account)%>
+  </td>
+</tr>
+

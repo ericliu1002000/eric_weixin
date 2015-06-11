@@ -1,0 +1,28 @@
+<h1>
+  微信多图文列表
+</h1>
+<a class="button" href="/cms/weixin/news_datas/new">新建</a>
+<table>
+  <thead>
+  <tr>
+    <th>
+      id
+    </th>
+    <th>
+      title
+    </th>
+    <th>
+      匹配关键词
+    </th>
+    <th>
+      查看
+    </th>
+    <th>
+      编辑
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+  <%=render :partial => "/cms/weixin/news_datas/news_data", collection: @news_datas %>
+  </tbody>
+</table>

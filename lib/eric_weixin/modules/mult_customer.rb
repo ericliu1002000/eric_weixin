@@ -1,9 +1,17 @@
 #多客服模块
 module EricWeixin::MultCustomer
-  ##
-  # 根据from_user, to_user等信息来获取<em>多客服</em>的数据日志。TODO 待完善
+  # 根据指定条件获取<em>指定用户</em>与<em>客服</em>的聊天记录.
   # ===参数说明
+  # * weixin_public_account_id/app_id/weixin_number #公众账号id/公众账号app_id/公众账号number 三个必须有一个
+  # * openid  #普通用户的标识，对当前公众号唯一
+  # * starttime  #聊天的开始时间，datetime类型
+  # * endtime  #聊天的结束时间，datetime类型
+  # * pageindex  #查询第几页，从1开始
+  # * pagesize  #每页大小，每页最多拉取50条
   # ===调用说明
+  #  首先强调的是starttime与endtime时间跨度不能超过一天，就是说两个时间点都必须是同一天的的某个时间点
+  #  options a =  {:app_id=>"xxxxxxx", :openid=>"xxxxxx", :endtime=>'2015-6-8 23:00:00'.to_time, :starttime=>'2015-6-8 00:00:00'.to_time, :pageindex=>1}
+  #  ::EricWeixin::MultCustomer.get_customer_service_messages options
   def self.get_customer_service_messages options
     pa = if options[:weixin_public_account_id].blank?
            if options[:app_id].blank?
@@ -50,7 +58,7 @@ module EricWeixin::MultCustomer
   end
 
 
-  # 发送多客服信息
+  # 发送多客服信息.
   # ====参数说明
   # app_id: 微信公众账号app_id
   # openid: 接收消息用户的openid

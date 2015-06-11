@@ -1,0 +1,8 @@
+<h1>菜单详情</h1>
+<%= weixin_menu_show_tag(@weixin_menus).html_safe %>
+<h3>重新生成菜单</h3>
+
+<%=form_tag("/cms/weixin/public_accounts/#{@public_account.id}/create_menu") do |f| %>
+    <textarea name="menu_json" rows="10" cols="50"><%=@public_account.menu_json%></textarea>
+    <input type="submit" name="commit" class="button" value="提交"/>
+<% end %>

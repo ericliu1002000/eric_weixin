@@ -1,0 +1,25 @@
+<table>
+  <thead>
+  <tr>
+    <th>
+      微信App Id
+    </th>
+    <th>
+      微信Secret key
+    </th>
+    <th width="100">
+      显示
+    </th>
+    <th width="110">
+      导出用户数据
+    </th>
+    <th width="110">
+      更新用户列表
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+  <%= render :partial => "/cms/weixin/public_accounts/public_account", collection: @public_accounts %>
+  <tr></tr>
+  </tbody>
+</table>

@@ -1,0 +1,28 @@
+<h1>微信多图文详情</h1>
+<h4>标题：<%=@news_data.title%></h4>
+<a href=<%="/cms/weixin/news_datas/#{@news_data.id}/edit"%>   >编辑</a>
+<h3>所包含的文章列表</h3>
+<table>
+  <thead>
+  <tr>
+    <th>
+      id
+    </th>
+    <th>
+      title
+    </th>
+    <th>
+      desc
+    </th>
+    <th>
+      pic_url
+    </th>
+    <th>
+      link_url
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+  <%=render :partial => "/cms/weixin/article_datas/article_data", collection: @news_data.weixin_articles %>
+  </tbody>
+</table>
