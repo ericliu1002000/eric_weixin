@@ -106,33 +106,19 @@ module EricWeixin::AnalyzeData
 
   private
 
-    def self.get_data_json url, options
-      token = get_access_token options
-      url = url + token
-      post_data = {
-          :begin_date => options[:begin_date],
-          :end_date => options[:end_date]
-      }
-      response = RestClient.post url, post_data.to_json
-      response = JSON.parse response.body
-      response
-    end
-
-    def self.get_access_token options
-      pa = if options[:weixin_public_account_id].blank?
-        if options[:app_id].blank?
-          pa = ::EricWeixin::PublicAccount.find_by_weixin_number options[:weixin_number]
-          options[:app_id] = pa.weixin_app_id
-          pa
-        else
-          ::EricWeixin::PublicAccount.find_by_weixin_app_id options[:app_id]
-        end
-      else
-        ::EricWeixin::PublicAccount.find(options[:weixin_public_account_id])
-      end
-      BusinessException.raise '公众账号未查询到' if pa.blank?
-      ::EricWeixin::AccessToken.get_valid_access_token_by_app_id app_id: pa.weixin_app_id
-    end
+  def self.get_data_json url, options
+    pa = ::EricWeixin::PublicAccount.find(options[:weixin_public_account_id])
+    BusinessException.raise '公众账号未查询到' if pa.blank?
+    token = ::EricWeixin::AccessToken.get_valid_access_token_by_app_id app_id: pa.weixin_app_id
+    url = url + token
+    post_data = {
+        :begin_date => options[:begin_date],
+        :end_date => options[:end_date]
+    }
+    response = RestClient.post url, post_data.to_json
+    response = JSON.parse response.body
+    response
+  end
 
 
 end
