@@ -6,6 +6,7 @@ require 'eric_weixin/modules/mult_customer'
 require 'eric_weixin/modules/reply_message'
 require 'eric_weixin/modules/snsapi'
 require 'eric_weixin/modules/ip'
+require 'eric_weixin/modules/analyze_data'
 
 
 module EricWeixin
