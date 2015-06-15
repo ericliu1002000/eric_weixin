@@ -1,5 +1,5 @@
 <h1>编辑多图文</h1>
-<%= form_for @news_data, url: cms_weixin_news_data_path(@news_data), method: :put  do |f| %>
+<%= form_for @news_data, url: "/eric_weixin/cms/weixin/news_datas/#{@news_data.id}", method: :put  do |f| %>
     <div class="row">
       <div class="large-3 columns">
         <%= f.label "标题" %>

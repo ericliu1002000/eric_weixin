@@ -11,3 +11,15 @@
 // about supported directives.
 //
 //= require_tree .
+//= require foundation
+
+
+//模式框弹出与关闭js代码
+function openWindow(){
+    document.getElementById('light').style.display='block';
+    document.getElementById('fade').style.display='block';
+}
+function closeWindow(){
+    document.getElementById('light').style.display='none';
+    document.getElementById('fade').style.display='none';
+}

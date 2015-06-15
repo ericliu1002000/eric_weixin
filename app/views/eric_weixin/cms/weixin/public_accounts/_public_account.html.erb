@@ -6,14 +6,14 @@
     <%=public_account.weixin_secret_key %>
   </td>
   <td>
-    <%= link_to "菜单详情", cms_weixin_public_account_path(public_account)%>
+    <%= link_to "菜单详情", "/eric_weixin/cms/weixin/public_accounts/#{public_account.id}" %>
   </td>
   <td>
-    <%= link_to "导出用户", export_cms_weixin_public_account_path(public_account)%>
+    <%= link_to "导出用户", "/eric_weixin/cms/weixin/public_accounts/#{public_account.id}/export" %>
   </td>
 
   <td>
-    <%= link_to "更新用户列表", rebuild_weixin_users_cms_weixin_public_account_path(public_account)%>
+    <%= link_to "更新用户列表", "/eric_weixin/cms/weixin/public_accounts/#{public_account.id}/rebuild_weixin_users" %>
   </td>
 </tr>
 

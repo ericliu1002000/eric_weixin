@@ -1,5 +1,5 @@
 <h1>编辑微信图文</h1>
-<%=form_for @article_data, url: cms_weixin_article_data_path(@article_data) do |f| %>
+<%=form_for @article_data, url: "/eric_weixin/cms/weixin/article_datas/#{@article_data.id}" do |f| %>
     <div class="row">
       <div class="large-4 columns">
         <label class="text-right inline">名称</label>

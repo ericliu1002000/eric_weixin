@@ -1,0 +1,69 @@
+<h1>新建微信消息匹配规则</h1>
+<%= form_tag("/eric_weixin/cms/weixin/reply_message_rules", method: :post) do%>
+    <div class="row">
+      <div class="large-6 columns">
+        <div class="row">
+          <div class="large-3 columns">
+            <label class="string required text-right inline">关联公众号</label>
+          </div>
+          <div class="large-9 columns">
+            <%= select_tag "weixin_public_account_id", options_from_collection_for_select(@public_accounts, "id", "name", params[:weixin_public_account_id]) %>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="large-3 columns">
+            <label class="string required text-right inline">关键字</label>
+          </div>
+          <div class="large-9 columns">
+            <input name="key_word" type="text" value="<%= params[:key_word] %>">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="large-3 columns">
+            <label class="string required text-right inline">
+              类型
+            </label>
+          </div>
+          <div class="large-9 columns">
+            <%= select_tag "key_word_type", options_from_collection_for_select(::EricWeixin::ReplyMessageRule::KEY_WORD_TYPE_LABEL, "first", "second", params[:key_word_type]), include_blank: "请选择"  %>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="large-3 columns">
+            <label class="string required text-right inline">
+              权重
+            </label>
+          </div>
+          <div class="large-9 columns">
+            <input name="order" type="text" value="<%= params[:order] %>">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="large-3 columns">
+            <label class="string required text-right inline">
+              回复消息
+            </label>
+          </div>
+          <div class="large-9 columns">
+            <%= text_area_tag "reply_message", params[:reply_message] %>
+          </div>
+        </div>
+        <div class="row">
+          <div class="large-3 columns">
+            <label class="string required text-right inline">
+              处理方式
+            </label>
+          </div>
+          <div class="large-9 columns">
+            <%= select_tag "reply_type", options_from_collection_for_select(::EricWeixin::ReplyMessageRule::REPLY_TYPE_LABEL, "first", "second", params[:reply_type] ), include_blank: "请选择"  %>
+          </div>
+        </div>
+
+        <input class="button" name="commit" type="submit" value="保存">
+      </div>
+    </div>
+<% end %>
