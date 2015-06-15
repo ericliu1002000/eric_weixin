@@ -17,7 +17,7 @@ class EricWeixin::Cms::Weixin::NewsDatasController < EricWeixin::Cms::BaseContro
                                                              params[:weixin_news][:weixin_article_data_ids],
                                                              params[:weixin_news][:weixin_article_data_sort]
           )
-          redirect_to "/cms/weixin/news_datas/#{@news_data.id}/edit", notice: '微信图文消息创建成功.'
+          redirect_to "/eric_weixin/cms/weixin/news_datas/#{@news_data.id}/edit", notice: '微信图文消息创建成功.'
         rescue Exception => e
           render :edit
         end
@@ -35,7 +35,7 @@ class EricWeixin::Cms::Weixin::NewsDatasController < EricWeixin::Cms::BaseContro
                                                             params[:weixin_news][:weixin_article_data_sort]
           )
 
-          redirect_to "/cms/weixin/news_datas/#{@news_data.id}/edit", notice: '微信图文消息更新成功.'
+          redirect_to "/eric_weixin/cms/weixin/news_datas/#{@news_data.id}/edit", notice: '微信图文消息更新成功.'
         rescue Exception => e
           render :edit
         end
