@@ -18,6 +18,8 @@ EricWeixin::Engine.routes.draw do
       resources :news_datas
 
       resources :reply_message_rules
+
+      resources :customs_service_records
     end
   end
 end

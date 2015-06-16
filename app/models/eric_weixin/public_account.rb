@@ -5,7 +5,7 @@ class EricWeixin::PublicAccount < ActiveRecord::Base
   has_many :weixin_users, :class_name => 'WeixinUser', foreign_key: "weixin_public_account_id"
   has_many :two_dimension_codes, :class_name => 'TwoDimensionCode', foreign_key: "weixin_public_account_id"
   has_one :access_token, :class_name => 'AccessToken', foreign_key: "public_account_id"
-
+  has_many :customs_service_records, class_name: 'CustomsServiceRecord', foreign_key: "weixin_public_account_id"
   #
   # def self.get_secret app_id
   #   account = ::EricWeixin::PublicAccount.where(weixin_app_id: app_id).first

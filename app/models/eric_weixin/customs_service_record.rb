@@ -1,5 +1,16 @@
 class EricWeixin::CustomsServiceRecord < ActiveRecord::Base
   self.table_name = 'weixin_customs_service_records'
+  belongs_to :public_account, class_name: "PublicAccount", foreign_key: "weixin_public_account_id"
+  OPERCODE = {
+    1000 => "创建未接入会话",
+    1001 =>	"接入会话",
+    1002 =>	"主动发起会话",
+    1004 =>	"关闭会话",
+    1005 =>	"抢接会话",
+    2001 =>	"公众号收到消息",
+    2002 =>	"客服发送消息",
+    2003 =>	"客服收到消息"
+  }
 
   validates_uniqueness_of :time, scope: [:openid, :weixin_public_account_id, :text], message: '客服聊天记录不能重复。'
 
@@ -56,4 +67,32 @@ class EricWeixin::CustomsServiceRecord < ActiveRecord::Base
     end
   end
 
+  def nick_name
+    ::EricWeixin::WeixinUser.find_by_openid(self.openid).nickname rescue ''
+  end
+
+  def self.common_query options
+    records = self.all
+
+    records = records.where(weixin_public_account_id: options[:public_account_id]) unless options[:public_account_id].blank?
+
+    records = records.where(opercode: options[:opercode]) unless options[:opercode].blank?
+
+    unless options[:chat_date].blank?
+      start_time = options[:chat_date].to_time.change(hour:0, min:0, sec:0).to_i
+      end_time = options[:chat_date].to_time.change(hour:23, min:59, sec:59).to_i
+      records = records.where("time between ? and ?", start_time, end_time)
+    end
+
+    records = records.where("text like ?", "%#{options[:chat_content]}%") unless options[:chat_content].blank?
+
+    records = records.where("worker like ?", "%#{options[:worker]}%") unless options[:worker].blank?
+
+    unless options[:nick_name].blank?
+      records = records.joins('LEFT JOIN weixin_users ON weixin_users.openid = weixin_customs_service_records.openid')
+      records = records.where("weixin_users.nickname like ?", "%#{CGI::escape(options[:nick_name])}%")
+    end
+
+    records
+  end
 end
