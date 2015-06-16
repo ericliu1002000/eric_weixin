@@ -93,6 +93,7 @@ class EricWeixin::TwoDimensionCode < ActiveRecord::Base
     ::EricWeixin::TwoDimensionCode.transaction do
       public_account = ::EricWeixin::PublicAccount.find_by_weixin_app_id options[:app_id]
       BusinessException.raise 'app_id不存在' if public_account.blank?
+      #查询有效期内的临时二维码
       codes = public_account.two_dimension_codes.where ["scene_id = ? and action_name = ? and expire_at > ?",
                                                         options[:scene_id],
                                                         "QR_SCENE",
@@ -110,7 +111,7 @@ class EricWeixin::TwoDimensionCode < ActiveRecord::Base
                codes[0]
              end
       if not code.ticket.blank?
-        return code  #永久性二维码，不需要再次进行更新。
+        return code
       end
       token = ::EricWeixin::AccessToken.get_valid_access_token_by_app_id app_id: options[:app_id]
       url = "https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token=#{token}"
@@ -131,6 +132,8 @@ class EricWeixin::TwoDimensionCode < ActiveRecord::Base
       code
     end
   end
+
+  #todo 需要定时清理已过时的临时二维码。
 
   # 长URL转短URL.
   # ===参数说明：
