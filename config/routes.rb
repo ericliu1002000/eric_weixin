@@ -18,6 +18,8 @@ EricWeixin::Engine.routes.draw do
       resources :news_datas
 
       resources :reply_message_rules
+      resources :two_dimension_codes
+      resources :url_encodes
     end
   end
 end

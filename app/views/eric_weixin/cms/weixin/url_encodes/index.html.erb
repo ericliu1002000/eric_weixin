@@ -1,0 +1,21 @@
+<br><br>
+<div style="width:800px;margin:0px auto;">
+  <div class="form">
+    <%= form_for(cms_weixin_url_encodes_path, remote: true) do |f|%>
+      <%= f.label :域名 %>
+      <%= f.text_field :schema_host %>
+      <%= f.label :域名后缀 %>
+      <%= f.text_field :url %>
+      <select name="<%= cms_weixin_url_encodes_path %>[app_id]">
+        <% ::EricWeixin::PublicAccount.all.each do |public_account| %>
+          <option value="<%= public_account.weixin_app_id %>">
+          <%= public_account.weixin_number %></option>
+        <% end %>
+      </select>
+      <%= f.check_box :user %>
+      <span>链接是否是需要用户授权的链接</span>
+      <input type="submit" name="commit" class="button right" value="生成微信网址">
+    <% end %>
+  </div><br><br>
+  <div class="url"></div>
+</div>

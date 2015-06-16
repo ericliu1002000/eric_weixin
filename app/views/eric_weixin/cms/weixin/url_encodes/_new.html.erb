@@ -1,0 +1,7 @@
+<% unless @short_url.blank? %>
+  <textarea disabled="disabled" readonly="readonly" rows="10">
+生成的微信URL是 <%= @url %>
+
+对应的短的URL是 <%= @short_url %>
+  </textarea>
+<% end %>
