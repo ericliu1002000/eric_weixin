@@ -1,0 +1,11 @@
+<% @two_dimension_codes.each do |two_dimension_code|%>
+	<tr>
+	  <td><img style="width:60px;height:60px;" src="https://mp.weixin.qq.com/cgi-bin/	showqrcode?ticket=<%= two_dimension_code.ticket %>" %></td>
+	  <td><%= two_dimension_code.action_info %></td>
+	  <td><%= two_dimension_code.scene_str %></td>
+	  <td>
+	    <%= link_to "查看大图", cms_weixin_two_dimension_code_path(two_dimension_code.id) %>
+	    <a href="https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=<%= two_dimension_code.ticket %>" download="<%= two_dimension_code.ticket %>"> 下载</a>
+	  </td>
+	</tr>
+<% end %>

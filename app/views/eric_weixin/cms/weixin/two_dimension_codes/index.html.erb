@@ -1,0 +1,30 @@
+<div style="width:800px;margin:0px auto;">
+
+<h1 style="text-align:center">
+  永久二维码列表列表
+</h1>
+<%= link_to "新建永久二维码", new_cms_weixin_two_dimension_code_path %><br><br><br>
+共<%= @two_dimension_codes.count %>个永久二维码
+<table>
+  <thead>
+  <tr>
+    <th>
+      永久二维码图片
+    </th>
+    <th>
+      描述
+    </th>
+    <th>
+      二维码场景
+    </th>
+    <th>
+      查看大图 下载
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+    <%= render 'two_dimension_code_form' %>
+  </tbody>
+</table>
+
+</div>
