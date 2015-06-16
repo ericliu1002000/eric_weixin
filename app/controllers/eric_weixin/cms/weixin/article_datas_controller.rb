@@ -1,7 +1,7 @@
 class EricWeixin::Cms::Weixin::ArticleDatasController < EricWeixin::Cms::BaseController
       before_action :set_weixin_article_data, only: [:show, :edit, :update, :destroy]
       def index
-        @article_datas = ::EricWeixin::Article.all
+        @article_datas = ::EricWeixin::Article.all.paginate(page: params[:page], per_page: 5)
       end
 
       def new

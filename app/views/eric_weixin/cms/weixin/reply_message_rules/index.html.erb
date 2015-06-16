@@ -1,5 +1,6 @@
-<h1>微信关键字列表</h1>
+<h3>微信关键字列表</h3>
 <a href="/eric_weixin/cms/weixin/reply_message_rules/new" class="tiny button">新建</a>
+<%= will_paginate @collection, renderer: FoundationPagination::Rails %>
 <table role="gridcell">
   <thead>
   <tr>
@@ -32,4 +33,6 @@
   <% end %>
   </tbody>
 </table>
+<%= will_paginate @collection, renderer: FoundationPagination::Rails %>
+
 

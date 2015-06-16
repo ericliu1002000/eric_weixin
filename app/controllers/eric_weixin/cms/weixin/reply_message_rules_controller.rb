@@ -2,7 +2,7 @@ class EricWeixin::Cms::Weixin::ReplyMessageRulesController < EricWeixin::Cms::Ba
   before_filter :need_login
 
   def index
-    @reply_message_rules = ::EricWeixin::ReplyMessageRule.valid
+    @reply_message_rules = ::EricWeixin::ReplyMessageRule.valid.paginate(page: params[:page], per_page:params[:per_page]||10)
     @public_accounts = ::EricWeixin::PublicAccount.all
   end
 

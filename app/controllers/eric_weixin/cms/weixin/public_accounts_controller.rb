@@ -1,6 +1,6 @@
 class EricWeixin::Cms::Weixin::PublicAccountsController < EricWeixin::Cms::BaseController
       def index
-        @public_accounts = ::EricWeixin::PublicAccount.all
+        @public_accounts = ::EricWeixin::PublicAccount.all.paginate(page:params[:page], per_page: 5)
       end
       def show
         @public_account = ::EricWeixin::PublicAccount.find(params[:id])
