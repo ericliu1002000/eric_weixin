@@ -20,8 +20,9 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
     pp '222222222222222222222222222222222222222'   
     @target_user = ::EricWeixin::WeixinUser.all
     @target_user = @target_user.where("id = ?", user[:id]) unless user[:id].blank?
-    @target_user = @target_user.where("created_at = ?", user[:created_at]) unless user[:created_at].blank?
-    @target_user = @target_user.where("updated_at = ?", user[:updated_at]) unless user[:updated_at].blank?
+    @target_user = @target_user.where("openid = ?", user[:openid]) unless user[:openid].blank?
+    @target_user = @target_user.where("created_at > ? AND created_at < ?", user[:created_at_start], user[:created_at_end]) unless user[:created_at_start].blank? || user[:created_at_end].blank?
+    @target_user = @target_user.where("updated_at > ? AND updated_at < ?", user[:updated_at_start], user[:updated_at_end]) unless user[:updated_at_start].blank? || user[:updated_at_end].blank?
     @target_user = @target_user.where("subscribe = ?", user[:subscribe]) unless user[:subscribe].blank?
     @target_user = @target_user.where("nickname = ?", user[:nickname]) unless user[:nickname].blank?
     @target_user = @target_user.where("sex = ?", user[:sex]) unless user[:sex].blank?
@@ -29,8 +30,7 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
     @target_user = @target_user.where("city = ?", user[:city]) unless user[:city].blank?
     @target_user = @target_user.where("province = ?", user[:province]) unless user[:province].blank?
     @target_user = @target_user.where("country = ?", user[:country]) unless user[:country].blank?
-    @target_user = @target_user.where("headimgurl = ?", user[:headimgurl]) unless user[:headimgurl].blank?
-    @target_user = @target_user.where("subscribe_time = ?", user[:subscribe_time]) unless user[:subscribe_time].blank?
+    @target_user = @target_user.where("subscribe_time > ? AND subscribe_time < ?", user[:subscribe_time_start], user[:subscribe_time_end]) unless user[:subscribe_time_start].blank? || user[:subscribe_time_end].blank?
     @target_user = @target_user.where("remark = ?", user[:remark]) unless user[:remark].blank?
     @target_user = @target_user.where("member_info_id = ?", user[:member_info_id]) unless user[:member_info_id].blank?
     @target_user = @target_user.where("weixin_public_account_id = ?", user[:weixin_public_account_id]) unless user[:weixin_public_account_id].blank?
