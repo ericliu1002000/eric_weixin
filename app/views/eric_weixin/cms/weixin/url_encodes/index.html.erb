@@ -1,10 +1,9 @@
-<br><br>
 <div style="width:800px;margin:0px auto;">
   <div class="form">
     <%= form_for(cms_weixin_url_encodes_path, remote: true) do |f|%>
-      <%= f.label :域名 %>
+      <%= f.label :您的项目域名 %>
       <%= f.text_field :schema_host %>
-      <%= f.label :域名后缀 %>
+      <%= f.label :用户跳转到的目的URL（您的项目域名下的网址可以省略域名只写路径） %>
       <%= f.text_field :url %>
       <select name="<%= cms_weixin_url_encodes_path %>[app_id]">
         <% ::EricWeixin::PublicAccount.all.each do |public_account| %>
@@ -12,10 +11,14 @@
           <%= public_account.weixin_number %></option>
         <% end %>
       </select>
-      <%= f.check_box :user %>
-      <span>链接是否是需要用户授权的链接</span>
-      <input type="submit" name="commit" class="button right" value="生成微信网址">
+      <%= f.check_box :details %>
+      <span>获取完整的用户信息(用户未关注时需要授权)</span>
+      <input type="submit" name="commit" class="button right" value="^_^ 上下通用按钮"><br>
+      <%= f.check_box :only_id %>
+      <span>仅获取用户ID</span><br>
+      <%= f.label :填入要生成短址的URL（独立功能，与上面输入框互斥: 使用上面的功能时，不要改动此输入框哦..） %>
+      <%= f.text_field :only_short_url, placeholder: "注意看上面哈" %>
     <% end %>
-  </div><br><br>
+  </div>
   <div class="url"></div>
 </div>

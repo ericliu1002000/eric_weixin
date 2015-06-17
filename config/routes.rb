@@ -16,7 +16,7 @@ EricWeixin::Engine.routes.draw do
 
       resources :article_datas
       resources :news_datas
-
+      resources :users
       resources :reply_message_rules
       resources :two_dimension_codes
       resources :url_encodes

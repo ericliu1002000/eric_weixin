@@ -1,0 +1,199 @@
+<h2 class="text-center">微信用户查询</h2>
+
+<div class="row">
+  <div class="columns small-12 text-right">
+    <%= link_to '这里的内容还没想好', '#', class: "button tiny" %>
+  </div>
+</div>
+
+<%= form_for(cms_weixin_users_path, remote: true) do |f|%>
+  <div class="row" style="border-top: solid 1px #000000"><br/>
+    <div class="row">
+      <div class="columns small-3">
+        <div class="row">
+          <div class="columns small-4">
+            <label class="inline left">昵称</label>
+          </div>
+          <div class="columns small-8">
+            <%= f.text_field :nickname %>
+          </div>
+        </div>
+      </div>
+      <div class="columns small-3">
+        <div class="row">
+          <div class="columns small-4">
+            <label class="inline left">性别</label>
+          </div>
+          <div class="columns small-8">
+            <select name="<%= cms_weixin_users_path %>[sex]">
+              <option value="">♂♀</option>
+              <option value="0">女</option>
+              <option value="1">男</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="columns small-3">
+        <div class="row">
+          <div class="columns small-4">
+            <label class="inline left">语言</label>
+          </div>
+          <div class="columns small-8">
+              <%= f.text_field :language, placeholder: "zh_CN 为中文" %>
+          </div>
+        </div>
+      </div>
+      <div class="columns small-3 end">
+        <div class="row">
+          <div class="columns small-4">
+            <label class="inline left">备注</label>
+          </div>
+          <div class="columns small-8">
+              <%= f.text_field :remark %>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="columns small-3">
+        <div class="row">
+          <div class="columns small-4">
+            <label class="inline left">微信公众号</label>
+          </div>
+          <div class="columns small-8">
+            <select name="<%= cms_weixin_users_path %>[weixin_public_account_id]">
+              <option value="">微信公众号</option>
+              <% ::EricWeixin::PublicAccount.all.each do |public_account| %>
+                <option value="<%= public_account.weixin_app_id %>">
+                <%= public_account.weixin_number %></option>
+              <% end %>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="columns small-3">
+        <div class="row">
+          <div class="columns small-4">
+            <label class="inline left">国家</label>
+          </div>
+          <div class="columns small-8">
+            <%= f.text_field :country %>
+          </div>
+        </div>
+      </div>
+      <div class="columns small-3">
+        <div class="row">
+          <div class="columns small-4">
+            <label class="inline left">省</label>
+          </div>
+          <div class="columns small-8">
+              <%= f.text_field :province %>
+          </div>
+        </div>
+      </div>
+      <div class="columns small-3 end">
+        <div class="row">
+          <div class="columns small-4">
+            <label class="inline left">城市</label>
+          </div>
+          <div class="columns small-8">
+              <%= f.text_field :city %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="columns small-3">
+        <div class="row">
+          <div class="columns small-4">
+            <label class="inline left">OpenId</label>
+          </div>
+          <div class="columns small-8">
+            <%= f.text_field :openid %>
+          </div>
+        </div>
+      </div>
+      <div class="columns small-3">
+        <div class="row">
+          <div class="columns small-4">
+            <label class="inline left">用户编号</label>
+          </div>
+          <div class="columns small-8">
+            <%= f.text_field :id %>
+          </div>
+        </div>
+      </div>
+      <div class="columns small-3">
+        <div class="row">
+          <div class="columns small-4">
+            <label class="inline left">最初订阅频道</label>
+          </div>
+          <div class="columns small-8">
+            <%= f.text_field :first_register_channel %>
+          </div>
+        </div>
+      </div>
+      <div class="columns small-3 end">
+        <div class="row">
+          <div class="columns small-4">
+            <label class="inline left">最新订阅频道</label>
+          </div>
+          <div class="columns small-8">
+            <%= f.text_field :last_register_channel %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="columns small-3">
+        <div class="row">
+          <div class="columns small-4">
+            <label class="inline left">是否订阅</label>
+          </div>
+          <div class="columns small-8">
+            <%= f.text_field :subscribe, placeholder: "1 为已订阅 0 为未订阅" %>
+          </div>
+        </div>
+      </div>
+      <div class="columns small-3">
+        <div class="row">
+          <div class="columns small-4">
+            <label class="inline left">用户创建时间</label>
+          </div>
+          <div class="columns small-8">
+            <%= f.text_field :created_at_start, placeholder: "填入查询开始时间" %>
+            <%= f.text_field :created_at_end, placeholder: "填入查询结束时间" %>
+          </div>
+        </div>
+      </div>
+      <div class="columns small-3">
+        <div class="row">
+          <div class="columns small-4">
+            <label class="inline left">用户最新更新时间</label>
+          </div>
+          <div class="columns small-8">
+            <%= f.text_field :updated_at_start, placeholder: "填入查询开始时间" %>
+            <%= f.text_field :updated_at_end, placeholder: "填入查询结束时间" %>
+          </div>
+        </div>
+      </div>
+      <div class="columns small-3 end">
+        <div class="row">
+          <div class="columns small-4">
+            <label class="inline left">用户订阅时间</label>
+          </div>
+          <div class="columns small-8">
+            <%= f.text_field :subscribe_time_start, placeholder: "填入查询开始时间" %>
+            <%= f.text_field :subscribe_time_end, placeholder: "填入查询结束时间" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <input type="submit" name="commit" value="查询" class="button tiny">
+<% end %>
+
+<div class="user"></div>

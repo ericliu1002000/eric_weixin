@@ -1,0 +1,96 @@
+<%= debug(params) if Rails.env.development? %><br><br>
+
+<% if @user.count == 0 %>
+  <%= '查询不到你要的信息' %>
+<% else %>
+  <table>
+    <thead>
+    <tr>
+      <th>
+        用户编号
+      </th>
+      <th>
+        昵称
+      </th>
+      <th>
+        头像
+      </th>
+      <th>
+        订阅情况
+      </th>
+      <th>
+        性别
+      </th>
+      <th>
+        语言
+      </th>
+      <th>
+        位置
+      </th>
+      <th>
+        备注
+      </th>
+      <th>
+        所属公众号
+      </th>
+      <th>
+        初始注册频道
+      </th>
+      <th>
+        最后注册频道
+      </th>
+      <th>
+        创建于
+      </th>
+      <th>
+        更新于
+      </th>
+    </tr>
+    </thead>
+    <% @user.each do |user| %>
+      <tbody>
+        <tr>
+          <td>
+            <%= user.id %>
+          </td>
+          <td>
+            <%= user.nickname %>
+          </td>
+          <td>
+            <img src="<%= user.headimgurl %>"/>
+          </td>
+          <td>
+            <%= user.subscribe == 1 ? "订阅于#{user.subscribe_time}" : "未订阅" %>
+          </td>
+          <td>
+            <%= user.sex == 1 ? "男" : "女" %>
+          </td>
+          <td>
+            <%= user.language %>
+          </td>
+          <td>
+            <%= user.country %>~<%= user.province %>~<%= user.city %>
+          </td>
+          <td>
+            <%= user.remark %>
+          </td>
+          <td>
+            <%= user.weixin_public_account_id %>
+          </td>
+          <td>
+            <%= user.first_register_channel %>
+          </td>
+          <td>
+            <%= user.last_register_channel %>
+          </td>
+          <td>
+            <%= user.created_at %>
+          </td>
+          <td>
+            <%= user.updated_at %>
+          </td>
+        </tr>
+      </tbody>
+    <% end %>
+  </table>
+<% end %>
