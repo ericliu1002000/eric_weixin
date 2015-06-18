@@ -45,6 +45,9 @@
       <th>
         更新于
       </th>
+      <th>
+        操作
+      </th>
     </tr>
     </thead>
     <% @user.each do |user| %>
@@ -71,7 +74,7 @@
           <td>
             <%= user.country %>~<%= user.province %>~<%= user.city %>
           </td>
-          <td>
+          <td id="user_remark_<%= user.id %>">
             <%= user.remark %>
           </td>
           <td>
@@ -84,13 +87,57 @@
             <%= user.last_register_channel %>
           </td>
           <td>
-            <%= user.created_at %>
+            <%= user.created_at.chinese_format %>
           </td>
           <td>
-            <%= user.updated_at %>
+            <%= user.updated_at.chinese_format %>
+          </td>
+          <td>
+            <%= link_to '修改备注名', "javascript:open_modal(#{user.id})" %>
           </td>
         </tr>
       </tbody>
     <% end %>
   </table>
 <% end %>
+
+<%= will_paginate @user %>
+
+
+<%= hidden_field_tag :hidden_user_id %>
+<script language="javascript">
+    function open_modal(user_id){
+      $("#hidden_user_id").val(user_id);
+      $('#myModal').foundation('reveal', 'open');
+
+    }
+    function modify_remark(){
+        user_id = $("#hidden_user_id").val();
+        new_remark = $("#new_remark").val();
+        $.ajax({
+            url: "/eric_weixin/cms/weixin/users/"+user_id+"/modify_remark",
+            type: "post",
+            async: false,
+            data: {new_remark: new_remark}
+        }).done(
+            function(result){
+              alert(result);
+                $("#user_remark_"+user_id).html(result);
+                $('#myModal').foundation('reveal', 'close');
+            }
+        );
+        openWindow();
+    }
+</script>
+
+
+
+<div id="myModal" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+  
+    <label class="inline left">新备注</label>
+    <%= text_field_tag :new_remark %>
+    <%= link_to "提交", "javascript:modify_remark()" %>
+    
+    
+  <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+</div>

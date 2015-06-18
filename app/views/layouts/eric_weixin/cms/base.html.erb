@@ -7,7 +7,7 @@
   <title><%= content_for?(:title) ? yield(:title) : "小神龙后台管理" %></title>
   <%= javascript_include_tag "cms/base" %>
   <%= stylesheet_link_tag "cms/base" %>
-  <!--<javascript_include_tag "vendor/modernizr" -->
+  <%= javascript_include_tag "vendor/modernizr" %>
   <%= csrf_meta_tags %>
 </head>
 
