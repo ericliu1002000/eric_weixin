@@ -1,16 +1,7 @@
 class EricWeixin::Cms::Weixin::UsersController < EricWeixin::Cms::BaseController
   def index
     pp user_params
-    @user = ::EricWeixin::WeixinUser.search_weixin_user(user_params).paginate(:page => params[:page], :per_page => 2)
-  end
-
-  def create
-  	params = user_params
-  	@user = ::EricWeixin::WeixinUser.search_weixin_user(params).paginate(:page => params[:page], :per_page => 2)
-  	pp @user
-  	respond_to do |format|
-      format.js {}
-    end
+    @user = ::EricWeixin::WeixinUser.search_weixin_user(user_params).paginate(:page => params[:page], :per_page => 10)
   end
 
   def modify_remark

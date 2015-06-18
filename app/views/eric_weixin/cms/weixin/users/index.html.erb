@@ -187,7 +187,6 @@
 <% end %>
 
 <div class="user">
-  <%= debug(params) if Rails.env.development? %><br><br>
 
 <% if @user.count == 0 %>
   <%= '查询不到你要的信息' %>
@@ -321,7 +320,7 @@
 
 <div id="myModal" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
   
-    <label class="inline right">新备注</label>
+    <label class="inline left">新备注</label>
     <%= text_field_tag :new_remark %>
     <%= link_to "提交", "javascript:modify_remark()" %>
     
