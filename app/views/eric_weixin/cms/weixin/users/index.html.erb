@@ -1,0 +1,331 @@
+<h2 class="text-center">微信用户查询</h2>
+
+<div class="row">
+  <div class="columns small-12 text-right">
+    <%= link_to '这里的内容还没想好', '#', class: "button tiny" %>
+  </div>
+</div>
+
+<%= form_tag("/eric_weixin/cms/weixin/users", method: :get ) do %>
+  <div class="row" style="border-top: solid 1px #000000"><br/>
+    <div class="row">
+      <div class="columns small-3">
+        <div class="row">
+          <div class="columns small-4">
+            <label class="inline right">昵称</label>
+          </div>
+          <div class="columns small-8">
+            <%= text_field_tag :nickname, params[:nickname] %>
+          </div>
+        </div>
+      </div>
+      <div class="columns small-3">
+        <div class="row">
+          <div class="columns small-4">
+            <label class="inline right">性别</label>
+          </div>
+          <div class="columns small-8">
+            <%= select_tag :sex, options_from_collection_for_select(::EricWeixin::WeixinUser::SEX, 'first', 'second', params[:sex]) %>
+          </div>
+        </div>
+      </div>
+      <div class="columns small-3">
+        <div class="row">
+          <div class="columns small-4">
+            <label class="inline right">语言</label>
+          </div>
+          <div class="columns small-8">
+              <%= text_field_tag :language, params[:language], placeholder: "zh_CN 为中文" %>
+          </div>
+        </div>
+      </div>
+      <div class="columns small-3 end">
+        <div class="row">
+          <div class="columns small-4">
+            <label class="inline right">备注</label>
+          </div>
+          <div class="columns small-8">
+              <%= text_field_tag :remark, params[:remark] %>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="columns small-3">
+        <div class="row">
+          <div class="columns small-4">
+            <label class="inline right">微信公众号</label>
+          </div>
+          <div class="columns small-8">
+            <%= select_tag :weixin_public_account_id, options_from_collection_for_select(::EricWeixin::PublicAccount.all, 'id', 'name', params[:weixin_public_account_id]) %>
+          </div>
+        </div>
+      </div>
+      <div class="columns small-3">
+        <div class="row">
+          <div class="columns small-4">
+            <label class="inline right">国家</label>
+          </div>
+          <div class="columns small-8">
+            <%= text_field_tag :country, params[:country] %>
+          </div>
+        </div>
+      </div>
+      <div class="columns small-3">
+        <div class="row">
+          <div class="columns small-4">
+            <label class="inline right">省</label>
+          </div>
+          <div class="columns small-8">
+              <%= text_field_tag :province, params[:province] %>
+          </div>
+        </div>
+      </div>
+      <div class="columns small-3 end">
+        <div class="row">
+          <div class="columns small-4">
+            <label class="inline right">城市</label>
+          </div>
+          <div class="columns small-8">
+              <%= text_field_tag :city, params[:city] %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="columns small-3">
+        <div class="row">
+          <div class="columns small-4">
+            <label class="inline right">OpenId</label>
+          </div>
+          <div class="columns small-8">
+            <%= text_field_tag :openid, params[:openid] %>
+          </div>
+        </div>
+      </div>
+      <div class="columns small-3">
+        <div class="row">
+          <div class="columns small-4">
+            <label class="inline right">用户编号</label>
+          </div>
+          <div class="columns small-8">
+            <%= text_field :id, params[:id] %>
+          </div>
+        </div>
+      </div>
+      <div class="columns small-3">
+        <div class="row">
+          <div class="columns small-4">
+            <label class="inline right">最初订阅频道</label>
+          </div>
+          <div class="columns small-8">
+            <%= text_field_tag :first_register_channel, params[:first_register_channel] %>
+          </div>
+        </div>
+      </div>
+      <div class="columns small-3 end">
+        <div class="row">
+          <div class="columns small-4">
+            <label class="inline right">最新订阅频道</label>
+          </div>
+          <div class="columns small-8">
+            <%= text_field_tag :last_register_channel, params[:last_register_channel] %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="columns small-3">
+        <div class="row">
+          <div class="columns small-4">
+            <label class="inline right">是否订阅</label>
+          </div>
+          <div class="columns small-8">
+            <%= text_field_tag :subscribe, params[:subscribe] ,placeholder: "1 为已订阅 0 为未订阅" %>
+          </div>
+        </div>
+      </div>
+      <div class="columns small-3">
+        <div class="row">
+          <div class="columns small-4">
+            <label class="inline right">用户创建时间</label>
+          </div>
+          <div class="columns small-8">
+            <%= text_field_tag :created_at_start, params[:created_at_start],placeholder: "填入查询开始时间" %>
+            <%= text_field_tag :created_at_end, params[:created_at_end],placeholder: "填入查询结束时间" %>
+          </div>
+        </div>
+      </div>
+      <div class="columns small-3">
+        <div class="row">
+          <div class="columns small-4">
+            <label class="inline right">用户最新更新时间</label>
+          </div>
+          <div class="columns small-8">
+            <%= text_field_tag :updated_at_start, params[:updated_at_start], placeholder: "填入查询开始时间" %>
+            <%= text_field_tag :updated_at_end, params[:updated_at_end], placeholder: "填入查询结束时间" %>
+          </div>
+        </div>
+      </div>
+      <div class="columns small-3 end">
+        <div class="row">
+          <div class="columns small-4">
+            <label class="inline right">用户订阅时间</label>
+          </div>
+          <div class="columns small-8">
+            <%= text_field_tag :subscribe_time_start, params[:subscribe_time_starte],placeholder: "填入查询开始时间" %>
+            <%= text_field_tag :subscribe_time_end,   params[:subscribe_time_end],placeholder: "填入查询结束时间" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <input type="submit" name="commit" value="查询" class="button tiny">
+<% end %>
+
+<div class="user">
+
+<% if @user.count == 0 %>
+  <%= '查询不到你要的信息' %>
+<% else %>
+  <table>
+    <thead>
+    <tr>
+      <th>
+        用户编号
+      </th>
+      <th>
+        昵称
+      </th>
+      <th>
+        头像
+      </th>
+      <th>
+        订阅情况
+      </th>
+      <th>
+        性别
+      </th>
+      <th>
+        语言
+      </th>
+      <th>
+        位置
+      </th>
+      <th>
+        备注
+      </th>
+      <th>
+        所属公众号
+      </th>
+      <th>
+        初始注册频道
+      </th>
+      <th>
+        最后注册频道
+      </th>
+      <th>
+        创建于
+      </th>
+      <th>
+        更新于
+      </th>
+      <th>
+        操作
+      </th>
+    </tr>
+    </thead>
+    <% @user.each do |user| %>
+      <tbody>
+        <tr>
+          <td>
+            <%= user.id %>
+          </td>
+          <td>
+            <%= user.nickname %>
+          </td>
+          <td>
+            <img src="<%= user.headimgurl %>"/>
+          </td>
+          <td>
+            <%= user.subscribe == 1 ? "订阅于#{user.subscribe_time}" : "未订阅" %>
+          </td>
+          <td>
+            <%= user.sex == 1 ? "男" : "女" %>
+          </td>
+          <td>
+            <%= user.language %>
+          </td>
+          <td>
+            <%= user.country %>~<%= user.province %>~<%= user.city %>
+          </td>
+          <td id="user_remark_<%= user.id %>">
+            <%= user.remark %>
+          </td>
+          <td>
+            <%= user.weixin_public_account_id %>
+          </td>
+          <td>
+            <%= user.first_register_channel %>
+          </td>
+          <td>
+            <%= user.last_register_channel %>
+          </td>
+          <td>
+            <%= user.created_at.chinese_format %>
+          </td>
+          <td>
+            <%= user.updated_at.chinese_format %>
+          </td>
+          <td>
+            <%= link_to '修改备注名', "javascript:open_modal(#{user.id})" %>
+          </td>
+        </tr>
+      </tbody>
+    <% end %>
+  </table>
+<% end unless @user.blank? %>
+
+<%= will_paginate @user %>
+
+
+<%= hidden_field_tag :hidden_user_id %>
+<script language="javascript">
+    function open_modal(user_id){
+      $("#hidden_user_id").val(user_id);
+      $('#myModal').foundation('reveal', 'open');
+
+    }
+    function modify_remark(){
+        user_id = $("#hidden_user_id").val();
+        new_remark = $("#new_remark").val();
+        $.ajax({
+            url: "/eric_weixin/cms/weixin/users/"+user_id+"/modify_remark",
+            type: "post",
+            async: false,
+            data: {new_remark: new_remark}
+        }).done(
+            function(result){
+                $("#user_remark_"+user_id).html(result);
+                $('#myModal').foundation('reveal', 'close');
+            }
+        );
+    }
+</script>
+
+
+
+<div id="myModal" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+  
+    <label class="inline left">新备注</label>
+    <%= text_field_tag :new_remark %>
+    <%= link_to "提交", "javascript:modify_remark()" %>
+    
+    
+  <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+</div>
+
+</div>

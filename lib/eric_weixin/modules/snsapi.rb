@@ -10,7 +10,7 @@ module EricWeixin::Snsapi
   # * schema_host 当前项目的域名(包含http://)：如http://www.baidu.com
   # * state 这个参数可以直接带到业务页面。
   # ===调用示例
-  #  EricWeixin::Snsapi.get_snsapi_base_url url:'/wz/service1/ddd?a=1', app_id: 'wx51729870d9012531', schema_host: "http://lxq.mdcc.club"
+  #  EricWeixin::Snsapi.get_snsapi_base_url url:'/weixin/service1/ddd?a=1', app_id: 'wx51729870d9012531', schema_host: "http://lxq.mdcc.club"
   def self.get_snsapi_base_url options
     require 'base64'
     p_zhongzhuan = []
@@ -21,7 +21,7 @@ module EricWeixin::Snsapi
     p_zhongzhuan = CGI::unescape p_zhongzhuan
     p_zhongzhuan_url = [p_zhongzhuan_host_path, p_zhongzhuan].join('?')
 
-    p_host_and_path = 'https://open.wz.qq.com/connect/oauth2/authorize'
+    p_host_and_path = 'https://open.weixin.qq.com/connect/oauth2/authorize'
     p = []
     p << ['appid', options[:app_id]]
     p << ['redirect_uri', CGI::escape(p_zhongzhuan_url)]
@@ -46,7 +46,7 @@ module EricWeixin::Snsapi
   # * schema_host 当前项目的域名(包含http://)：如http://www.baidu.com
   # * state 这个参数可以直接带到业务页面。
   # ===调用示例
-  #  EricWeixin::Snsapi.get_snsapi_userinfo_url url:'/wz/service1/ddd?a=1', app_id: 'wx51729870d9012531', schema_host: "http://lxq.mdcc.club"
+  #  EricWeixin::Snsapi.get_snsapi_userinfo_url url:'/weixin/service1/ddd?a=1', app_id: 'wx51729870d9012531', schema_host: "http://lxq.mdcc.club"
   def self.get_snsapi_userinfo_url options
     require 'base64'
     p_zhongzhuan = []
@@ -57,7 +57,7 @@ module EricWeixin::Snsapi
     p_zhongzhuan = CGI::unescape p_zhongzhuan
     p_zhongzhuan_url = [p_zhongzhuan_host_path, p_zhongzhuan].join('?')
 
-    p_host_and_path = 'https://open.wz.qq.com/connect/oauth2/authorize'
+    p_host_and_path = 'https://open.weixin.qq.com/connect/oauth2/authorize'
     p = []
     p << ['appid', options[:app_id]]
     p << ["redirect_uri", CGI::escape(p_zhongzhuan_url)]
