@@ -3,9 +3,16 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
   scope :valid, -> { where(:is_valid => true) }
   belongs_to :weixin_public_account, :class_name => '::EricWeixin::PublicAccount', foreign_key: "weixin_public_account_id"
   delegate :name, to: :weixin_public_account, prefix: true, allow_nil: true
-
   KEY_WORD_TYPE_LABEL = {"keyword" => '字符', 'regularexpr' => '正则表达式'}
   REPLY_TYPE_LABEL = {"text" => '静态字符串', 'wx_function' => '动态运行', 'news' => '多图文'}
+
+  validates_presence_of :key_word, message: "关键词不能为空。"
+  validates_presence_of :reply_message, message: "回复信息不能为空。"
+  validates_presence_of :weixin_public_account, message: "对应的微信公众账号不能为空。"
+  validates_inclusion_of :reply_type, in: REPLY_TYPE_LABEL.collect{|r| r.first}, message: "不正确的回复类型。"
+  validates_inclusion_of :key_word_type, in: KEY_WORD_TYPE_LABEL.collect{|r| r.first}, message: "不正确的关键词类型。"
+
+
 
   class << self
 

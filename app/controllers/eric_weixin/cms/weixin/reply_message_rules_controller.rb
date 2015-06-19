@@ -2,15 +2,25 @@ class EricWeixin::Cms::Weixin::ReplyMessageRulesController < EricWeixin::Cms::Ba
   before_filter :need_login
 
   def index
-    @reply_message_rules = ::EricWeixin::ReplyMessageRule.valid
+    @reply_message_rules = ::EricWeixin::ReplyMessageRule.valid.paginate(page: params[:page], per_page:params[:per_page]||10)
     @public_accounts = ::EricWeixin::PublicAccount.all
   end
 
   def new
+    @public_accounts = ::EricWeixin::PublicAccount.all
   end
 
   def create
-   @rule = ::EricWeixin::ReplyMessageRule.create_reply_message_rule params
+    begin
+      ::EricWeixin::ReplyMessageRule.create_reply_message_rule params
+      flash[:success] = "创建成功。"
+      redirect_to action: :index
+    rescue Exception=>e
+      dispose_exception e
+      flash.now[:alert] = get_notice_str
+      @public_accounts = ::EricWeixin::PublicAccount.all
+      render :new
+    end
   end
 
   def edit
@@ -19,7 +29,16 @@ class EricWeixin::Cms::Weixin::ReplyMessageRulesController < EricWeixin::Cms::Ba
   end
 
   def update
-    @reply_message_rule = ::EricWeixin::ReplyMessageRule.update_reply_message_rule(params[:id],params[:weixin_reply_message_rule])
+    begin
+      @reply_message_rule = ::EricWeixin::ReplyMessageRule.update_reply_message_rule(params[:id],params)
+      flash[:success] = "更新成功。"
+      redirect_to action: :index
+    rescue Exception=> e
+      dispose_exception e
+      flash.now[:alert] = get_notice_str
+      @public_accounts = ::EricWeixin::PublicAccount.all
+      render :edit
+    end
   end
 
   def destroy

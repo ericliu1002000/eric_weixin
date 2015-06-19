@@ -1,7 +1,7 @@
 class EricWeixin::Cms::Weixin::ArticleDatasController < EricWeixin::Cms::BaseController
       before_action :set_weixin_article_data, only: [:show, :edit, :update, :destroy]
       def index
-        @article_datas = ::EricWeixin::Article.all
+        @article_datas = ::EricWeixin::Article.all.paginate(page: params[:page], per_page: 5)
       end
 
       def new
@@ -20,10 +20,10 @@ class EricWeixin::Cms::Weixin::ArticleDatasController < EricWeixin::Cms::BaseCon
       def create
         begin
           @article_data = ::EricWeixin::Article.create_article_data(weixin_article_data_params)
-          redirect_to "/cms/weixin/article_datas/#{@article_data.id}"
+          redirect_to "/eric_weixin/cms/weixin/article_datas/#{@article_data.id}"
         rescue Exception => e
           set_notice "参数输入有错"
-          redirect_to "/cms/weixin/article_datas/new"
+          redirect_to "/eric_weixin/cms/weixin/article_datas/new"
         end
       end
 
@@ -40,6 +40,6 @@ class EricWeixin::Cms::Weixin::ArticleDatasController < EricWeixin::Cms::BaseCon
       end
 
       def weixin_article_data_params
-        params.require(:weixin_article_data).permit(:title, :desc, :pic_url, :link_url)
+        params.require(:article).permit(:title, :desc, :pic_url, :link_url)
       end
 end

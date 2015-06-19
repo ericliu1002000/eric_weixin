@@ -1,7 +1,8 @@
-<h1>
+<h3>
   微信多图文列表
-</h1>
-<a class="button" href="/cms/weixin/news_datas/new">新建</a>
+</h3>
+<a class="button tiny" href="/eric_weixin/cms/weixin/news_datas/new">新建</a>
+<%= will_paginate @collection, renderer: FoundationPagination::Rails %>
 <table>
   <thead>
   <tr>
@@ -23,6 +24,7 @@
   </tr>
   </thead>
   <tbody>
-  <%=render :partial => "/cms/weixin/news_datas/news_data", collection: @news_datas %>
+  <%=render :partial => "/eric_weixin/cms/weixin/news_datas/news_data", collection: @news_datas %>
   </tbody>
 </table>
+<%= will_paginate @collection, renderer: FoundationPagination::Rails %>

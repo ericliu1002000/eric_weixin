@@ -1,0 +1,66 @@
+<%= form_tag '/eric_weixin/cms/weixin/customs_service_records', method: :get do %>
+    <div class="row">
+      <div class="columns small-2">
+        <label class="inline text-right">公众号</label>
+      </div>
+      <div class="columns small-2">
+        <%= select_tag 'public_account_id', options_from_collection_for_select(::EricWeixin::PublicAccount.all, 'id', 'name', params[:public_account_id]), include_blank: "ALL" %>
+      </div>
+      <div class="columns small-2">
+        <label class="inline text-right">记录类型</label>
+      </div>
+      <div class="columns small-2">
+        <%= select_tag 'opercode', options_from_collection_for_select(::EricWeixin::CustomsServiceRecord::OPERCODE, 'first', 'second', params[:opercode]), include_blank: "ALL" %>
+      </div>
+      <div class="columns small-2">
+        <label class="inline text-right">日期</label>
+      </div>
+      <div class="columns small-2">
+        <%= date_field_tag 'chat_date', params[:chat_date] %>
+      </div>
+    </div>
+    <div class="row">
+      <div class="columns small-2">
+        <label class="inline text-right">聊天内容包括</label>
+      </div>
+      <div class="columns small-2">
+        <%= text_field_tag 'chat_content', params[:chat_content] %>
+      </div>
+      <div class="columns small-2">
+        <label class="inline text-right">接待客服</label>
+      </div>
+      <div class="columns small-2">
+        <%= text_field_tag 'worker', params[:worker] %>
+      </div>
+      <div class="columns small-2">
+        <label class="inline text-right">用户昵称</label>
+      </div>
+      <div class="columns small-2">
+        <%= text_field_tag 'nick_name', params[:nick_name] %>
+      </div>
+    </div>
+    <div class="row">
+      <div class="columns small-2 small-offset-10">
+        <%= submit_tag '查询', class: "button tiny" %>
+      </div>
+    </div>
+<% end %>
+<table>
+  <thead>
+  <th width="100">用户</th><th>客服</th><th>聊天类型</th><th>日期时间</th><th>公众号</th><th>聊天内容</th>
+  </thead>
+  <tbody>
+  <% @customs_service_records.each do |record| %>
+    <tr>
+      <td><%= record.nick_name %></td>
+      <td><%= record.worker %></td>
+      <td><%= ::EricWeixin::CustomsServiceRecord::OPERCODE[record.opercode.to_i] %></td>
+      <td><%= Time.at( record.time.to_i ).chinese_format %></td>
+      <td><%= record.public_account.name %></td>
+      <td><%= record.text %></td>
+    </tr>
+  <% end unless @customs_service_records.blank? %>
+  </tbody>
+</table>
+<%= will_paginate @collection, renderer: FoundationPagination::Rails %>
+

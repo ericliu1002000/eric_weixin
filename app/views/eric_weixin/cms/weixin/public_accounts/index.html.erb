@@ -1,3 +1,4 @@
+<%= will_paginate @collection, renderer: FoundationPagination::Rails %>
 <table>
   <thead>
   <tr>
@@ -19,7 +20,8 @@
   </tr>
   </thead>
   <tbody>
-  <%= render :partial => "/cms/weixin/public_accounts/public_account", collection: @public_accounts %>
+  <%= render :partial => "/eric_weixin/cms/weixin/public_accounts/public_account", collection: @public_accounts %>
   <tr></tr>
   </tbody>
 </table>
+<%= will_paginate @collection, renderer: FoundationPagination::Rails %>

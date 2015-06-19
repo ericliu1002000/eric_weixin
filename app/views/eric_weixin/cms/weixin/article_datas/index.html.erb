@@ -1,31 +1,21 @@
-<h1>
+<h3>
   微信图文素材列表
-</h1>
-<a href="/cms/weixin/article_datas/new" class="button">新建</a>
+</h3>
+<a href="/eric_weixin/cms/weixin/article_datas/new" class="button tiny">新建</a>
+<%= will_paginate @collection, renderer: FoundationPagination::Rails %>
 <table>
   <thead>
   <tr>
-    <th>
-      id
-    </th>
-    <th>
-      title
-    </th>
-    <th>
-      desc
-    </th>
-    <th>
-      pic_url
-    </th>
-    <th>
-      link_url
-    </th>
-    <th>
-      编辑
-    </th>
+    <th>id</th>
+    <th>title</th>
+    <th>desc</th>
+    <th>pic_url</th>
+    <th>link_url</th>
+    <th>编辑</th>
   </tr>
   </thead>
   <tbody>
-  <%=render :partial => "/cms/weixin/article_datas/article_data", collection: @article_datas %>
+  <%=render :partial => "/eric_weixin/cms/weixin/article_datas/article_data", collection: @article_datas %>
   </tbody>
 </table>
+<%= will_paginate @collection, renderer: FoundationPagination::Rails %>
