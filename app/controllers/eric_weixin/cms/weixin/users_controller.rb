@@ -4,6 +4,7 @@ class EricWeixin::Cms::Weixin::UsersController < EricWeixin::Cms::BaseController
     @user = ::EricWeixin::WeixinUser.search_weixin_user(user_params).paginate(:page => params[:page], :per_page => 10)
   end
 
+
   def modify_remark
     user = ::EricWeixin::WeixinUser.find(params[:id])
     user.set_remark params[:new_remark]
