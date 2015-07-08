@@ -14,6 +14,8 @@ EricWeixin::Engine.routes.draw do
         end
       end
 
+      resources :weixin_users
+
       resources :article_datas
       resources :news_datas
 
