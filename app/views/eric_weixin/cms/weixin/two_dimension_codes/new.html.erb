@@ -29,7 +29,7 @@
     <div class="large-8 columns">
       <select name="two[app_id]">
         <% @public_accounts.each do |public_account| %>
-          <option value="<%= public_account.weixin_app_id %>"><%= public_account.weixin_number %></option>
+          <option value="<%= public_account.weixin_app_id %>"><%= public_account.name %></option>
         <% end %>
       </select>
     </div>
