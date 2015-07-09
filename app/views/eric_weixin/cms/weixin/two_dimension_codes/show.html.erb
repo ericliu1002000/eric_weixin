@@ -1,0 +1,12 @@
+<div style="width:800px;margin:0px auto;">
+  <div style="margin:0px 0px 0px 30px;">
+    <%= link_to "返回永久二维码列表", cms_weixin_two_dimension_codes_path %><br><br>
+    <b>二维码编号</b>：<%= @two_dimension_code.id %><br>
+	<b>二维码场景</b>：<%= @two_dimension_code.scene_str %><br>
+	<b>描述</b>：<%= @two_dimension_code.action_info %><br><br><br>
+  </div>
+  <img src="https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=<%= @two_dimension_code.ticket %>" /><br><br>
+  <div style="margin:0px 0px 0px 30px;">
+    <a href="https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=<%= @two_dimension_code.ticket %>" download="<%= @two_dimension_code.ticket %>">点击下载</a>
+  </div>
+</div>

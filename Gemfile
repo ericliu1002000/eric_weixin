@@ -13,4 +13,11 @@ gemspec :name => 'eric_weixin'
 
 # To use debugger
 # gem 'debugger'
-gem 'rails', '4.1.4'
+gem 'rails', '>= 4.1.4'
+gem "multi_xml"
+gem 'nokogiri'
+gem 'rest-client', '1.8.0'
+gem 'foundation-rails', '5.4.3'
+gem 'will_paginate', '~> 3.0'
+gem 'jquery-rails'
+gem 'eric_tools', '~> 0.0.6'

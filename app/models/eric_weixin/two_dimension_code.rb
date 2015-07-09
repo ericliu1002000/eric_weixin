@@ -19,7 +19,7 @@ class EricWeixin::TwoDimensionCode < ActiveRecord::Base
   # ===调用示例
   # ::EricWeixin::TwoDimensionCode.image_url
   def image_url
-    "https://mp.wz.qq.com/cgi-bin/showqrcode?ticket=#{self.encode_ticket}"
+    "https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=#{self.encode_ticket}"
   end
 
   # 获取永久性二维码对象.
@@ -47,7 +47,7 @@ class EricWeixin::TwoDimensionCode < ActiveRecord::Base
                                                        action_name: "QR_LIMIT_STR_SCENE",
                                                        action_info: options[:action_info],
                                                        scene_str: options[:scene_str],
-                                                       expire_at: Time.now.chinese_format +
+                                                       expire_at: Time.now.chinese_format
                code.save!
                code
              else

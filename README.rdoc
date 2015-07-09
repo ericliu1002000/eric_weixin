@@ -16,6 +16,7 @@
 * 在微信管理界面的配置地址：http://#{host_name}/eric_weixin/weixin/service/#{app_id},如下：
 
   http://www.xxx.com/eric_weixin/weixin/service/wx51729870d9092531
-===数据库迁移（migration）
+===数据库迁移（migration），目前仅支持MySQL语法。
 * 第一次使用Gem或对Gem升级以后，都需要对migration进行升级，进入到Application目录下，执行如下操作：
+
   rake eric_weixin:install:migrations

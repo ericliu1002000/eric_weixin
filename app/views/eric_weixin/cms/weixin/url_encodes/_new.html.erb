@@ -1,0 +1,25 @@
+<% if @short_url.blank? %>
+
+  <% unless @details_url.blank?  %>
+    <textarea disabled="disabled" readonly="readonly" rows="9">
+<%= time_ago_in_words(Time.now) %>生成<br>
+生成能获取用户详细信息的微信 URL 是   <%= @details_url %>
+  
+对应的短址为   <%= @short_details_url %>
+    </textarea>
+  <% end %>
+  
+  <% unless @only_id_url.blank? %>
+    <textarea disabled="disabled" readonly="readonly" rows="9">
+<%= time_ago_in_words(Time.now) %>生成<br>
+仅能获取 ID 的微信 URL 是   <%= @only_id_url %>
+  
+对应的短址为   <%= @short_only_id_url %>
+    </textarea>
+  <% end %>
+<% else %>
+  <textarea disabled="disabled" readonly="readonly" rows="1">
+<%= time_ago_in_words(Time.now) %>生成<br>
+获取到的短网址   <%= @short_url %>
+  </textarea>
+<% end %>

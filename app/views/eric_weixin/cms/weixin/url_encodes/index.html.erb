@@ -1,0 +1,43 @@
+<div style="width:1200px;margin:0px auto;">
+  <div class="form" style="width:800px;float:left">
+    <%= form_for(cms_weixin_url_encodes_path, remote: true) do |f|%>
+      <%= f.label '您项目的域名 （例 http://lxq.mdcc.club )' %>
+      <%= f.text_field :schema_host %>
+      <%= f.label '用户跳转到的目标URL（例 http://lxq.mdcc.club/weixin/service1/ddd?a=1 )' %>
+      <%= f.text_field :url %>
+      <%= f.label :微信公众号 %>
+      <select name="<%= cms_weixin_url_encodes_path %>[app_id]">
+        <% ::EricWeixin::PublicAccount.all.each do |public_account| %>
+          <option value="<%= public_account.weixin_app_id %>">
+          <%= public_account.name %></option>
+        <% end %>
+      </select>
+      <%= f.check_box :details, checked: "checked" %>
+      <span>以snsapi_base为scope发起的网页授权</span>
+      <input type="submit" name="commit" class="button right" value="生成微信授权链接"><br>
+      <%= f.check_box :only_id %>
+      <span>以snsapi_userinfo为scope发起的网页授权</span><hr/>
+    <% end %>
+    <%= form_for(cms_weixin_url_encodes_path, remote: true) do |f|%>
+      <%= f.label :微信公众号 %>
+        <select name="<%= cms_weixin_url_encodes_path %>[app_id]">
+          <% ::EricWeixin::PublicAccount.all.each do |public_account| %>
+            <option value="<%= public_account.weixin_app_id %>">
+            <%= public_account.name %></option>
+          <% end %>
+        </select>
+      <%= f.label :填入要生成短址的URL %>
+      <%= f.text_field :only_short_url, placeholder: "注意看上面哈" %>
+      <input type="submit" name="commit" class="button right" value="生成短网址"><br>
+    <% end %>
+  </div>
+
+  <div class="imformation" style="width:400px;float:left">
+    <div style="width:300px;margin:0px auto;">
+      1、以snsapi_base为scope发起的网页授权，是用来获取进入页面的用户的openid的，并且是静默授权并自动跳转到回调页的。用户感知的就是直接进入了回调页（往往是业务页面）。<br>
+      2、以snsapi_userinfo为scope发起的网页授权，是用来获取用户的基本信息的。但这种授权需要用户手动同意，并且由于用户同意过，所以无须关注，就可在授权后获取该用户的基本信息。
+    </div>
+  </div>
+  
+  <div class="url"></div>
+</div>

@@ -84,6 +84,7 @@ class EricWeixin::CustomsServiceRecord < ActiveRecord::Base
       records = records.where("time between ? and ?", start_time, end_time)
     end
 
+    #todo 这里的查询方式有可能有问题，建议取消此类查询。
     records = records.where("text like ?", "%#{options[:chat_content]}%") unless options[:chat_content].blank?
 
     records = records.where("worker like ?", "%#{options[:worker]}%") unless options[:worker].blank?
