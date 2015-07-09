@@ -16,6 +16,12 @@ EricWeixin::Engine.routes.draw do
         end
       end
 
+      resources :weixin_users do
+        member do
+          post :modify_remark
+        end
+      end
+
       resources :article_datas
       resources :news_datas
       resources :users do

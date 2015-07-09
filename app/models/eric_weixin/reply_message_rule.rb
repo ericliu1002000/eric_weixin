@@ -3,7 +3,8 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
   scope :valid, -> { where(:is_valid => true) }
   belongs_to :weixin_public_account, :class_name => '::EricWeixin::PublicAccount', foreign_key: "weixin_public_account_id"
   delegate :name, to: :weixin_public_account, prefix: true, allow_nil: true
-  KEY_WORD_TYPE_LABEL = {"keyword" => '字符', 'regularexpr' => '正则表达式'}
+  KEY_WORD_TYPE_LABEL = {"text" => '字符', 'regularexpr' => '正则表达式', 'event' => '事件'}
+
   REPLY_TYPE_LABEL = {"text" => '静态字符串', 'wx_function' => '动态运行', 'news' => '多图文'}
 
   validates_presence_of :key_word, message: "关键词不能为空。"
@@ -187,8 +188,10 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
 
     def match_key_words wx_key_word, public_account_id, receive_message,need_to_mult_service=true
       matched_rule = ::EricWeixin::ReplyMessageRule.order(order: :desc).
-          where(:key_word => wx_key_word, :weixin_public_account_id => public_account_id, :key_word_type=>(receive_message[:MsgType]||"keyword")).first
+          where(:key_word => wx_key_word, :weixin_public_account_id => public_account_id, :key_word_type=>(receive_message[:MsgType]||"text")).first
       if matched_rule.nil?
+        # todo  处理正则表达式
+
         if need_to_mult_service
           return ::EricWeixin::ReplyMessage::transfer_mult_customer_service ToUserName: receive_message[:FromUserName],
                                                                           FromUserName: receive_message[:ToUserName]

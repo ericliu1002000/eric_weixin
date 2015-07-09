@@ -1,0 +1,128 @@
+<h3>用户表</h3>
+<%= form_tag '/eric_weixin/cms/weixin/weixin_users', method: :get do %>
+    <div class="row">
+      <div class="columns small-2 text-right">
+        <label class="inline">订阅状态</label>
+      </div>
+      <div class="columns small-2">
+        <%= select_tag :subscribe, options_from_collection_for_select({1=>'订阅',0=>'取消订阅'},'first','second',params[:subscribe]),prompt:"ALL" %>
+      </div>
+      <div class="columns small-2 text-right">
+        <label class="inline">昵称</label>
+      </div>
+      <div class="columns small-2">
+        <%= text_field_tag :nickname, params[:nickname] ,placeholder:"ALL" %>
+      </div>
+      <div class="columns small-2 text-right">
+        <label class="inline">性别</label>
+      </div>
+      <div class="columns small-2 end">
+        <%= select_tag :sex, options_from_collection_for_select(::EricWeixin::WeixinUser::SEX,'first','second',params[:sex]), prompt:"ALL" %>
+      </div>
+    </div>
+    <div class="row">
+      <div class="columns small-2 text-right">
+        <label class="inline">城市</label>
+      </div>
+      <div class="columns small-2">
+        <%= text_field_tag :city, params[:city] ,placeholder:"ALL" %>
+      </div>
+      <div class="columns small-2 text-right">
+        <label class="inline">省份</label>
+      </div>
+      <div class="columns small-2 end">
+        <%= text_field_tag :province, params[:province] ,placeholder:"ALL" %>
+      </div>
+
+
+    </div>
+<div class="row">
+  <div class="columns small-2 text-right">
+    <label class="inline">关注日期起始</label>
+  </div>
+  <div class="columns small-2">
+    <%= date_field_tag :start_date, params[:start_date] %>
+  </div>
+  <div class="columns small-2 text-right">
+    <label class="inline">关注日期结束</label>
+  </div>
+  <div class="columns small-2">
+    <%= date_field_tag :end_date, params[:end_date] %>
+  </div>
+
+  <div class="columns small-2">
+    <%= select_tag :public_account_id, options_from_collection_for_select(@public_accounts, 'id', 'name', (params[:public_account_id].blank? ? '' : params[:public_account_id])), prompt: '请选择公众账号' %>
+  </div>
+
+  <div class="columns small-2 end">
+    <%= submit_tag '加载用户', class: 'button tiny' %>
+  </div>
+</div>
+<% end %>
+<% unless @weixin_users.blank? %>
+    <%= will_paginate @collection, renderer: FoundationPagination::Rails %>
+<table>
+  <thead>
+  <th width="150px">openid</th> <th>是否订阅</th> <th>昵称</th> <th>性别</th> <th>语言</th> <th>城市</th> <th>省份</th> <th>国家</th> <th>头像</th> <th>关注时间</th> <th>备注</th> <th>最后一次注册渠道</th> <th>第一次注册渠道</th><th>操作</th>
+  </thead>
+  <tbody>
+  <% @weixin_users.each do |user| %>
+  <tr>
+    <td style="word-wrap:break-word;word-break:break-all;"><%= user.openid %></td>
+    <td><%= case user.subscribe when 1 then '是' when 0 then '否' end %></td>
+    <td><%= user.nickname %></td>
+    <td><%= case user.sex when 1 then '男' when 2 then '女' else '未知' end %></td>
+    <td><%= case user.language when 'zh_CN' then '简体中文' when 'zh_TW' then '繁体中文' when 'en' then '英文' else '其它' end %></td>
+    <td><%= user.city %></td>
+    <td><%= user.province %></td>
+    <td><%= user.country %></td>
+    <td><%= image_tag(user.headimgurl, height: '32', width: '32') %></td>
+    <td><%= Time.at(user.subscribe_time.to_i).chinese_format %></td>
+    <td id="user_remark_<%= user.id %>"><%= user.remark %></td>
+    <td><%= user.last_register_channel %></td>
+    <td><%= user.first_register_channel %></td>
+    <td>
+      <%= link_to '备注', "javascript:open_modal(#{user.id})" %>
+    </td>
+  </tr>
+  <% end %>
+  </tbody>
+</table>
+    <%= will_paginate @collection, renderer: FoundationPagination::Rails %>
+<% end %>
+
+<%= hidden_field_tag :hidden_user_id %>
+<script language="javascript">
+    function open_modal(user_id){
+        $("#hidden_user_id").val(user_id);
+        $('#myModal').foundation('reveal', 'open');
+
+    }
+    function modify_remark(){
+        user_id = $("#hidden_user_id").val();
+        new_remark = $("#new_remark").val();
+        $.ajax({
+            url: "/eric_weixin/cms/weixin/users/"+user_id+"/modify_remark",
+            type: "post",
+            async: false,
+            data: {new_remark: new_remark}
+        }).done(
+                function(result){
+                    $("#user_remark_"+user_id).html(result);
+                    $('#myModal').foundation('reveal', 'close');
+                }
+        );
+    }
+</script>
+
+
+
+<div id="myModal" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+
+  <label class="inline left">新备注</label>
+  <%= text_field_tag :new_remark %>
+  <%= link_to "提交", "javascript:modify_remark()" %>
+
+
+  <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+</div>
