@@ -20,3 +20,5 @@
 * 第一次使用Gem或对Gem升级以后，都需要对migration进行升级，进入到Application目录下，执行如下操作：
 
   rake eric_weixin:install:migrations
+===管理平台的链接
+*

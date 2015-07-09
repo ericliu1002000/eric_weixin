@@ -2,9 +2,12 @@ require "pp"
 module EricWeixin
   class Wz::WeixinController < ApplicationController
     # 第一次接入时，用于微信服务器验证开者服务器的真实性。
+    protect_from_forgery except: :reply
     def index
       render :text => params[:echostr]
     end
+
+
 
     def reply
       request_body = request.body.read
@@ -73,6 +76,12 @@ module EricWeixin
 
     def aa
       @ee = 12
+    end
+
+    private
+    def get_ip
+      ip = request.env["HTTP_X_FORWARDED_FOR"]||"127.0.0.1"
+      ip = begin ip.split(',')[0] rescue "127.0.0.1" end
     end
 
   end

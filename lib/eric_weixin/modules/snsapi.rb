@@ -10,7 +10,7 @@ module EricWeixin::Snsapi
   # * schema_host 当前项目的域名(包含http://)：如http://www.baidu.com
   # * state 这个参数可以直接带到业务页面。
   # ===调用示例
-  #  EricWeixin::Snsapi.get_snsapi_base_url url:'/weixin/service1/ddd?a=1', app_id: 'wx51729870d9012531', schema_host: "http://lxq.mdcc.club"
+  #
   def self.get_snsapi_base_url options
     require 'base64'
     p_zhongzhuan = []
