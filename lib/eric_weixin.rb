@@ -7,6 +7,7 @@ require 'eric_weixin/modules/reply_message'
 require 'eric_weixin/modules/snsapi'
 require 'eric_weixin/modules/ip'
 require 'eric_weixin/modules/analyze_data'
+require 'eric_weixin/modules/pay'
 
 
 module EricWeixin
