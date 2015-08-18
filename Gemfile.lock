@@ -1,11 +1,7 @@
 PATH
   remote: .
   specs:
-<<<<<<< HEAD
     eric_weixin (0.1.0)
-=======
-    eric_weixin (0.0.12)
->>>>>>> e213c5eb7370d4545e344ca866cf90e0ed5e823e
       rails (~> 4.1.4)
 
 GEM
