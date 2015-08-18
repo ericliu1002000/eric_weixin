@@ -1,0 +1,49 @@
+<%
+   timestamp = Time.now.to_i.to_s
+   noncestr = SecureRandom.uuid.tr('-', '')
+   public_account = ::EricWeixin::PublicAccount.find_by_weixin_app_id(params[:appid])
+   options = {}
+   options[:appId] = params[:appid]
+   options[:timeStamp] = timestamp
+   options[:nonceStr] = noncestr
+   options[:package] = "prepay_id=#{@prepay_id}"
+   options[:signType] = "MD5"
+   paySign = ::EricWeixin::Pay.generate_sign options, public_account.mch_key
+%>
+
+<script language="javascript">
+    function onBridgeReady(){
+        WeixinJSBridge.invoke(
+                'getBrandWCPayRequest',{
+                    "appId": "<%= params[:appid] %>",     //公众号名称，由商户传入
+                    "timeStamp": "<%= timestamp %>",         //时间戳，自1970年以来的秒数
+                    "nonceStr":"<%= noncestr %>", //随机串
+                    "package":"prepay_id=<%= @prepay_id %>",
+                    "signType":"MD5",         //微信签名方式：
+                    "paySign":"<%= paySign %>" //微信签名
+                },
+                function(res){
+                    if(res.err_msg == "get_brand_wcpay_request:ok" ) {
+                        document.getElementById('message').innerHTML = '您支付成功，谢谢。';
+                    }     // 使用以上方式判断前端返回,微信团队郑重提示：res.err_msg将在用户支付成功后返回    ok，但并不保证它绝对可靠。
+                    else {
+                        document.getElementById('message').innerHTML = '您支付失败，请返回重新尝试，谢谢。';
+                    }
+                }
+        );
+    }
+
+
+        if (typeof WeixinJSBridge == "undefined"){
+            if( document.addEventListener ){
+                document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
+            }else if (document.attachEvent){
+                document.attachEvent('WeixinJSBridgeReady', onBridgeReady);
+                document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
+            }
+        }else{
+            onBridgeReady();
+        }
+</script>
+<br/><br/><br/><br/><br/><br/><br/>
+<h1 id="message" style="text-align: center"></h1>

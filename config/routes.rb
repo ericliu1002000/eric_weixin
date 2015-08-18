@@ -4,8 +4,11 @@ EricWeixin::Engine.routes.draw do
   get "/weixin/service1/ddd" => "wz/weixin#aa"
   get "/weixin/snsapi" => "wz/weixin#snsapi_api"
   get "/weixin/snsuserinfo" => "wz/weixin#snsapi_userinfo"
-  post "/weixin/snsapi" => "wz/weixin#snsapi_api"
-  post "/weixin/snsuserinfo" => "wz/weixin#snsapi_userinfo"
+
+  get "/weixin/pay" => "wz/pays#prepay"
+  get "/weixin/pay_ok" => "wz/pays#pay_ok"
+  get "/weixin/pay_fail"=> "wz/pays#pay_fail"
+
   namespace :cms do
     namespace :weixin do
       resources :public_accounts do

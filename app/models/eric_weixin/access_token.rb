@@ -52,6 +52,7 @@ module EricWeixin
     # * public_account_id   #公众账号 ID
     # ===调用示例
     # ::EricWeixin::AccessToken.get_new_token '5e3b98ca0000959946657212739fd535'
+    # https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=12&secret=23
     def self.get_new_token public_account_id
       account = ::EricWeixin::PublicAccount.find_by_id public_account_id
       BusinessException.raise 'account 不存在' if account.blank?

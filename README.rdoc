@@ -21,4 +21,9 @@
 
   rake eric_weixin:install:migrations
 ===管理平台的链接
-*
+* 二维码： /eric_weixin/cms/weixin/two_dimension_codes
+* 关键字回复： /eric_weixin/cms/weixin/reply_message_rules
+* 公众账号管理： /eric_weixin/cms/weixin/public_accounts
+* 图文管理： /eric_weixin/cms/weixin/news_datas
+* 图文素材管理： /eric_weixin/cms/weixin/article_datas
+* 链接管理： /eric_weixin/cms/weixin/url_encodes

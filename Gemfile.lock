@@ -1,7 +1,11 @@
 PATH
   remote: .
   specs:
+<<<<<<< HEAD
     eric_weixin (0.1.0)
+=======
+    eric_weixin (0.0.12)
+>>>>>>> e213c5eb7370d4545e344ca866cf90e0ed5e823e
       rails (~> 4.1.4)
 
 GEM
@@ -87,7 +91,11 @@ GEM
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 3.0)
       netrc (~> 0.7)
+<<<<<<< HEAD
     sass (3.4.15)
+=======
+    sass (3.4.16)
+>>>>>>> e213c5eb7370d4545e344ca866cf90e0ed5e823e
     sprockets (2.12.3)
       hike (~> 1.2)
       multi_json (~> 1.0)
