@@ -18,7 +18,6 @@ EricWeixin::Engine.routes.draw do
           post :create_menu
         end
       end
-
       resources :weixin_users do
         member do
           post :modify_remark
@@ -33,13 +32,9 @@ EricWeixin::Engine.routes.draw do
         end
       end
       resources :reply_message_rules
-
       resources :two_dimension_codes
       resources :url_encodes
-
-
       resources :customs_service_records
-
     end
   end
 end
