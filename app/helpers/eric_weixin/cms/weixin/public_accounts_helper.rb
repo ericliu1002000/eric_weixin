@@ -1,8 +1,8 @@
 module EricWeixin::Cms::Weixin::PublicAccountsHelper
   def weixin_menu_show_tag json
-    puts "****"*300
-    puts json.class
-    puts "****"*300
+    # puts "****"*300
+    # puts json.class
+    # puts "****"*300
     return '<h6>还没有任何菜单哦！</h6>' if json.blank? || json == "null"
     result = '<table border="1" style="word-break:break-all;"><thead><th width="140">button name</th><th width="140">sub_button name</th><th width="60">type</th><th width="150">key</th><th>url</th></thead><tbody>'
     obj = JSON.parse json

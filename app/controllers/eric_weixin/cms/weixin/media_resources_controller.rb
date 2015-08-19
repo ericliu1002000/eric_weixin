@@ -1,7 +1,7 @@
-class EricWexin::Cms::Weixin::MediaResourcesController < EricWeixin::Cms::BaseController
+class EricWeixin::Cms::Weixin::MediaResourcesController < EricWeixin::Cms::BaseController
 
   def index
-    @media_resources = ::EricWeixin::Weixin.all.order(:id)
+    @media_resources = ::EricWeixin::MediaResource.all.order(:id)
     @media_resources = @media_resources.where("tags like ?", "%#{params[:tag]}%") unless params[:tag].blank?
     @media_resources = @media_resources.where(category_name: params[:category_name]) unless params[:category_name].blank?
     @media_resources = @media_resources.paginate(per_page: params[:per_page]||10, page: params[:page]||1)
@@ -14,6 +14,8 @@ class EricWexin::Cms::Weixin::MediaResourcesController < EricWeixin::Cms::BaseCo
   def create
     begin
 
+      flash[:success] = '创建成功'
+      redirect_to action: :new
     rescue Exception=> e
       dispose_exception e
       flash[:alert] = get_notice_str

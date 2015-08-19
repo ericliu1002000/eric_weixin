@@ -3,7 +3,7 @@ module EricWeixin
     protect_from_forgery with: :exception
     require 'pp'
     # helper :all # include all helpers, all the time
-    helper_method :current_user, :get_session_content
+    helper_method :current_user, :get_session_content, :get_notice_str, :get_notice_hash, :get_session_content
 
     #处理控制器中的异常信息。
     def dispose_exception e, error_messages={:unknow_error=>nil, :act=>nil}

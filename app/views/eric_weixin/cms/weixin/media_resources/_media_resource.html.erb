@@ -7,7 +7,7 @@
     <label class="inline">素材标签</label>
   </div>
   <div class="columns small-3 end">
-    <%= text_field_tag :tags, get_show_value(params[:tags], v1:session_content[:tags], v2:@media_resource.tags) %>
+    <%= text_field_tag "resource[tags]", get_show_value(params[:tags], v1:session_content[:tags], v2:@media_resource.tags) %>
   </div>
 </div>
 
@@ -16,7 +16,7 @@
     <label class="inline">素材类型</label>
   </div>
   <div class="columns small-3 end">
-    <%= select_tag :category_name, options_from_collection_for_select(::EricWeixin::MediaResource::RESOURCE_TYPE, 'first', 'second', get_show_value(params[:category_name], v1:session_content[:category_name], v2:@media_resource.category_name)) %>
+    <%= select_tag "resource[category_name]", options_from_collection_for_select(::EricWeixin::MediaResource::RESOURCE_TYPE, 'first', 'second', get_show_value(params[:category_name], v1:session_content[:category_name], v2:@media_resource.category_name)) %>
   </div>
 </div>
 
@@ -25,9 +25,9 @@
     <label class="inline">请选择图片</label>
   </div>
   <div class="small-6 columns" style="position: relative">
-    <input class="fake diff" type="text" value="<%= @media_resource.wechat_link %>" disabled="disabled" style="background-color: white" name="txt_image"/>
+    <input class="fake diff" type="text" value="<%= @media_resource.wechat_link %>" disabled="disabled" style="background-color: white" name="resource[pic]" id="resource_pic"/>
     <label class="upload diff" name="file">选择文件</label>
-    <input class="file diff" type="file" name="image_file" onchange="txt_image.value=this.value"/>
+    <input class="file diff" type="file" name="image_file" onchange="document.getElementById('resource_pic').value=this.value"/>
   </div>
 </div>
 
@@ -36,7 +36,7 @@
     <label class="inline">选择公众号</label>
   </div>
   <div class="columns small-3 end">
-    <%= select_tag :public_account_id, options_from_collection_for_select(::EricWeixin::PublicAccount.all, 'id', 'name', get_show_value(params[:public_account_id], v1:session_content[:public_account_id], v2:@media_resource.public_account_id)) %>
+    <%= select_tag "resource[public_account_id]", options_from_collection_for_select(::EricWeixin::PublicAccount.all, 'id', 'name', get_show_value(params[:public_account_id], v1:session_content[:public_account_id], v2:@media_resource.public_account_id)) %>
   </div>
 </div>
 
