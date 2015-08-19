@@ -1,0 +1,4 @@
+<%= form_tag "/eric_weixin/cms/weixin/media_resources/#{@media_resource.id}", method: :patch do %>
+    <%= render partial: 'media_resource' %>
+    <%= submit '保存', class: 'button tiny' %>
+<% end %>
