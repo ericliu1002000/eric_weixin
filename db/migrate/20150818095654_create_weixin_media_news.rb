@@ -11,6 +11,8 @@ class CreateWeixinMediaNews < ActiveRecord::Migration
       t.integer :total_count
       t.integer :filter_count
       t.integer :status
+      t.integer :public_account_id
+      t.timestamps
     end
   end
 end

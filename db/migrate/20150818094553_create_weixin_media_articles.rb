@@ -10,6 +10,8 @@ class CreateWeixinMediaArticles < ActiveRecord::Migration
       t.boolean :show_cover_pic
       t.string :tag
       t.boolean :is_first_article
+      t.integer :public_account_id
+      t.timestamps
     end
   end
 end

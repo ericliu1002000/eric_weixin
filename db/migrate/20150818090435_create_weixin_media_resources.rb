@@ -6,6 +6,8 @@ class CreateWeixinMediaResources < ActiveRecord::Migration
       t.string :local_link
       t.string :wechat_link
       t.string :media_id
+      t.integer :public_account_id
+      t.timestamps
     end
   end
 end

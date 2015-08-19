@@ -4,6 +4,8 @@ class CreateWeixinMediaArticlesNews < ActiveRecord::Migration
       t.integer :weixin_media_article_id
       t.integer :weixin_media_news_id
       t.integer :sort
+
+      t.timestamps
     end
   end
 end
