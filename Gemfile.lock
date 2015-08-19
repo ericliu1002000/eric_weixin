@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    eric_weixin (0.1.0)
+    eric_weixin (0.1.1)
       rails (~> 4.1.4)
 
 GEM
