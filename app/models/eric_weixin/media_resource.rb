@@ -1,7 +1,7 @@
 class EricWeixin::MediaResource < ActiveRecord::Base
-  self.table_name = "weixin_message_logs"
 
-  
+  self.table_name = 'weixin_media_resources'
+
+
 end
-
 
