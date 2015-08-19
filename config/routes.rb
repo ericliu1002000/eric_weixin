@@ -35,6 +35,8 @@ EricWeixin::Engine.routes.draw do
       resources :two_dimension_codes
       resources :url_encodes
       resources :customs_service_records
+
+      resources :media_resources
     end
   end
 end
