@@ -1,0 +1,35 @@
+<h3 class="text-center">微信素材管理</h3>
+<%= form_tag '/eric_weixin/cms/weixin/media_resources/', method: :get do %>
+    <div class="row">
+      <div class="columns small-2 text-right">
+        <label class="inline">标签名称</label>
+      </div>
+      <div class="columns small-2">
+        <%= text_field_tag :tag, params[:tag] %>
+      </div>
+      <div class="columns small-2 text-right">
+        <label class="inline">素材类型</label>
+      </div>
+      <div class="columns small-2">
+        <%= select_tag :category_name, options_from_collection_for_select(::EricWeixin::MediaResource::RESOURCE_TYPE, 'first', 'second', params[:category_name]) %>
+      </div>
+      <div class="columns small-4">
+        <%= submit_tag '查询', class: 'button tiny' %>
+      </div>
+    </div>
+<% end %>
+
+<table>
+  <thead>
+    <th>图片预览</th><th>类型</th><th>创建时间</th><th>链接</th>
+  </thead>
+  <% @media_resources.each do |media_resource| %>
+    <tr>
+      <td><%= image_tag "#{media_resource.wechat_link}", size: "20x20" %></td>
+      <td><%= ::EricWeixin::MediaResource::RESOURCE_TYPE[media_resource.category_name] %></td>
+      <td><%= media_resource.created_at.chinese_format %></td>
+      <td><%= media_resource.wechat_link %></td>
+    </tr>
+  <% end %>
+</table>
+<%= will_paginate @media_resources %>
