@@ -16,6 +16,7 @@
 // require tinymce
 //= require_tree .
 
+
 //$(function(){
 //    //$(document).foundation();
 //    $(document).foundation('reveal', {animation: false});

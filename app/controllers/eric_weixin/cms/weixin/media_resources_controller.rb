@@ -13,9 +13,15 @@ class EricWeixin::Cms::Weixin::MediaResourcesController < EricWeixin::Cms::BaseC
 
   def create
     begin
+      p = params.require(:resource).permit(:tags, :category_name,  :public_account_id)
+      params.permit :pic
+      if p[:category_name] == 'pic_in_article'
+        EricWeixin::MediaResource.save_pic_in_article p, params[:pic]
+        flash[:success] = '创建成功'
+        redirect_to action: :new
+        return
+      end
 
-      flash[:success] = '创建成功'
-      redirect_to action: :new
     rescue Exception=> e
       dispose_exception e
       flash[:alert] = get_notice_str

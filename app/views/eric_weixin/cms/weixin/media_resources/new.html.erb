@@ -1,4 +1,4 @@
-<%= form_tag '/eric_weixin/cms/weixin/media_resources', method: :post do %>
+<%= form_tag '/eric_weixin/cms/weixin/media_resources', method: :post, :multipart =>  true do %>
     <%= render partial: 'media_resource' %>
     <%= submit_tag '上传', class: 'button tiny' %>
 <% end %>

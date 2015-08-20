@@ -21,26 +21,29 @@ class EricWeixin::MediaResource < ActiveRecord::Base
   #                                                 public_account_id: 1
   #
   # #
-  def self.save_pic_in_article options
+  def self.save_pic_in_article options, file
+    pic_in_article_path = '/uploads/wechat_pic/file_in_content/'
     EricWeixin::MediaResource.transaction do
-      pp options[:pic].methods
+      # pp options[:pic].methods
       resource = EricWeixin::MediaResource.new tags: options[:tags],
-                                               category_name: 'pic_in_article'
-      resource.save!
-
-      url = EricWeixin::MediaResource.upload_pic_in_article pic: options[:pic],
-                                                            public_account_id: options[:public_account_id]
-      resource.wechat_link = url
+                                               category_name: 'pic_in_article',
+                                               public_account_id: options[:public_account_id]
       resource.save!
 
 
-      file_name = "#{EricTools.uuid}-#{options[:pic].original_filename}"
-      origin_name_with_path = Rails.root.join('public/uploads/wechat_pic/', file_name)
-      File.open(origin_name_with_path, 'wb') do |file|
-        file.write(uploaded_io.read)
+      file_name = "#{EricTools.uuid}-#{file.original_filename}"
+      origin_name_with_path = Rails.root.join("public#{pic_in_article_path}", file_name)
+      File.open(origin_name_with_path, 'wb') do |f|
+        f.write(file.read)
       end
 
-      resource.local_link = "/uploads/wechat_pic/#{file_name}"
+      url = EricWeixin::MediaResource.upload_pic_in_article pic: File.new(origin_name_with_path),
+                                                            public_account_id: options[:public_account_id]
+
+      # file.close rescue ''
+      # pp url
+      resource.wechat_link = url
+      resource.local_link = "#{pic_in_article_path}#{file_name}"
       resource.save!
 
     end
@@ -58,7 +61,11 @@ class EricWeixin::MediaResource < ActiveRecord::Base
     token = ::EricWeixin::AccessToken.get_new_token options[:public_account_id]
     url = "https://api.weixin.qq.com/cgi-bin/media/uploadimg?access_token=#{token}"
     response = RestClient.post url, :media => options[:pic]
-    url = JSON.parse(response)["url"]
+    pp response
+    pp '[['*1000
+    response_json = JSON.parse(response)
+    url = response_json["url"]
+    BusinessException.raise response_json["errmsg"] if url.blank?
   end
 
 end
