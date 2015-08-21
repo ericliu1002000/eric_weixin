@@ -73,9 +73,10 @@ class EricWeixin::MediaResource < ActiveRecord::Base
   # * type  资源类型
   # ===调用示例
   #
-  # ::EricWeixin::MediaResource.save_media pic: File.new('/Users/ericliu/Pictures/1.pic.jpg'),
-  #                                                 tags: 'test',
-  #                                                 public_account_id: 1
+  # ::EricWeixin::MediaResource.save_media media: File.new('/Users/ericliu/Pictures/1.pic.jpg'),
+  #                                        tags: 'test',
+  #                                        public_account_id: 1,
+  #                                        type: xx
   # #
   def self.save_media options
     BusinessException.raise "媒体类型不正确" unless EricWeixin::MediaResource::RESOURCE_TYPE.keys.include?(options[:type])
