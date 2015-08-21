@@ -37,6 +37,11 @@ EricWeixin::Engine.routes.draw do
       resources :customs_service_records
 
       resources :media_resources
+      resources :media_articles do
+        collection do
+          get :select_pic
+        end
+      end
     end
   end
 end

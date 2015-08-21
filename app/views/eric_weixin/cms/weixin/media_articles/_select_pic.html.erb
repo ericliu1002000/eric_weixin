@@ -1,0 +1,78 @@
+<% @pics.each_with_index do |pic, index| %>
+    <% if index%6==0  %>
+        <div class="row">
+    <% end %>
+    <div class="columns small-2 <%= @pics.count == index+1 ? 'end' : '' %>">
+      <label class="inline"><span><%= radio_button_tag 'picture', pic.id, false, onchange: "change_thumb_media_id('#{pic.id}','#{pic.local_link}')" %></span>
+        <img src='<%= pic.local_link %>' width="100" height="100"></label>
+    </div>
+    <% if index%6==5 || @pics.count == index+1 %>
+        </div>
+    <% end %>
+<% end %>
+<div class="row">
+  <div class="columns small-12 text-right">
+    <% if @current_page == 1 %>
+        <%= "上一页" %>
+    <% else %>
+        <%= link_to '上一页',"javascript:pre_page(#{@current_page||1})", disabled: (@current_page ==1 ? 'false' : 'true') %>
+    <% end %>
+
+    <% if @current_page == @total_page %>
+        <%= "下一页" %>
+    <% else %>
+        <%= link_to '下一页',"javascript:next_page(#{@current_page||1})" %>
+    <% end %>
+    <%= "当前第#{@current_page||1}页 共#{@total_page}页" %>
+  </div>
+</div>
+<div class="row">
+  <div class="columns small-2 small-offset-5 text-center">
+    <%= link_to '确定', 'javascript:close_modal()', class: 'text-center button tiny' %>
+  </div>
+</div>
+
+<script language="javascript">
+    function change_thumb_media_id(thumb_media_id, link) {
+        $("#article_thumb_media_id").val(thumb_media_id);
+        $("#suoluetu").attr('src',link);
+    }
+
+    function close_modal(){
+        $('#AddPosterModal').foundation('reveal', 'close');
+    }
+
+    function pre_page(current_page){
+        target_page = current_page - 1;
+        if(target_page == 0){
+            target_page = 1;
+        }
+        $.ajax({
+            url: '/eric_weixin/cms/weixin/media_articles/select_pic',
+            type: 'get',
+            data: {target_page: target_page},
+            async: false
+        }).done(
+            function(result){
+                $("#select_pic_div").html(result);
+            }
+        );
+    }
+
+    function next_page(current_page){
+        target_page = current_page + 1;
+        if(target_page > <%= @total_page %>){
+            target_page = <%= @total_page %>;
+        }
+        $.ajax({
+            url: '/eric_weixin/cms/weixin/media_articles/select_pic',
+            type: 'get',
+            data: {target_page: target_page},
+            async: false
+        }).done(
+                function(result){
+                    $("#select_pic_div").html(result);
+                }
+        );
+    }
+</script>
