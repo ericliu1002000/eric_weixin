@@ -22,6 +22,9 @@ class EricWeixin::MediaResource < ActiveRecord::Base
   # #
   def self.save_pic_in_article options, file
     pic_in_article_path = '/uploads/wechat_pic/file_in_content/'
+    unless Dir.exist? pic_in_article_path
+      BusinessException.raise "请创建目录#{pic_in_article_path}"
+    end
     EricWeixin::MediaResource.transaction do
       # pp options[:pic].methods
       resource = EricWeixin::MediaResource.new tags: options[:tags],
@@ -81,6 +84,9 @@ class EricWeixin::MediaResource < ActiveRecord::Base
   def self.save_media options
     BusinessException.raise "媒体类型不正确" unless EricWeixin::MediaResource::RESOURCE_TYPE.keys.include?(options[:type])
     file_path = "/uploads/wechat_pic/#{options[:type]}/"
+    unless Dir.exist? file_path
+      BusinessException.raise "请创建目录#{file_path}"
+    end
     EricWeixin::MediaResource.transaction do
       resource = EricWeixin::MediaResource.new tags: options[:tags],
                                                category_name: options[:type],
