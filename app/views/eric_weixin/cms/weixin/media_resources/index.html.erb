@@ -31,7 +31,7 @@
   <% @media_resources.each do |media_resource| %>
       <tr>
         <td>
-          <img src="<%= media_resource.local_link %>", width="100", height="100">
+          <img src="<%= media_resource.local_link %>" width="100" height="100">
 
         </td>
         <td><%= ::EricWeixin::MediaResource::RESOURCE_TYPE[media_resource.category_name] %></td>
