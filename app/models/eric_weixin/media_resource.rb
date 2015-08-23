@@ -2,6 +2,8 @@ class EricWeixin::MediaResource < ActiveRecord::Base
 
   self.table_name = 'weixin_media_resources'
 
+  has_many :media_articles, foreign_key: 'thumb_media_id'
+
   RESOURCE_TYPE = {
       'pic_in_article' => '文章内图片',
       'thumbnail' => '缩略图',
@@ -22,8 +24,8 @@ class EricWeixin::MediaResource < ActiveRecord::Base
   # #
   def self.save_pic_in_article options, file
     pic_in_article_path = '/uploads/wechat_pic/file_in_content/'
-    unless Dir.exist? pic_in_article_path
-      BusinessException.raise "请创建目录#{pic_in_article_path}"
+    unless Dir.exist?  Rails.root.join("public").to_s + pic_in_article_path
+      BusinessException.raise "请创建目录#{ Rails.root.join("public").to_s + pic_in_article_path}"
     end
     EricWeixin::MediaResource.transaction do
       # pp options[:pic].methods
@@ -58,7 +60,7 @@ class EricWeixin::MediaResource < ActiveRecord::Base
   # ::EricWeixin::MediaResource.upload_pic_in_article pic: File.new('/Users/ericliu/Pictures/1.pic.jpg'),
   #                                                   public_account_id: 1
   def self.upload_pic_in_article options
-    token = ::EricWeixin::AccessToken.get_new_token options[:public_account_id]
+    token = ::EricWeixin::AccessToken.get_valid_access_token public_account_id: options[:public_account_id]
     url = "https://api.weixin.qq.com/cgi-bin/media/uploadimg?access_token=#{token}"
     response = RestClient.post url, :media => options[:pic]
     response_json = JSON.parse(response)
@@ -81,11 +83,11 @@ class EricWeixin::MediaResource < ActiveRecord::Base
   #                                        public_account_id: 1,
   #                                        type: xx
   # #
-  def self.save_media options
+  def self.save_media options, file
     BusinessException.raise "媒体类型不正确" unless EricWeixin::MediaResource::RESOURCE_TYPE.keys.include?(options[:type])
     file_path = "/uploads/wechat_pic/#{options[:type]}/"
-    unless Dir.exist? file_path
-      BusinessException.raise "请创建目录#{file_path}"
+    unless Dir.exist?  Rails.root.join("public").to_s + file_path
+      BusinessException.raise "请创建目录#{ Rails.root.join("public").to_s + file_path}"
     end
     EricWeixin::MediaResource.transaction do
       resource = EricWeixin::MediaResource.new tags: options[:tags],
@@ -96,7 +98,7 @@ class EricWeixin::MediaResource < ActiveRecord::Base
       file_name = "#{EricTools.uuid}-#{file.original_filename}"
       origin_name_with_path = Rails.root.join("public#{file_path}", file_name)
       File.open(origin_name_with_path, 'wb') do |f|
-        f.write(options[:media].read)
+        f.write(file.read)
       end
 
 
@@ -112,8 +114,8 @@ class EricWeixin::MediaResource < ActiveRecord::Base
                                                              'image'
                                                          end,
                                                    public_account_id: options[:public_account_id]
-      url = json[:url]
-      media_id = json[:media_id]
+      url = json["url"]
+      media_id = json["media_id"]
       resource.local_link = "#{file_path}#{file_name}"
       resource.wechat_link = url
       resource.media_id = media_id
@@ -136,7 +138,7 @@ class EricWeixin::MediaResource < ActiveRecord::Base
 
   def self.upload_media options
     BusinessException.raise '资源类型不正确，应该是image  voice  video  thumb 的其中一种' unless ["image", "voice", "video", "thumb"].include? options[:type]
-    token = ::EricWeixin::AccessToken.get_new_token options[:public_account_id]
+    token = ::EricWeixin::AccessToken.get_valid_access_token public_account_id: options[:public_account_id]
     url = "https://api.weixin.qq.com/cgi-bin/material/add_material?access_token=#{token}"
 
     response = RestClient.post url, :media => options[:media], :type => options[:type]

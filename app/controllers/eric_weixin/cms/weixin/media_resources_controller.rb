@@ -20,6 +20,12 @@ class EricWeixin::Cms::Weixin::MediaResourcesController < EricWeixin::Cms::BaseC
         flash[:success] = '创建成功'
         redirect_to action: :new
         return
+      else
+        p[:type] = p[:category_name]
+        EricWeixin::MediaResource.save_media p, params[:pic]
+        flash[:success] = '创建成功'
+        redirect_to action: :new
+        return
       end
 
     rescue Exception=> e

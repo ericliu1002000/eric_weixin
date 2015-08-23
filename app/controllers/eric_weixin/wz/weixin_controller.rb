@@ -12,8 +12,8 @@ module EricWeixin
     def reply
       request_body = request.body.read
       public_account = PublicAccount.find_by_weixin_app_id params[:app_id]
-      BusinessException.raise 'ip不正确' unless Ip.is_ip_exist? public_account_id: public_account.id,
-                                ip: get_ip
+      # BusinessException.raise 'ip不正确' unless Ip.is_ip_exist? public_account_id: public_account.id,
+      #                           ip: get_ip
       "message from wechat: ".to_logger
       request_body.to_logger
       weixin_message = MultiXml.parse(request_body).deep_symbolize_keys[:xml]
