@@ -1,4 +1,20 @@
+<h3 class="text-center"> 编辑素材标签</h3>
+<% session_content = get_session_content(params[:session_content_id])[:resource] || {} rescue {} %>
 <%= form_tag "/eric_weixin/cms/weixin/media_resources/#{@media_resource.id}", method: :patch, :multipart =>  true do %>
-    <%= render partial: 'media_resource' %>
-    <%= submit '保存', class: 'button tiny' %>
+    <div class="row">
+      <div class="columns small-3 text-right">
+        <label class="inline">素材标签</label>
+      </div>
+      s<%= session_content[:tags] %>||
+      <br/>
+      @<%= @media_resource.tags %>||
+      <br/>
+      p<%= params[:tags] %>||<br/>
+      <div class="columns small-3">
+        <%= text_field_tag "resource[tags]", get_show_value(params[:tags], v1:session_content[:tags], v2:@media_resource.tags) %>
+      </div>
+      <div class="columns small-3 text-center end">
+        <%= submit_tag '保存', class: 'button tiny' %>
+      </div>
+    </div>
 <% end %>
