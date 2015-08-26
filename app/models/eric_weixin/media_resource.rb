@@ -148,5 +148,25 @@ class EricWeixin::MediaResource < ActiveRecord::Base
     response_json
   end
 
+  def delete_server_resource
+    EricWeixin::MediaResource.transaction do
+      token = ::EricWeixin::AccessToken.get_valid_access_token public_account_id: self.public_account_id
+      url = "https://api.weixin.qq.com/cgi-bin/material/del_material?access_token=#{token}"
+
+      response = RestClient.post url, { "media_id" => self.media_id }.to_json
+      pp "****************** 删除该图文 ***********************"
+      pp response
+      response_json = JSON.parse(response)
+      BusinessException.raise response_json["errmsg"] unless response_json["errcode"] == 0
+      self.media_id = nil
+      self.save!
+    end
+  end
+
+  def delete_self
+    BusinessException.raise '该资源有其他文章素材引用，不能删除。' unless self.media_articles.blank?
+    self.delete_server_resource
+    self.destroy!
+  end
 end
 

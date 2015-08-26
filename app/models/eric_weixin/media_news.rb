@@ -2,7 +2,7 @@ class EricWeixin::MediaNews < ActiveRecord::Base
   self.table_name = 'weixin_media_news'
   has_many :media_article_news, foreign_key: 'weixin_media_news_id'
   has_many :media_articles, through: :media_article_news
-  def upload_news
+  def upload_news_old
 
     EricWeixin::MediaNews.transaction do
       h = {"articles" => []}
@@ -16,7 +16,7 @@ class EricWeixin::MediaNews < ActiveRecord::Base
             "thumb_media_id" => article.media_resource.media_id,
             "author" => article.author,
             "content_source_url" => article.content_source_url,
-            "content" => article.content,
+            "content" => CGI::escape(article.content).force_encoding("UTF-8"),
             "digest" => article.digest,
             "show_cover_pic" => if article.show_cover_pic then 1 else 0 end
         }
@@ -27,15 +27,49 @@ class EricWeixin::MediaNews < ActiveRecord::Base
 
       token = ::EricWeixin::AccessToken.get_valid_access_token public_account_id: self.public_account_id
       url = "https://api.weixin.qq.com/cgi-bin/media/uploadnews?access_token=#{token}"
-      pp "********************** 上传图文的参数 ********************************"
-      pp h
-
-      response = RestClient.post url, h.to_json
+      response = RestClient.post url, CGI::unescape(h.to_json)
       pp "********************* 上传该图文 **********************"
       pp response
       response_json = JSON.parse(response)
+      BusinessException.raise response_json["errmsg"] unless response_json["errmsg"].blank?
       self.media_id = response_json["media_id"]
       self.save!
+      self.reload
+    end
+  end
+
+  def upload_news
+    EricWeixin::MediaNews.transaction do
+      h = {"articles" => []}
+      pp "************* 图文 **************"
+      pp self
+      pp "************** 该图文包含的文章 *******************"
+      pp self.media_articles
+      self.media_articles.each do |article|
+        article_hash = {
+            "title" => article.title,
+            "thumb_media_id" => article.media_resource.media_id,
+            "author" => article.author,
+            "content_source_url" => article.content_source_url,
+            "content" => CGI::escape(article.content).force_encoding("UTF-8"),
+            "digest" => article.digest,
+            "show_cover_pic" => if article.show_cover_pic then 1 else 0 end
+        }
+        pp "*************** 文章内容 **********************"
+        pp article_hash
+        h["articles"] << article_hash
+      end
+
+      token = ::EricWeixin::AccessToken.get_valid_access_token public_account_id: self.public_account_id
+      url = "https://api.weixin.qq.com/cgi-bin/material/add_news?access_token=#{token}"
+      response = RestClient.post url, CGI::unescape(h.to_json)
+      pp "********************* 上传该图文 **********************"
+      pp response
+      response_json = JSON.parse(response)
+      BusinessException.raise response_json.to_s if response_json["media_id"].blank?
+      self.media_id = response_json["media_id"]
+      self.save!
+      self.reload
     end
   end
 
@@ -44,14 +78,15 @@ class EricWeixin::MediaNews < ActiveRecord::Base
       token = ::EricWeixin::AccessToken.get_valid_access_token public_account_id: self.public_account_id
       url = "https://api.weixin.qq.com/cgi-bin/material/del_material?access_token=#{token}"
 
-      response = RestClient.post url, { "media_id" => self.media_id }
+      response = RestClient.post url, { "media_id" => self.media_id }.to_json
       pp "****************** 删除该图文 ***********************"
       pp response
+      pp JSON.parse(response)["errcode"].class
       response_json = JSON.parse(response)
-      if response_json["errcode"] == 0
-        self.media_id = nil
-        self.save!
-      end
+      BusinessException.raise response_json["errmsg"] unless response_json["errcode"] == 0
+      self.media_id = nil
+      self.save!
+      self.reload
     end
   end
 
@@ -73,15 +108,18 @@ class EricWeixin::MediaNews < ActiveRecord::Base
             "touser" => needopenids,
             "mpnews" => {"media_id" => self.media_id},
             "msgtype" => "mpnews"
-        }.to_json
+        }
         pp "************************* 群发的参数 *******************************"
         pp data
-        response = RestClient.post url, data
+        response = RestClient.post url, data.to_json
         pp "******************* 群发的结果 ******************************"
         pp response
+        response_json = JSON.parse(response)
+        BusinessException.raise response_json["errmsg"] unless response_json["errcode"] == 0
       end
       self.status = 'send'
       self.save!
+      self.reload
     end
   end
 
@@ -95,6 +133,8 @@ class EricWeixin::MediaNews < ActiveRecord::Base
                        }.to_json
     pp "********************* 预览结果 ****************************"
     pp response
+    response_json = JSON.parse(response)
+    BusinessException.raise response_json["errmsg"] unless response_json["errcode"] == 0
   end
 
   # will_send_article_msg: will_send_article_msg,

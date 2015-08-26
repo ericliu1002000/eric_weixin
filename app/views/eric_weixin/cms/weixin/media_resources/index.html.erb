@@ -38,7 +38,10 @@
         <td><%= media_resource.created_at.chinese_format %></td>
 
         <td style="WORD-BREAK: break-all; WORD-WRAP: break-word"><%= media_resource.wechat_link %></td>
-        <td> <a href="/eric_weixin/cms/weixin/media_resources/<%= media_resource.id %>/edit">编辑</a></td>
+        <td>
+          <a href="/eric_weixin/cms/weixin/media_resources/<%= media_resource.id %>/edit">编辑标签</a>
+          <%= link_to '删除', "/eric_weixin/cms/weixin/media_resources/#{media_resource.id}", method: :delete, data: {confirm: '确定删除？'} %>
+        </td>
 
       </tr>
   <% end %>

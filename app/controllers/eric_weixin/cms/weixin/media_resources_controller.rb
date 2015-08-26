@@ -41,7 +41,11 @@ class EricWeixin::Cms::Weixin::MediaResourcesController < EricWeixin::Cms::BaseC
 
   def update
     begin
-
+      media_resource = ::EricWeixin::MediaResource.find_by_id(params[:id])
+      new_tags = params.require(:resource).permit(:tags)[:tags]
+      media_resource.update! tags: new_tags unless new_tags.blank?
+      flash[:success] = "更新标签成功。"
+      redirect_to action: :index
     rescue Exception=>e
       dispose_exception e
       flash[:alert] = get_notice_str
@@ -49,4 +53,16 @@ class EricWeixin::Cms::Weixin::MediaResourcesController < EricWeixin::Cms::BaseC
     end
   end
 
+  def destroy
+    begin
+      media_resource = ::EricWeixin::MediaResource.find_by_id(params[:id])
+      media_resource.delete_self
+      flash[:success] = '删除成功'
+      redirect_to action: :index
+    rescue Exception=>e
+      dispose_exception e
+      flash[:alert] = get_notice_str
+      redirect_to action: :index
+    end
+  end
 end

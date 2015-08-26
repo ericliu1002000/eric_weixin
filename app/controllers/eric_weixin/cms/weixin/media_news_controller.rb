@@ -130,15 +130,15 @@ class EricWeixin::Cms::Weixin::MediaNewsController < EricWeixin::Cms::BaseContro
         media_news = ::EricWeixin::MediaNews.save_news params.permit(:will_send_article_msg,:user_group_name,
                                                                      :send_at_fixed_time,:send_fixed_date,
                                                                      :send_fixed_time,:send_save_to_history,:public_account_id)
-        media_news.preview params[:preview_openid]
+        media_news.preview params.permit(:preview_openid)[:preview_openid]
         render text: "#{media_news.id}"
         return
       else
-        media_news = ::EricWeixin::MediaNews.find_by_id(params[:media_news_id])
+        media_news = ::EricWeixin::MediaNews.find_by_id(params.permit(:media_news_id)[:media_news_id])
         media_news.update_news params.permit(:will_send_article_msg,:user_group_name,
                                              :send_at_fixed_time,:send_fixed_date,
                                              :send_fixed_time,:send_save_to_history,:public_account_id)
-        media_news.preview params[:preview_openid]
+        media_news.preview params.permit(:preview_openid)[:preview_openid]
         render text: "#{media_news.id}"
       end
     rescue Exception=>e
