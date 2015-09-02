@@ -51,7 +51,7 @@ class EricWeixin::MediaNews < ActiveRecord::Base
             "thumb_media_id" => article.media_resource.media_id,
             "author" => article.author,
             "content_source_url" => article.content_source_url,
-            "content" => CGI::escape(article.content).force_encoding("UTF-8"),
+            "content" => CGI::escape(article.content.gsub("\"","'")),
             "digest" => article.digest,
             "show_cover_pic" => if article.show_cover_pic then 1 else 0 end
         }
@@ -62,6 +62,8 @@ class EricWeixin::MediaNews < ActiveRecord::Base
 
       token = ::EricWeixin::AccessToken.get_valid_access_token public_account_id: self.public_account_id
       url = "https://api.weixin.qq.com/cgi-bin/material/add_news?access_token=#{token}"
+      pp "***************************** CGI::unescape(h.to_json) ********************************"
+      pp CGI::unescape(h.to_json)
       response = RestClient.post url, CGI::unescape(h.to_json)
       pp "********************* 上传该图文 **********************"
       pp response
