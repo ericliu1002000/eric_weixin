@@ -9,6 +9,7 @@ module EricWeixin::Ip
   # ===调用示例
   # Ip.is_ip_exist? ip: "127.0.0.1", public_account_id: 1
   def self.is_ip_exist? options
+    return true    #TODO 腾讯ip有时候不能获取正常的列表，需要调整研究
     options[:ip].to_s.to_debug
     return true if IPLIST[:iplist].include? options[:ip]
     get_ip_list options
@@ -27,6 +28,7 @@ module EricWeixin::Ip
       token = ::EricWeixin::AccessToken.get_valid_access_token public_account_id: options[:public_account_id]
       ips = RestClient.get "https://api.weixin.qq.com/cgi-bin/getcallbackip?access_token=#{token}"
       ips = JSON.parse ips.body
+      ips.to_debug
       IPLIST[:iplist] =  ips["ip_list"]
       IPLIST[:update_at] = Time.now
     end
