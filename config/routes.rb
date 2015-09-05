@@ -6,8 +6,6 @@ EricWeixin::Engine.routes.draw do
   get "/weixin/snsuserinfo" => "wz/weixin#snsapi_userinfo"
 
   get "/weixin/pay" => "wz/pays#prepay"
-  get "/weixin/pay_ok" => "wz/pays#pay_ok"
-  get "/weixin/pay_fail"=> "wz/pays#pay_fail"
 
   namespace :cms do
     namespace :weixin do
@@ -37,6 +35,22 @@ EricWeixin::Engine.routes.draw do
       resources :customs_service_records
 
       resources :media_resources
+      resources :media_articles do
+        collection do
+          get :select_pic
+        end
+      end
+
+      resources :media_news do
+        collection do
+          get :query_media_articles
+          get :will_send_articles
+          post :save_news
+          post :preview
+          post :send_news_now
+          get :query_weixin_users
+        end
+      end
     end
   end
 end

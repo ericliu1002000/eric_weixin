@@ -1,0 +1,8 @@
+<table>
+  <% @weixin_users.each do |user| %>
+    <tr>
+      <td><%= check_box_tag 'preview_openid', user.openid, false %>
+      <label class="inline"><%= user.nickname %></label></td>
+    </tr>
+  <% end %>
+</table>

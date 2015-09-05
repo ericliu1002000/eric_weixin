@@ -12,6 +12,7 @@
 //
 //= require_tree .
 //= require foundation
+//= require tinymce-jquery
 
 
 //模式框弹出与关闭js代码

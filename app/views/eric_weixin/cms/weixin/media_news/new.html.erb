@@ -1,0 +1,284 @@
+<h3 class="text-center">图文发送</h3>
+<br/>
+
+<div class="row">
+  <div class="columns small-3 text-right">
+    <label class="inline">选择公众号</label>
+  </div>
+  <div class="columns small-5 end">
+    <%= select_tag "condition[public_account_id]", options_from_collection_for_select(::EricWeixin::PublicAccount.all, 'id', 'name', '') %>
+  </div>
+</div>
+
+<div class="row">
+  <div class="columns small-3 text-right">
+    <label class="inline">图文标签</label>
+  </div>
+  <div class="columns small-5 end">
+    <%= text_field_tag 'condition[tag]' %>
+  </div>
+</div>
+<div class="row">
+  <div class="columns small-3 text-right">
+    <label class="inline">图文创建时间</label>
+  </div>
+  <div class="columns small-2">
+    <%= date_field_tag 'condition[start_date]' %>
+  </div>
+  <div class="columns small-1 text-center">
+    <label class="inline">至</label>
+  </div>
+  <div class="columns small-2">
+    <%= date_field_tag 'condition[end_date]' %>
+  </div>
+  <div class="columns small-offset-1 small-3 text-center">
+    <%= link_to '查询', "javascript:query_media_articles()", class: 'button tiny' %>
+  </div>
+</div>
+<script language="javascript">
+  function query_media_articles(){
+      tag = $("#condition_tag").val();
+      start_date = $("#condition_start_date").val();
+      end_date = $("#condition_end_date").val();
+      public_account_id = $("#condition_public_account_id").val();
+      $.ajax({
+          url: '/eric_weixin/cms/weixin/media_news/query_media_articles',
+          type: 'get',
+          data: {tag: tag, start_date: start_date, end_date: end_date, public_account_id: public_account_id}
+      }).done(
+              function(result){
+                  $("#query_result").html(result);
+              }
+      )
+  }
+</script>
+<!--************************************** 查找到的内容 ************************************************-->
+<div class="row">
+  <div id="query_result" class="columns small-12 panel callout radius">
+
+  </div>
+</div>
+
+<!--************************************** 将要被发送的内容 ************************************************-->
+<div class="row">
+  <div id="will_send_content" class="columns small-12 panel callout radius">
+
+  </div>
+</div>
+
+<div class="row">
+  <div class="columns small-6 text-right">
+    <label class="inline">发送对象</label>
+  </div>
+  <div class="columns small-3 end">
+    <%= select_tag 'send[target]', options_from_collection_for_select(::Weixin::Process.get_user_groups, 'first', 'second', '') %>
+  </div>
+</div>
+
+<div class="row">
+  <div class="columns small-6 text-right end">
+    <label class="inline">其他</label>
+  </div>
+  <div class="columns small-6 text-left">
+    <%= check_box_tag 'do_send[fix_time]', true, false %><label class="inline">定时发送</label>
+  </div>
+</div>
+<div class="row">
+  <div class="columns small-offset-6 small-6">
+    <div class="row">
+      <div class="columns small-4">
+        <label class="inline">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;定时发送时间</label>
+      </div>
+      <div class="columns small-4">
+        <%= date_field_tag 'send[fix_date]' %>
+      </div>
+      <div class="columns small-4">
+        <%= time_field_tag 'send[fix_time]' %>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="columns small-offset-6 small-6 text-left">
+    <%= check_box_tag 'send[save_to_history]', true, false %><label class="inline">保留为历史小心(所有用户可见)</label>
+  </div>
+</div>
+
+<br/><br/>
+<%= hidden_field_tag :media_news_id, @media_news_id %>
+<div class="row">
+  <div class="columns small-6 small-offset-3 end">
+
+    <div class="row">
+      <div class="columns small-4 text-center">
+        <%= link_to '预览', "#", class: "button tiny", 'data-reveal-id' => 'SendPreview' %>
+      </div>
+      <div class="columns small-4 text-center">
+        <%= link_to '保存', "javascript:save_news()", class: "button tiny" %>
+      </div>
+      <div class="columns small-4 text-center">
+        <%= link_to '立即发送', "javascript:send_news_now()", class: "button tiny" %>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="SendPreview" class="reveal-modal" data-reveal>
+  <h3>选择预览用户</h3>
+  <div class="panel callout radius" id="select_pic_div">
+
+    <div class="row">
+      <div class="columns small-4 text-right">
+        <label class="inline">请输入用户昵称</label>
+      </div>
+      <div class="columns small-4">
+        <%= text_field_tag 'preview[nick_name]' %>
+      </div>
+      <div class="columns small-4">
+        <%= link_to '查询', "javascript:select_weixin_user()", class: 'button tiny' %>
+      </div>
+    </div>
+
+    <!--************************************** 查找到的预览用户 ************************************************-->
+    <div class="row">
+      <div id="preview_select_user" class="columns small-12 panel">
+
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="columns small-6 text-center">
+        <%= link_to '发送', 'javascript:preview()', class: 'text-center button tiny' %>
+      </div>
+      <div class="columns small-6 text-center">
+        <%= link_to '取消', 'javascript:close_modal()', class: 'text-center button tiny' %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script language="javascript">
+    function close_modal(){
+        $('#SendPreview').foundation('reveal', 'close');
+    }
+
+    function select_weixin_user(){
+        nickname = $("#preview_nick_name").val();
+        public_account_id = $("#condition_public_account_id").val();
+        $.ajax({
+            url: "/eric_weixin/cms/weixin/media_news/query_weixin_users",
+            type: 'get',
+            data: {nickname: nickname, public_account_id: public_account_id}
+        }).done(
+                function (result) {
+                    $("#preview_select_user").html(result);
+                }
+        )
+    }
+
+    function preview(){
+        preview_openid = $("#preview_openid").val();
+        will_send_article_msg = $("#will_send_article_msg").val();
+        user_group_name = $("#send_target").val();
+        send_at_fixed_time = $("#do_send_fix_time").val();
+        send_fixed_date = $("#send_fix_date").val();
+        send_fixed_time = $("#send_fix_time").val();
+        send_save_to_history = $("#send_save_to_history").val();
+        public_account_id = $("#condition_public_account_id").val();
+        media_news_id = $("#media_news_id").val();
+        $.ajax({
+            url: "/eric_weixin/cms/weixin/media_news/preview",
+            type: 'post',
+            data: {
+                will_send_article_msg: will_send_article_msg,
+                user_group_name: user_group_name,
+                send_at_fixed_time: send_at_fixed_time,
+                send_fixed_date: send_fixed_date,
+                send_fixed_time: send_fixed_time,
+                send_save_to_history: send_save_to_history,
+                public_account_id: public_account_id,
+                preview_openid: preview_openid,
+                media_news_id: media_news_id
+            }
+        }).done(
+                function(result){
+                    if(result.substr(0,4)=="保存失败") {
+                        alert(result);
+                    } else {
+                        $("#media_news_id").val(result);
+                        $('#SendPreview').foundation('reveal', 'close');
+                        alert("预览成功")
+                    }
+                }
+        )
+    }
+
+    function save_news(){
+        will_send_article_msg = $("#will_send_article_msg").val();
+        user_group_name = $("#send_target").val();
+        send_at_fixed_time = $("#do_send_fix_time").val();
+        send_fixed_date = $("#send_fix_date").val();
+        send_fixed_time = $("#send_fix_time").val();
+        send_save_to_history = $("#send_save_to_history").val();
+        public_account_id = $("#condition_public_account_id").val();
+        media_news_id = $("#media_news_id").val();
+        $.ajax({
+            url: "/eric_weixin/cms/weixin/media_news/save_news",
+            type: 'post',
+            data: {
+                    will_send_article_msg: will_send_article_msg,
+                    user_group_name: user_group_name,
+                    send_at_fixed_time: send_at_fixed_time,
+                    send_fixed_date: send_fixed_date,
+                    send_fixed_time: send_fixed_time,
+                    send_save_to_history: send_save_to_history,
+                    public_account_id: public_account_id,
+                    media_news_id: media_news_id
+                  }
+        }).done(
+                function(result){
+                    if(result.substr(0,4)=="保存失败") {
+                        alert(result);
+                    } else {
+                        $("#media_news_id").val(result);
+                        alert("保存成功")
+                    }
+                }
+        )
+    }
+
+    function send_news_now() {
+        will_send_article_msg = $("#will_send_article_msg").val();
+        user_group_name = $("#send_target").val();
+        send_at_fixed_time = $("#do_send_fix_time").val();
+        send_fixed_date = $("#send_fix_date").val();
+        send_fixed_time = $("#send_fix_time").val();
+        send_save_to_history = $("#send_save_to_history").val();
+        public_account_id = $("#condition_public_account_id").val();
+        media_news_id = $("#media_news_id").val();
+        $.ajax({
+            url: "/eric_weixin/cms/weixin/media_news/send_news_now",
+            type: 'post',
+            data: {
+                will_send_article_msg: will_send_article_msg,
+                user_group_name: user_group_name,
+                send_at_fixed_time: send_at_fixed_time,
+                send_fixed_date: send_fixed_date,
+                send_fixed_time: send_fixed_time,
+                send_save_to_history: send_save_to_history,
+                public_account_id: public_account_id,
+                media_news_id: media_news_id
+            }
+        }).done(
+                function(result){
+                    if(result.substr(0,4)=="保存失败") {
+                        alert(result);
+                    } else {
+                        $("#media_news_id").val(result);
+                        alert("发送成功")
+                    }
+                }
+        )
+    }
+</script>

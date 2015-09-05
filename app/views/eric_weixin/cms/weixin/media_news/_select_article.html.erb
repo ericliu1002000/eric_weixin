@@ -1,0 +1,90 @@
+<h5>筛选供使用的文章</h5>
+<table>
+  <% @media_articles.each do |media_article| %>
+      <tr>
+        <td><%= media_article.title %></td>
+        <td><img src="<%= media_article.media_resource.local_link %>" width="20" height="20"></td>
+        <td><%= media_article.is_first_article ? '首图文' : '' %></td>
+        <td><%= link_to '选中️', "javascript:select_this_to_target_news(#{media_article.id})" %></td>
+      </tr>
+  <% end %>
+</table>
+<div class="row">
+  <div class="columns small-12 text-right">
+    <% if @current_page == 1 %>
+        <%= "上一页" %>
+    <% else %>
+        <%= link_to '上一页',"javascript:pre_page(#{@current_page||1})", disabled: (@current_page ==1 ? 'false' : 'true') %>
+    <% end %>
+
+    <% if @current_page == @total_page %>
+        <%= "下一页" %>
+    <% else %>
+        <%= link_to '下一页',"javascript:next_page(#{@current_page||1})" %>
+    <% end %>
+    <%= "当前第#{@current_page||1}页 共#{@total_page}页" %>
+  </div>
+</div>
+<script language="javascript">
+
+    function select_this_to_target_news(media_article_id){
+        existed_article_ids = $("#will_send_article_msg").val();
+        new_article_id = media_article_id;
+        $.ajax({
+            url: "/eric_weixin/cms/weixin/media_news/will_send_articles",
+            type: 'get',
+            data: {existed_article_ids: existed_article_ids, new_article_id: new_article_id}
+        }).done(
+                function(result){
+                    if(result == "existed"){
+                        alert("该文章已经在该图文里了");
+                    } else {
+                        $("#will_send_content").html(result);
+                    }
+                }
+        );
+    }
+
+
+    function pre_page(current_page){
+        tag = $("#condition_tag").val();
+        start_date = $("#condition_start_date").val();
+        end_date = $("#condition_end_date").val();
+        target_page = current_page - 1;
+        if(target_page == 0){
+            target_page = 1;
+        }
+
+
+        $.ajax({
+            url: '/eric_weixin/cms/weixin/media_news/query_media_articles',
+            type: 'get',
+            data: {tag: tag, start_date: start_date, end_date: end_date, page: target_page},
+            async: false
+        }).done(
+            function(result){
+                $("#query_result").html(result);
+            }
+        );
+    }
+
+    function next_page(current_page){
+        tag = $("#condition_tag").val();
+        start_date = $("#condition_start_date").val();
+        end_date = $("#condition_end_date").val();
+        target_page = current_page + 1;
+        if(target_page > <%= @total_page %>){
+            target_page = <%= @total_page %>;
+        }
+        $.ajax({
+            url: '/eric_weixin/cms/weixin/media_news/query_media_articles',
+            type: 'get',
+            data: {tag: tag, start_date: start_date, end_date: end_date, page: target_page},
+            async: false
+        }).done(
+                function(result){
+                    $("#query_result").html(result);
+                }
+        );
+    }
+</script>

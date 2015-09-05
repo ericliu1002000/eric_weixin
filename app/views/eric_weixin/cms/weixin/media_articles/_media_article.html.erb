@@ -1,0 +1,131 @@
+<% session_content = get_session_content(params[:session_content_id])[:article] || {} rescue {} %>
+
+<%= tinymce_assets %>
+<div class="row">
+    <div class="columns small-2 text-right">
+      <label class="inline">选择公众号</label>
+    </div>
+    <div class="columns small-5 end">
+      <%= select_tag "article[public_account_id]", options_from_collection_for_select(::EricWeixin::PublicAccount.all, 'id', 'name', get_show_value(@media_article.public_account_id, v1:session_content[:public_account_id], v2:@media_article.public_account_id)) %>
+    </div>
+</div>
+
+<div class="row">
+  <div class="columns small-2 text-right">
+    <label class="inline">图文标签</label>
+  </div>
+  <div class="columns small-5 end">
+    <%= text_field_tag "article[tag]", (get_show_value(@media_article.tag, v1:session_content[:tag]) ) %>
+  </div>
+</div>
+
+<div class="row">
+  <div class="columns small-2 text-right">
+    <label class="inline">请选择缩略图</label>
+  </div>
+  <div class="columns small-5 end">
+    <img id="suoluetu" src="<%= ::EricWeixin::MediaResource.find_by_id(get_show_value(@media_article.thumb_media_id, v1:session_content[:thumb_media_id])).local_link rescue '' %>" width="100" height="100">
+  </div><%= link_to '选择封面', '#', class: 'button tiny', 'data-reveal-id' => 'AddPosterModal' %>
+</div>
+<br/>
+<%= hidden_field_tag "article[thumb_media_id]", (get_show_value(@media_article.thumb_media_id, v1:session_content[:thumb_media_id]) rescue '') %>
+
+<div class="row">
+  <div class="columns small-2 text-right">
+    <label class="inline">作者</label>
+  </div>
+  <div class="columns small-5 end">
+    <%= text_field_tag "article[author]", (get_show_value(@media_article.author, v1:session_content[:author]) rescue '') %>
+  </div>
+</div>
+
+<div class="row">
+  <div class="columns small-2 text-right">
+    <label class="inline">标题</label>
+  </div>
+  <div class="columns small-5 end">
+    <%= text_field_tag "article[title]", (get_show_value(@media_article.title, v1:session_content[:title]) rescue '') %>
+  </div>
+</div>
+
+<div class="row">
+  <div class="columns small-2 text-right">
+    <label class="inline">摘要</label>
+  </div>
+  <div class="columns small-5 end">
+    <%= text_field_tag "article[digest]", (get_show_value(@media_article.digest, v1:session_content[:digest]) rescue '') %>
+  </div>
+</div>
+
+<div class="row">
+  <div class="columns small-2 text-right">
+    <label class="inline"></label>
+  </div>
+  <div class="columns small-5 end">
+    <%= check_box_tag "article[show_cover_pic]", true , (get_show_value((@media_article.show_cover_pic==true ? 'true' : 'false'), v1:session_content[:show_cover_pic])=='true' rescue '') %>
+    <label class="inline text-left">是否在正文显示封面</label>
+  </div>
+</div>
+
+<div class="row">
+  <div class="columns small-2 text-right">
+    <label class="inline"></label>
+  </div>
+  <div class="columns small-5 end">
+    <%= check_box_tag "article[is_first_article]", true , (get_show_value((@media_article.is_first_article==true ? 'true' : 'false'), v1:session_content[:is_first_article])=='true' rescue '') %>
+    <label class="inline">是否首图</label>
+  </div>
+</div>
+
+<div class="row">
+  <div class="columns small-2 end text-right">
+    <label class="inline">内容</label>
+  </div>
+</div>
+
+<div class="row">
+  <div class="columns small-12">
+    <%= text_area_tag "article[content]", (get_show_value(@media_article.content, v1:session_content[:content]) rescue ''), :class => "tinymce", :rows => 40, :cols => 120 %>
+  </div>
+</div>
+
+<br/>
+
+<div class="row">
+  <div class="columns small-2 text-right">
+    <label class="inline">阅读原文链接</label>
+  </div>
+  <div class="columns small-10 end">
+    <%= text_field_tag "article[content_source_url]", (get_show_value(@media_article.content_source_url, v1:session_content[:content_source_url]) rescue '') %>
+  </div>
+</div>
+
+<div class="row">
+  <div class="columns small-6 text-center">
+    <%= submit_tag '提交', class: 'button tiny' %>
+  </div>
+  <div class="columns small-6 text-center">
+    <%= submit_tag '预览', class: 'button tiny' %>
+  </div>
+</div>
+
+<script language="javascript">
+    tinyMCE.init({
+        selector: '#article_content',
+        plugins : 'advlist code colorpicker fullscreen image link paste preview print save lists table wordcount textcolor',
+        toolbar1: "forecolor backcolor newdocument bold italic underline strikethrough alignleft",
+        toolbar2: "styleselect formatselect fontselect fontsizeselect cut copy paste",
+        toolbar3: "indent blockquote undo redo removeformat subscript superscript hr link unlink image charmap pastetext print preview anchor pagebreak spellchecker searchreplace visualblocks visualchars",
+        toolbar4: "code fullscreen insertdatetime media nonbreaking save cancel table ltr rtl emoticons template forecolor backcolor insertfile aligncenter alignright alignjustify bullist numlist outdent"
+    });
+</script>
+
+
+
+<!--弹出选择缩略图模式框-->
+<div id="AddPosterModal" class="reveal-modal" data-reveal>
+  <h3>选择封面</h3>
+  <div class="panel callout radius" id="select_pic_div">
+    <%= render partial: 'select_pic' %>
+  </div>
+</div>

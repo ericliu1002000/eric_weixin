@@ -1,0 +1,31 @@
+<h3 class="text-center">微信素材管理</h3>
+<%= form_tag '/eric_weixin/cms/weixin/media_articles/', method: :get do %>
+    <div class="row">
+      <div class="columns small-2 text-right">
+        <label class="inline">图文标题</label>
+      </div>
+      <div class="columns small-2">
+        <%= text_field_tag :title, params[:title] %>
+      </div>
+      <div class="columns small-4">
+        <%= submit_tag '查询', class: 'button tiny' %>
+      </div>
+    </div>
+<% end %>
+
+<table>
+  <thead>
+  <th>图文名称</th><th>创建时间</th><th>原文链接</th><th>首图</th><th>摘要</th><th>操作</th>
+  </thead>
+  <% @media_articles.each do |media_article| %>
+      <tr>
+        <td><%= media_article.title %></td>
+        <td><%= media_article.created_at.chinese_format %></td>
+        <td><%= media_article.content_source_url %></td>
+        <td><%= media_article.is_first_article %></td>
+        <td><%= media_article.digest %></td>
+        <td><%= link_to '编辑', "/eric_weixin/cms/weixin/media_articles/#{media_article.id}/edit", class: 'button tiny' %></td>
+      </tr>
+  <% end %>
+</table>
+<%= will_paginate @media_articles %>

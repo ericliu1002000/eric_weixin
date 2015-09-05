@@ -1,0 +1,53 @@
+<h5>最终要发送的图文</h5>
+<table>
+  <% @will_send_articles.each do |will_send_article| %>
+      <tr>
+        <td><%= will_send_article.title %></td>
+        <td><img src="<%= will_send_article.media_resource.local_link %>" width="50" height="50"></td>
+        <td><%= will_send_article.is_first_article ? '首图文' : '' %></td>
+        <td>
+          <%= link_to '↑↑', "javascript:up_article(#{will_send_article.id})" %>
+            &nbsp;&nbsp;
+          <%= link_to '↓↓', "javascript:down_article(#{will_send_article.id})" %>
+        </td>
+      </tr>
+  <% end %>
+</table>
+
+<%= hidden_field_tag :will_send_article_msg, @will_send_article_msg %>
+
+<script language="javascript">
+  function up_article(article_id){
+      existed_article_ids = $("#will_send_article_msg").val();
+      $.ajax({
+          url: "/eric_weixin/cms/weixin/media_news/will_send_articles",
+          type: 'get',
+          data: {existed_article_ids: existed_article_ids, up_article_id: article_id}
+      }).done(
+              function(result){
+                  if(result == "top"){
+                      alert("已经在最顶部了");
+                  } else {
+                      $("#will_send_content").html(result);
+                  }
+              }
+      );
+  }
+
+  function down_article(article_id){
+      existed_article_ids = $("#will_send_article_msg").val();
+      $.ajax({
+          url: "/eric_weixin/cms/weixin/media_news/will_send_articles",
+          type: 'get',
+          data: {existed_article_ids: existed_article_ids, down_article_id: article_id}
+      }).done(
+              function(result){
+                  if(result == "bottom"){
+                      alert("已经在最底部了");
+                  } else {
+                      $("#will_send_content").html(result);
+                  }
+              }
+      );
+  }
+</script>

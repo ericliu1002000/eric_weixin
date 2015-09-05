@@ -1,5 +1,6 @@
 require "eric_weixin/version"
 require "rest-client"
+require "tinymce-rails"
 require "eric_weixin/engine"
 
 require 'eric_weixin/modules/mult_customer'

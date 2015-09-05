@@ -13,6 +13,7 @@ gemspec :name => 'eric_weixin'
 
 # To use debugger
 # gem 'debugger'
+gem 'tinymce-rails'
 gem 'rails', '>= 4.1.4'
 gem "multi_xml"
 gem 'nokogiri'
