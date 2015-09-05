@@ -67,7 +67,7 @@ class EricWeixin::Cms::Weixin::MediaArticlesController < EricWeixin::Cms::BaseCo
     end
 
     def available_pics
-      ::EricWeixin::MediaResource.all.order(:id)
+      ::EricWeixin::MediaResource.where(category_name: 'thumbnail').order(:id)
     end
 
 end

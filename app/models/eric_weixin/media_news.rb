@@ -119,7 +119,7 @@ class EricWeixin::MediaNews < ActiveRecord::Base
         response_json = JSON.parse(response)
         BusinessException.raise response_json["errmsg"] unless response_json["errcode"] == 0
       end
-      self.status = 'send'
+      self.status = 1
       self.save!
       self.reload
     end
