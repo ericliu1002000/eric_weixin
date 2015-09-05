@@ -92,6 +92,13 @@ class EricWeixin::MediaNews < ActiveRecord::Base
     end
   end
 
+  def self.try_send_media_news
+    not_send_media_news = self.where(status: 0)
+    not_send_media_news.each do |news|
+      next if news.planned_send_time.blank?
+      news.send_to_openids if news.planned_send_time <= Time.now
+    end
+  end
 
   def send_to_openids
     BusinessException.raise '' if self.media_id.blank?
@@ -119,7 +126,7 @@ class EricWeixin::MediaNews < ActiveRecord::Base
         response_json = JSON.parse(response)
         BusinessException.raise response_json["errmsg"] unless response_json["errcode"] == 0
       end
-      self.status = 'send'
+      self.status = 1
       self.save!
       self.reload
     end
