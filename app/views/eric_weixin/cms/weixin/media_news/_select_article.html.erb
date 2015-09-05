@@ -5,7 +5,7 @@
         <td><%= media_article.title %></td>
         <td><img src="<%= media_article.media_resource.local_link %>" width="20" height="20"></td>
         <td><%= media_article.is_first_article ? '首图文' : '' %></td>
-        <td><%= link_to '选中️', "javascript:select_this_to_target_news(#{media_article.id})" %></td>
+        <td><%= link_to '选中', "javascript:select_this_to_target_news(#{media_article.id})" %></td>
       </tr>
   <% end %>
 </table>

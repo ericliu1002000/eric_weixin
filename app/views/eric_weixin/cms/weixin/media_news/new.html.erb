@@ -80,14 +80,14 @@
     <label class="inline">其他</label>
   </div>
   <div class="columns small-6 text-left">
-    <%= check_box_tag 'do_send[fix_time]', true, false %><label class="inline">定时发送</label>
+    <%= check_box_tag 'do_send[fix_time]', true, false %><label class="inline">定时发送（分钟数请设置为5分钟的整数倍）</label>
   </div>
 </div>
 <div class="row">
   <div class="columns small-offset-6 small-6">
     <div class="row">
       <div class="columns small-4">
-        <label class="inline">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;定时发送时间</label>
+        <label class="inline">定时发送时间：</label>
       </div>
       <div class="columns small-4">
         <%= date_field_tag 'send[fix_date]' %>
@@ -100,7 +100,7 @@
 </div>
 <div class="row">
   <div class="columns small-offset-6 small-6 text-left">
-    <%= check_box_tag 'send[save_to_history]', true, false %><label class="inline">保留为历史小心(所有用户可见)</label>
+    <%= check_box_tag 'send[save_to_history]', true, false %><label class="inline">保留为历史消息(所有用户可见)</label>
   </div>
 </div>
 
