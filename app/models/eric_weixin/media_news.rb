@@ -92,6 +92,13 @@ class EricWeixin::MediaNews < ActiveRecord::Base
     end
   end
 
+  def self.try_send_media_news
+    not_send_media_news = self.where(status: 0)
+    not_send_media_news.each do |news|
+      next if news.planned_send_time.blank?
+      news.send_to_openids if news.planned_send_time <= Time.now
+    end
+  end
 
   def send_to_openids
     BusinessException.raise '' if self.media_id.blank?
