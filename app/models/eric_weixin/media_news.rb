@@ -2,6 +2,7 @@ class EricWeixin::MediaNews < ActiveRecord::Base
   self.table_name = 'weixin_media_news'
   has_many :media_article_news, foreign_key: 'weixin_media_news_id'
   has_many :media_articles, through: :media_article_news
+  has_many :media_messages, foreign_key: 'media_news_id'
   # def upload_news_old
   #
   #   EricWeixin::MediaNews.transaction do
@@ -77,6 +78,7 @@ class EricWeixin::MediaNews < ActiveRecord::Base
 
   def delete_server_news
     EricWeixin::MediaNews.transaction do
+      BusinessException.raise '该图文已经发送出去，不可以删除。' if self.status == 1
       token = ::EricWeixin::AccessToken.get_valid_access_token public_account_id: self.public_account_id
       url = "https://api.weixin.qq.com/cgi-bin/material/del_material?access_token=#{token}"
 
@@ -101,7 +103,7 @@ class EricWeixin::MediaNews < ActiveRecord::Base
   end
 
   def send_to_openids
-    BusinessException.raise '' if self.media_id.blank?
+    BusinessException.raise 'media_id不可以为空。' if self.media_id.blank?
     EricWeixin::MediaNews.transaction do
       openids = ::Weixin::Process.__send__ self.user_group_name
       pp "****************** 将要发送的openids *********************"
@@ -125,7 +127,12 @@ class EricWeixin::MediaNews < ActiveRecord::Base
         pp response
         response_json = JSON.parse(response)
         BusinessException.raise response_json["errmsg"] unless response_json["errcode"] == 0
+        media_message = ::EricWeixin::MediaNewsSentRecord.new
+        media_message.msg_id = response_json["msg_id"]
+        media_message.media_news = self
+        media_message.save!
       end
+      self.send_time = Time.now
       self.status = 1
       self.save!
       self.reload
@@ -210,6 +217,24 @@ class EricWeixin::MediaNews < ActiveRecord::Base
       news.delete_server_news
       news.upload_news
       news
+    end
+  end
+
+  def self.update_media_news_after_sending receive_message
+    self.transaction do
+      msg = EricWeixin::MediaNewsSentRecord.find_by_msg_id(receive_message[:MsgID]||receive_message[:MsgId])
+      return if msg.blank?
+      msg.update sent_count: receive_message[:SentCount],
+                 total_count: receive_message[:TotalCount],
+                 filter_count: receive_message[:FilterCount],
+                 error_count: receive_message[:ErrorCount],
+                 status: receive_message[:Status]
+      news = msg.media_news
+      news.filter_count = (news.filter_count.blank? ? 0 : news.filter_count) +  msg.filter_count
+      news.total_count = (news.total_count.blank? ? 0 : news.total_count) +  msg.total_count
+      news.sent_count = (news.sent_count.blank? ? 0 : news.sent_count) + msg.sent_count
+      news.error_count = (news.error_count.blank? ? 0 : news.error_count) + msg.error_count
+      news.save!
     end
   end
 

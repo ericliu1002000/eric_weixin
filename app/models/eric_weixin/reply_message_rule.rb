@@ -163,7 +163,10 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
                           else
                             result
                           end
-
+                        # 发送图文推送后，微信服务器返回的结果
+                        when /event~MASSSENDJOBFINISH/
+                          ::EricWeixin::MediaNews.update_media_news_after_sending receive_message
+                          ''
                         #暂时识别不了的消息
                         else
                           "暂时未处理的场景".to_logger
