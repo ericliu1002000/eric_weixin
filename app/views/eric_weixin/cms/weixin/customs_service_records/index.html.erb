@@ -47,12 +47,13 @@
 <% end %>
 <table>
   <thead>
-  <th width="100">用户</th><th>客服</th><th>聊天类型</th><th>日期时间</th><th>公众号</th><th>聊天内容</th>
+  <th width="100">用户</th><th>头像</th><th>客服</th><th>聊天类型</th><th>日期时间</th><th>公众号</th><th>聊天内容</th>
   </thead>
   <tbody>
   <% @customs_service_records.each do |record| %>
     <tr>
       <td><%= record.nick_name %></td>
+      <td><%= image_tag((record.weixin_user.headimgurl rescue ''), height: '32', width: '32') %></td>
       <td><%= record.worker %></td>
       <td><%= ::EricWeixin::CustomsServiceRecord::OPERCODE[record.opercode.to_i] %></td>
       <td><%= Time.at( record.time.to_i ).chinese_format %></td>

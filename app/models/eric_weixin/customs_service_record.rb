@@ -71,6 +71,10 @@ class EricWeixin::CustomsServiceRecord < ActiveRecord::Base
     ::EricWeixin::WeixinUser.find_by_openid(self.openid).nickname rescue ''
   end
 
+  def wixin_user
+    ::EricWeixin::WeixinUser.find_by_openid(self.openid)
+  end
+
   def self.common_query options
     records = self.all
 
