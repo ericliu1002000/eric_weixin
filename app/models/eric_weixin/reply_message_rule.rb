@@ -10,13 +10,13 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
   validates_presence_of :key_word, message: "关键词不能为空。"
   validates_presence_of :reply_message, message: "回复信息不能为空。"
   validates_presence_of :weixin_public_account, message: "对应的微信公众账号不能为空。"
-  validates_inclusion_of :reply_type, in: REPLY_TYPE_LABEL.collect{|r| r.first}, message: "不正确的回复类型。"
-  validates_inclusion_of :key_word_type, in: KEY_WORD_TYPE_LABEL.collect{|r| r.first}, message: "不正确的关键词类型。"
-
+  validates_inclusion_of :reply_type, in: REPLY_TYPE_LABEL.collect { |r| r.first }, message: "不正确的回复类型。"
+  validates_inclusion_of :key_word_type, in: KEY_WORD_TYPE_LABEL.collect { |r| r.first }, message: "不正确的关键词类型。"
 
 
   class << self
 
+    #创建匹配规则
     def create_reply_message_rule options
       options = get_arguments_options options, [:weixin_public_account_id, :key_word, :reply_message, :key_word_type, :order, :reply_type], is_valid: true
       ::EricWeixin::ReplyMessageRule.transaction do
@@ -26,6 +26,7 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
       end
     end
 
+    # 更新匹配规则
     def update_reply_message_rule(rule_id, options)
       options = get_arguments_options options, [:weixin_public_account_id, :key_word, :reply_message, :key_word_type, :order, :reply_type, :is_valid]
       ::EricWeixin::ReplyMessageRule.transaction do
@@ -37,7 +38,7 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
     end
 
 
-    #todo xiameng 注释  勾子使用方法
+    #处理来自微信端客户所有的处理。
     def process_rule(receive_message, public_account)
       business_type = "#{receive_message[:MsgType]}~#{receive_message[:Event]}"
 
@@ -59,10 +60,10 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
       reply_message = case business_type
                         #订阅
                         when /event~subscribe/
-                          ::EricWeixin::WeixinUser.create_weixin_user public_account.id, receive_message[:FromUserName],receive_message[:EventKey]
+                          ::EricWeixin::WeixinUser.create_weixin_user public_account.id, receive_message[:FromUserName], receive_message[:EventKey]
                           result = ::Weixin::Process.subscribe receive_message
                           if result == true
-                            match_key_words 'subscribe', public_account.id, receive_message
+                            match_key_words 'subscribe', public_account.id, receive_message, false
                           else
                             result
                           end
@@ -77,16 +78,18 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
                             result
                           end
 
-                        #点击消息
+                        #点击消息,点击菜单时响应。
                         when /event~CLICK/
                           result = ::Weixin::Process.click_event receive_message[:EventKey], receive_message
                           if result == true
-                            match_key_words receive_message[:EventKey], public_account.id, receive_message
+                            match_key_words receive_message[:EventKey], public_account.id, receive_message, false
                           else
                             result
                           end
 
-                        #点击消息
+                        #扫描带参数二维码
+
+
                         when /event~SCAN/
                           result = ::Weixin::Process.scan_event receive_message[:EventKey], receive_message
                           if result == true
@@ -155,7 +158,7 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
                             #   ::EricWeixin::ReplyMessage::transfer_mult_customer_service ToUserName: receive_message[:FromUserName],
                             #                                                              FromUserName: receive_message[:ToUserName]
                             # else
-                              match_key_words receive_message[:Content], public_account.id, receive_message
+                            match_key_words receive_message[:Content], public_account.id, receive_message
                             # end
                           else
                             result
@@ -173,9 +176,11 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
                           else
                             result
                           end
-                        # 发送图文推送后，微信服务器返回的结果
+
+                        # 群发发送图文推送后，微信服务器返回的结果
                         when /event~MASSSENDJOBFINISH/
                           ::EricWeixin::MediaNews.update_media_news_after_sending receive_message
+                          ::Weixin::Process.message_send_job_finish receive_message
                           ''
                         #暂时识别不了的消息
                         else
@@ -199,48 +204,116 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
       reply_message
     end
 
-    def match_key_words wx_key_word, public_account_id, receive_message,need_to_mult_service=true
-      matched_rule = ::EricWeixin::ReplyMessageRule.order(order: :desc).
-          where(:key_word => wx_key_word, :weixin_public_account_id => public_account_id, :key_word_type=>(receive_message[:MsgType]||"text")).first
-      if matched_rule.nil?
-        # todo  处理正则表达式
-        rules = ::EricWeixin::ReplyMessageRule.where(key_word_type: 'regularexpr', weixin_public_account_id: public_account_id).order(order: :desc)
-        rules.each do |rule|
-          regexp = Regexp.new rule.key_word
-          result = regexp.match wx_key_word
-          unless result.blank?
-            matched_rule = rule
-            break
+
+    # 用户发送的关键字、 事件关键字匹配处理。
+    # 关键字处理分三类： 事件关键字、 正则表达式关键字、 文本严格匹配关键字
+    # 关键字匹配好以后，返回类型有三种： 文本、 图文、以及动态运行。
+    #
+    #  need_to_mult_service  如果匹配不到，是否提示转客服。
+    def match_key_words wx_key_word, public_account_id, receive_message, need_to_mult_service=true
+
+      message_type = receive_message[:MsgType]||"text"
+      reply_message_rule = nil
+      case message_type
+        when 'event'
+          # event类型关键字   event类型关键字不需要匹配正则表达式。
+          reply_message_rule = ::EricWeixin::ReplyMessageRule.order(order: :desc).valid.
+              where(weixin_public_account_id: public_account_id, key_word_type: 'event', key_word: wx_key_word).first
+        else
+          #  对于非event类型的关键字， 按照order 的优先级，逐条比对。 如果order相同，文本类型优先。 匹配成功就停止。
+          rules = ::EricWeixin::ReplyMessageRule.order(order: :desc).valid.
+              where(weixin_public_account_id: public_account_id, key_word_type: ['regularexpr', 'text'])
+          rules.each do |rule|
+            if rule.key_word_type == 'text'
+              if wx_key_word == rule.key_word
+                reply_message_rule = rule
+                break
+              end
+            end
+            if rule.key_word_type = 'regularexpr'
+              regexp = Regexp.new rule.key_word
+              result = regexp.match wx_key_word
+              unless result.blank?
+                reply_message_rule = rule
+                break
+              end
+            end
           end
-        end
-        # if need_to_mult_service
-        #   return ::EricWeixin::ReplyMessage::transfer_mult_customer_service ToUserName: receive_message[:FromUserName],
-        #                                                                   FromUserName: receive_message[:ToUserName]
-        # else
-        #   return '' #当匹配不上，也不需要去多客服的时候，就直接返回。
-        # end
-
       end
-      if matched_rule.blank?
 
-        return ::EricWeixin::ReplyMessage.get_reply_user_message_text ToUserName: receive_message[:FromUserName],
-                                                                      FromUserName: receive_message[:ToUserName],
-                                                                      Content: '请回复"我要找客服"转接到客服。'
-      end
-      reply_msg = case matched_rule.reply_type
-                    when "text"
-                      ::EricWeixin::ReplyMessage.get_reply_user_message_text ToUserName: receive_message[:FromUserName],
-                                                                           FromUserName: receive_message[:ToUserName],
-                                                                           Content: matched_rule.reply_message
-                    when "news"
-                      weixin_news = ::EricWeixin::News.find_by_match_key matched_rule.reply_message
-                      ::EricWeixin::ReplyMessage::get_reply_user_message_image_text ToUserName: receive_message[:FromUserName],
-                                                                                  FromUserName: receive_message[:ToUserName],
-                                                                                  news: weixin_news.weixin_articles
-                    when "wx_function"
-                      ::Weixin::WeixinAutoReplyFunctions.send(matched_rule.reply_message, ({:key_word => wx_key_word, :receive_message => receive_message}))
+
+      # if need_to_mult_service
+      #   return ::EricWeixin::ReplyMessage::transfer_mult_customer_service ToUserName: receive_message[:FromUserName],
+      #                                                                   FromUserName: receive_message[:ToUserName]
+      # else
+      #   return '' #当匹配不上，也不需要去多客服的时候，就直接返回。
+      # end
+
+
+      reply_msg = if reply_message_rule.blank?
+                    if need_to_mult_service
+                      # 返回给用户，如何唤醒客服。
+                      message = ::EricWeixin::ReplyMessageRule.get_contact_customer_notice public_account_id
+                      if message.blank?
+                        ''
+                      else
+                        ::EricWeixin::ReplyMessage.get_reply_user_message_text ToUserName: receive_message[:FromUserName],
+                                                                               FromUserName: receive_message[:ToUserName],
+                                                                               Content: message
+                      end
+                    else
+                      ''
+                    end
+
+                  else
+
+                    if reply_message_rule.reply_message == 'CONTACT_CUSTOMER_NOTICE'
+                      ::EricWeixin::ReplyMessage::transfer_mult_customer_service ToUserName: receive_message[:FromUserName],
+                                                                                 FromUserName: receive_message[:ToUserName]
+                    else
+                      case reply_message_rule.reply_type
+                        when "text"
+                          ::EricWeixin::ReplyMessage.get_reply_user_message_text ToUserName: receive_message[:FromUserName],
+                                                                                 FromUserName: receive_message[:ToUserName],
+                                                                                 Content: reply_message_rule.reply_message
+                        when "news"
+                          weixin_news = ::EricWeixin::News.find_by_match_key reply_message_rule.reply_message
+                          ::EricWeixin::ReplyMessage::get_reply_user_message_image_text ToUserName: receive_message[:FromUserName],
+                                                                                        FromUserName: receive_message[:ToUserName],
+                                                                                        news: weixin_news.weixin_articles
+                        when "wx_function"
+                          ::Weixin::WeixinAutoReplyFunctions.send(reply_message_rule.reply_message, ({:key_word => wx_key_word, :receive_message => receive_message}))
+                      end
+                    end
                   end
       reply_msg
+    end
+
+
+    # 获取提示找客服的语句。
+    def get_contact_customer_notice public_account_id
+      rules = ::EricWeixin::ReplyMessageRule.valid.where weixin_public_account_id: public_account_id,
+                                                         key_word_type: 'text',
+                                                         key_word: 'CONTACT_CUSTOMER_NOTICE'
+      if rules.blank?
+        ::EricWeixin::ReplyMessageRule.create_reply_message_rule weixin_public_account_id: public_account_id,
+                                                                 key_word: 'CONTACT_CUSTOMER_NOTICE',
+                                                                 reply_message: '请发送："芝麻开门"来联系客服',
+                                                                 key_word_type: 'text',
+                                                                 order: 1,
+                                                                 reply_type: "text"
+
+        ::EricWeixin::ReplyMessageRule.create_reply_message_rule weixin_public_account_id: public_account_id,
+                                                                 key_word: '芝麻开门',
+                                                                 reply_message: 'CONTACT_CUSTOMER_NOTICE',
+                                                                 key_word_type: 'text',
+                                                                 order: 1,
+                                                                 reply_type: "text"
+
+        return ::EricWeixin::ReplyMessageRule.get_contact_customer_notice public_account_id
+      else
+        rules.first.reply_message
+      end
     end
   end
 end
