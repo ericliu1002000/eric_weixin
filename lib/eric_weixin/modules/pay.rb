@@ -51,20 +51,23 @@ module EricWeixin::Pay
     pay_load = "<xml>#{options.map { |k, v| "<#{k.to_s}>#{v.to_s}</#{k.to_s}>" }.join}</xml>"
     require 'rest-client'
     # 请求接口
-    response = RestClient.post 'https://api.mch.weixin.qq.com/mmpaymkttransfers/sendredpack', pay_load
+    # response = RestClient.post 'https://api.mch.weixin.qq.com/mmpaymkttransfers/sendredpack', pay_load
     # RestClient::Resource.new(
-    #     :ssl_client_cert  =>  OpenSSL::X509::Certificate.new(File.read("/Users/beslow/Downloads/cert/apiclient_cert.pem")),
-    #     :ssl_client_key   =>  OpenSSL::PKey::RSA.new(File.read("/Users/beslow/Downloads/cert/apiclient_key.pem"), "passphrase, if any"),
-    #     :ssl_ca_file      =>  "/Users/beslow/Downloads/cert/rootca.pem",
+    #     :ssl_client_cert  =>  OpenSSL::X509::Certificate.new(File.read("/Users/ericliu/Desktop/cert/apiclient_cert.pem")),
+    #     :ssl_client_key   =>  OpenSSL::PKey::RSA.new(File.read("/Users/ericliu/Desktop/cert/apiclient_key.pem"), "passphrase, if any"),
+    #     :ssl_ca_file      =>  "/Users/ericliu/Desktop/cert/rootca.pem",
     #     :verify_ssl       =>  OpenSSL::SSL::VERIFY_PEER
     # ).post 'https://api.mch.weixin.qq.com/mmpaymkttransfers/sendredpack', pay_load
 
-    # RestClient::Request.execute(method: :post, url: 'https://api.mch.weixin.qq.com/mmpaymkttransfers/sendredpack',
-    #                             ssl_ca_file: '/Users/beslow/Downloads/cert/rootca.pem',
-    #                             ssl_client_cert: OpenSSL::X509::Certificate.new(File.read("/Users/beslow/Downloads/cert/apiclient_cert.pem")),
-    #                             ssl_client_key:  OpenSSL::PKey::RSA.new(File.read("/Users/beslow/Downloads/cert/apiclient_key.pem"), "passphrase, if any"),
-    #                             ssl_ciphers: 'AESGCM:!aNULL',
-    # payload: pay_load)
+    response = RestClient::Request.execute(method: :post, url: 'https://api.mch.weixin.qq.com/mmpaymkttransfers/sendredpack',
+                                # ssl_ca_file: '/Users/beslow/Downloads/cert/apiclient_key.pem',
+                                ssl_client_cert: OpenSSL::X509::Certificate.new(File.read("/Users/ericliu/Desktop/cert/apiclient_cert.pem")),
+                                ssl_client_key:  OpenSSL::PKey::RSA.new(File.read("/Users/ericliu/Desktop/cert/apiclient_key.pem"), "passphrase, if any"),
+                                ssl_ciphers: 'AESGCM:!aNULL',
+    payload: pay_load)
+
+
+
 
     # 分析请求结果
     pp "********************** 发红包 请求结果 ******************************"
