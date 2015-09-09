@@ -44,30 +44,17 @@ module EricWeixin::Pay
     options[:mch_id] = public_account.mch_id
     options[:mch_billno] = public_account.mch_id + Time.now.strftime("%Y%m%d") + Time.now.strftime("%H%M%S") + EricTools.generate_random_string(4,1).to_s
     options[:send_name] = public_account.name
-        # 生成签名
+    # 生成签名
     sign = generate_sign options, public_account.mch_key
     options[:sign] = sign
     # 生成xml数据包
     pay_load = "<xml>#{options.map { |k, v| "<#{k.to_s}>#{v.to_s}</#{k.to_s}>" }.join}</xml>"
     require 'rest-client'
-    # 请求接口
-    # response = RestClient.post 'https://api.mch.weixin.qq.com/mmpaymkttransfers/sendredpack', pay_load
-    # RestClient::Resource.new(
-    #     :ssl_client_cert  =>  OpenSSL::X509::Certificate.new(File.read("/Users/ericliu/Desktop/cert/apiclient_cert.pem")),
-    #     :ssl_client_key   =>  OpenSSL::PKey::RSA.new(File.read("/Users/ericliu/Desktop/cert/apiclient_key.pem"), "passphrase, if any"),
-    #     :ssl_ca_file      =>  "/Users/ericliu/Desktop/cert/rootca.pem",
-    #     :verify_ssl       =>  OpenSSL::SSL::VERIFY_PEER
-    # ).post 'https://api.mch.weixin.qq.com/mmpaymkttransfers/sendredpack', pay_load
-
     response = RestClient::Request.execute(method: :post, url: 'https://api.mch.weixin.qq.com/mmpaymkttransfers/sendredpack',
-                                # ssl_ca_file: '/Users/beslow/Downloads/cert/apiclient_key.pem',
                                 ssl_client_cert: OpenSSL::X509::Certificate.new(File.read("/Users/ericliu/Desktop/cert/apiclient_cert.pem")),
                                 ssl_client_key:  OpenSSL::PKey::RSA.new(File.read("/Users/ericliu/Desktop/cert/apiclient_key.pem"), "passphrase, if any"),
                                 ssl_ciphers: 'AESGCM:!aNULL',
     payload: pay_load)
-
-
-
 
     # 分析请求结果
     pp "********************** 发红包 请求结果 ******************************"
