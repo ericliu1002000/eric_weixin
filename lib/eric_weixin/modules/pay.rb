@@ -28,4 +28,49 @@ module EricWeixin::Pay
     end.join('&')
     Digest::MD5.hexdigest("#{query}&key=#{api_key}").upcase
   end
+
+  # wxappid
+  # re_openid
+  # total_amount
+  # wishing
+  # client_ip
+  # act_name
+  # remark
+  def self.sendredpack options
+    options[:nonce_str] = SecureRandom.uuid.tr('-', '')
+    options[:total_num] = 1
+    # 确认公众账号
+    public_account = ::EricWeixin::PublicAccount.find_by_weixin_app_id(options[:wxappid])
+    options[:mch_id] = public_account.mch_id
+    options[:mch_billno] = public_account.mch_id + Time.now.strftime("%Y%m%d") + Time.now.strftime("%H%M%S") + EricTools.generate_random_string(4,1).to_s
+    options[:send_name] = public_account.name
+        # 生成签名
+    sign = generate_sign options, public_account.mch_key
+    options[:sign] = sign
+    # 生成xml数据包
+    pay_load = "<xml>#{options.map { |k, v| "<#{k.to_s}>#{v.to_s}</#{k.to_s}>" }.join}</xml>"
+    require 'rest-client'
+    # 请求接口
+    response = RestClient.post 'https://api.mch.weixin.qq.com/mmpaymkttransfers/sendredpack', pay_load
+    # RestClient::Resource.new(
+    #     :ssl_client_cert  =>  OpenSSL::X509::Certificate.new(File.read("/Users/beslow/Downloads/cert/apiclient_cert.pem")),
+    #     :ssl_client_key   =>  OpenSSL::PKey::RSA.new(File.read("/Users/beslow/Downloads/cert/apiclient_key.pem"), "passphrase, if any"),
+    #     :ssl_ca_file      =>  "/Users/beslow/Downloads/cert/rootca.pem",
+    #     :verify_ssl       =>  OpenSSL::SSL::VERIFY_PEER
+    # ).post 'https://api.mch.weixin.qq.com/mmpaymkttransfers/sendredpack', pay_load
+
+    # RestClient::Request.execute(method: :post, url: 'https://api.mch.weixin.qq.com/mmpaymkttransfers/sendredpack',
+    #                             ssl_ca_file: '/Users/beslow/Downloads/cert/rootca.pem',
+    #                             ssl_client_cert: OpenSSL::X509::Certificate.new(File.read("/Users/beslow/Downloads/cert/apiclient_cert.pem")),
+    #                             ssl_client_key:  OpenSSL::PKey::RSA.new(File.read("/Users/beslow/Downloads/cert/apiclient_key.pem"), "passphrase, if any"),
+    #                             ssl_ciphers: 'AESGCM:!aNULL',
+    # payload: pay_load)
+
+    # 分析请求结果
+    pp "********************** 发红包 请求结果 ******************************"
+    pp response.force_encoding("UTF-8")
+    result = Hash.from_xml(response.force_encoding("UTF-8"))
+    return true if result['xml']['return_code'] == 'SUCCESS'
+    false
+  end
 end
