@@ -6,6 +6,7 @@ EricWeixin::Engine.routes.draw do
   get "/weixin/snsuserinfo" => "wz/weixin#snsapi_userinfo"
 
   get "/weixin/pay" => "wz/pays#prepay"
+  get "/weixin/sendredpack" => "wz/pays#sendredpack"
 
   namespace :cms do
     namespace :weixin do
