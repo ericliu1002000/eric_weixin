@@ -19,21 +19,21 @@ class EricWeixin::Wz::PaysController < ApplicationController
   # client_ip
   # act_name
   # remark
-  def sendredpack
-    pp "******************* params *********************"
-    pp params
-    weixin_user = ::Weixin::WeixinUser.find_by_openid(params[:openid])
-    public_account = weixin_user.weixin_public_account
-    options = {}
-    options[:wxappid] = public_account.weixin_app_id
-    options[:re_openid] = params[:openid]
-    options[:total_amount] = params[:total_fee]
-    options[:wishing] = "恭喜发财"
-    options[:client_ip] = get_ip
-    options[:act_name] = "送福利"
-    options[:remark] = "第一次送"
-    EricWeixin::Pay.sendredpack options
-    render text: 'ok'
-  end
+  # def sendredpack
+  #   pp "******************* params *********************"
+  #   pp params
+  #   weixin_user = ::Weixin::WeixinUser.find_by_openid(params[:openid])
+  #   public_account = weixin_user.weixin_public_account
+  #   options = {}
+  #   options[:wxappid] = public_account.weixin_app_id
+  #   options[:re_openid] = params[:openid]
+  #   options[:total_amount] = params[:total_fee]
+  #   options[:wishing] = "恭喜发财"
+  #   options[:client_ip] = get_ip
+  #   options[:act_name] = "送福利"
+  #   options[:remark] = "第一次送"
+  #   EricWeixin::Pay.sendredpack options
+  #   render text: 'ok'
+  # end
 
 end

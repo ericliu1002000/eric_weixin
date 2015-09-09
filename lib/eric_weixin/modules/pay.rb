@@ -29,6 +29,7 @@ module EricWeixin::Pay
     Digest::MD5.hexdigest("#{query}&key=#{api_key}").upcase
   end
 
+  # 参数
   # wxappid
   # re_openid
   # total_amount
@@ -36,6 +37,18 @@ module EricWeixin::Pay
   # client_ip
   # act_name
   # remark
+  # 使用方法
+  #   weixin_user = ::Weixin::WeixinUser.find_by_openid(params[:openid])
+  #   public_account = weixin_user.weixin_public_account
+  #   options = {}
+  #   options[:wxappid] = public_account.weixin_app_id
+  #   options[:re_openid] = params[:openid]
+  #   options[:total_amount] = params[:total_fee]
+  #   options[:wishing] = "恭喜发财"
+  #   options[:client_ip] = get_ip
+  #   options[:act_name] = "送福利"
+  #   options[:remark] = "第一次送"
+  #   EricWeixin::Pay.sendredpack options
   def self.sendredpack options
     options[:nonce_str] = SecureRandom.uuid.tr('-', '')
     options[:total_num] = 1
@@ -50,9 +63,12 @@ module EricWeixin::Pay
     # 生成xml数据包
     pay_load = "<xml>#{options.map { |k, v| "<#{k.to_s}>#{v.to_s}</#{k.to_s}>" }.join}</xml>"
     require 'rest-client'
+    ca_path = Rails.root.join("ca/").to_s
+    Dir.mkdir ca_path unless Dir.exist? ca_path
+    BusinessException.raise '请下载证书' unless Dir.exist?(ca_path+"apiclient_cert.pem") && Dir.exist?(ca_path+"apiclient_key.pem")
     response = RestClient::Request.execute(method: :post, url: 'https://api.mch.weixin.qq.com/mmpaymkttransfers/sendredpack',
-                                ssl_client_cert: OpenSSL::X509::Certificate.new(File.read("/Users/ericliu/Desktop/cert/apiclient_cert.pem")),
-                                ssl_client_key:  OpenSSL::PKey::RSA.new(File.read("/Users/ericliu/Desktop/cert/apiclient_key.pem"), "passphrase, if any"),
+                                ssl_client_cert: OpenSSL::X509::Certificate.new(File.read(ca_path+"apiclient_cert.pem")),
+                                ssl_client_key:  OpenSSL::PKey::RSA.new(File.read(ca_path+"apiclient_key.pem"), "passphrase, if any"),
                                 ssl_ciphers: 'AESGCM:!aNULL',
     payload: pay_load)
 
@@ -63,4 +79,6 @@ module EricWeixin::Pay
     return true if result['xml']['return_code'] == 'SUCCESS'
     false
   end
+
+
 end
