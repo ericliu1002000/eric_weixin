@@ -34,7 +34,20 @@
         <%= text_field_tag :province, params[:province] ,placeholder:"ALL" %>
       </div>
 
-
+    </div>
+    <div class="row">
+      <div class="columns small-2 text-right">
+        <label class="inline">首次关注渠道</label>
+      </div>
+      <div class="columns small-2">
+        <%= text_field_tag :first_register_channel, params[:first_register_channel], placeholder: "ALL" %>
+      </div>
+      <div class="columns small-2 text-right">
+        <label class="inline">最后关注渠道</label>
+      </div>
+      <div class="columns small-2 end">
+        <%= text_field_tag :last_register_channel, params[:last_register_channel], placeholder: "ALL" %>
+      </div>
     </div>
 <div class="row">
   <div class="columns small-2 text-right">

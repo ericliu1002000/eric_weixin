@@ -37,7 +37,7 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
   end
 
   def nickname
-    CGI::unescape(self.attributes["nickname"])
+    CGI::unescape(self.attributes["nickname"]) rescue '无法正常显示'
   end
 
   ##
@@ -162,6 +162,8 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
       users = users.where(weixin_public_account_id: options[:weixin_public_account_id]) unless options[:weixin_public_account_id].blank?
       users = users.where("subscribe_time >= ?", options[:start_date].to_date.to_time.to_i) unless options[:start_date].blank?
       users = users.where("subscribe_time <= ?", (options[:end_date].to_date+1.day).to_time.to_i) unless options[:end_date].blank?
+      users = users.where("last_register_channel = ?", options[:last_register_channel]) unless options[:last_register_channel].blank?
+      users = users.where("first_register_channel = ?", options[:first_register_channel]) unless options[:first_register_channel].blank?
       users
     end
   end

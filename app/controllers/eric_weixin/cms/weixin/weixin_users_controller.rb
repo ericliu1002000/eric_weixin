@@ -9,7 +9,9 @@ class EricWeixin::Cms::Weixin::WeixinUsersController < EricWeixin::Cms::BaseCont
                                                                            :province,
                                                                            :weixin_public_account_id,
                                                                            :start_date,
-                                                                           :end_date)).
+                                                                           :end_date,
+                                                             :first_register_channel,
+                                                             :last_register_channel)).
         order(id: :desc).
         paginate(page: params[:page]||1, per_page: params[:per_page]||10) unless public_account.blank?
   end
