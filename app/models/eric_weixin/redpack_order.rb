@@ -40,7 +40,7 @@ class EricWeixin::RedpackOrder < ActiveRecord::Base
       result = EricWeixin::Pay.sendredpack options
       pp "*********************** 发红包结果 **************************"
       pp result
-      BusinessException.raise result['return_msg'] if result['return_code'] == 'FAIL'
+      return result['err_code'] if result['return_code'] == 'FAIL'
       redpack_order = self.new
       redpack_order.mch_billno = result['mch_billno']
       redpack_order.weixin_public_account_id = public_account.id
@@ -59,7 +59,7 @@ class EricWeixin::RedpackOrder < ActiveRecord::Base
       result = EricWeixin::Pay.gethbinfo options
       pp "************************ 查询红包结果 *****************************"
       pp result
-      BusinessException.raise result['return_msg'] if result['return_code'] = 'FAIL'
+      return result['err_code'] if result['return_code'] = 'FAIL'
       self.detail_id = result['detail_id']
       self.send_type = result['send_type']
       self.hb_type = result['hb_type']
