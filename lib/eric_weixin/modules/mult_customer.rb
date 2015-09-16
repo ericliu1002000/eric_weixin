@@ -84,15 +84,17 @@ module EricWeixin::MultCustomer
          end
     BusinessException.raise '公众账号未查询到' if pa.blank?
     token = ::EricWeixin::AccessToken.get_valid_access_token_by_app_id app_id: options[:app_id]
-
-
+    t_options = {}
+    options[:data].each do |k,v|
+      t_options[k] = CGI::escape(v.gsub("\"","'"))
+    end
     post_data = {
         :touser => options[:openid],
         :msgtype => options[:message_type],
-        options[:message_type] => options[:data]
+        options[:message_type] => t_options
     }
     url = "https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=#{token}"
-    response = RestClient.post url, post_data.to_json
+    response = RestClient.post url, CGI::unescape(post_data.to_json)
     response = JSON.parse response.body
     ::EricWeixin::MessageLog.transaction do
       message = ::EricWeixin::MessageLog.where(message_id: options[:message_id]).first
