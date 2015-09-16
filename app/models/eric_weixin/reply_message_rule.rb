@@ -62,8 +62,8 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
       reply_message = case business_type
                         #订阅
                         when /event~subscribe/
-                          ::EricWeixin::WeixinUser.create_weixin_user public_account.id, receive_message[:FromUserName], receive_message[:EventKey]
-                          result = ::Weixin::Process.subscribe receive_message
+                          user, is_new = ::EricWeixin::WeixinUser.create_weixin_user public_account.id, receive_message[:FromUserName], receive_message[:EventKey]
+                          result = ::Weixin::Process.subscribe receive_message, is_new
                           if result == true
                             match_key_words 'subscribe', public_account.id, receive_message, false
                           else

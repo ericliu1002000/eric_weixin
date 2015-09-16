@@ -1,7 +1,7 @@
 module EricWeixin
   class AccessToken < ActiveRecord::Base
 
-    belongs_to :public_account, :class_name => '::EricWeixin::PublicAccount', foreign_key: :experience_center_id
+    belongs_to :public_account, :class_name => '::EricWeixin::PublicAccount', foreign_key: :public_account_id
 
     self.table_name = "weixin_access_tokens"
 

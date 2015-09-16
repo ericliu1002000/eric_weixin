@@ -37,7 +37,7 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
   end
 
   def nickname
-    CGI::unescape(self.attributes["nickname"])
+    CGI::unescape(self.attributes["nickname"]) rescue '无法正常显示'
   end
 
   ##
@@ -79,12 +79,14 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
       is_new = false
       public_account = ::EricWeixin::PublicAccount.find_by_id(public_account_id)
       ::EricWeixin::ReplyMessageRule.transaction do
+        is_new = false
         weixin_user = ::EricWeixin::WeixinUser.where(openid: openid, weixin_public_account_id: public_account.id).first
         if weixin_user.blank?
           is_new = true
           weixin_user = ::EricWeixin::WeixinUser.new openid: openid,
                                        weixin_public_account_id: public_account.id
           weixin_user.save!
+          is_new = true
         end
         wx_user_data = public_account.get_user_data_from_weixin_api openid
         weixin_user.update_attributes(wx_user_data.select{|k,v| ["subscribe", "openid", "nickname", "sex", "language", "city", "province", "country", "headimgurl", "subscribe_time", "remark"].include? k })
@@ -164,6 +166,8 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
       users = users.where(weixin_public_account_id: options[:weixin_public_account_id]) unless options[:weixin_public_account_id].blank?
       users = users.where("subscribe_time >= ?", options[:start_date].to_date.to_time.to_i) unless options[:start_date].blank?
       users = users.where("subscribe_time <= ?", (options[:end_date].to_date+1.day).to_time.to_i) unless options[:end_date].blank?
+      users = users.where("last_register_channel = ?", options[:last_register_channel]) unless options[:last_register_channel].blank?
+      users = users.where("first_register_channel = ?", options[:first_register_channel]) unless options[:first_register_channel].blank?
       users
     end
   end
