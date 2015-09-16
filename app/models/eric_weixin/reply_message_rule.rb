@@ -40,6 +40,8 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
 
     #处理来自微信端客户所有的处理。
     def process_rule(receive_message, public_account)
+      receive_message_log = receive_message.clone
+      receive_message_log[:Content] = CGI::escape(receive_message_log[:Content]) if not receive_message_log[:Content].blank?
       business_type = "#{receive_message[:MsgType]}~#{receive_message[:Event]}"
 
       #兼容腾讯的一个坑....有的是MsgId， 有的是MsgID
@@ -50,7 +52,7 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
                                                                                weixin_public_account_id: public_account.id,
                                                                                message_type: receive_message[:MsgType],
                                                                                message_id: receive_message[:MsgId] || receive_message[:MsgID],
-                                                                               data: receive_message.to_json,
+                                                                               data: receive_message_log.to_json,
                                                                                process_status: 0, #在这里假设都处理完毕，由业务引起的更新请在工程的Process中进行修改。
                                                                                event_name: receive_message[:Event],
                                                                                event_key: receive_message[:EventKey], #事件值

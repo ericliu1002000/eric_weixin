@@ -54,7 +54,7 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
     response.to_debug
     response = JSON.parse response.body
     if response["errcode"].to_i == 0
-      response = ::EricWeixin::WeixinUser.create_weixin_user self.weixin_public_account_id, self.openid
+      ::EricWeixin::WeixinUser.create_weixin_user self.weixin_public_account_id, self.openid
 
     else
       BusinessException.raise "设置备注名报错，错误代码为#{response["errcode"]}"
@@ -76,10 +76,12 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
     # ====返回
     # 正常情况下返回当前微信用户 <tt>::EricWeixin::WeixinUser</tt>，抛出异常时错误查看异常信息。
     def create_weixin_user(public_account_id, openid, channel=nil)
+      is_new = false
       public_account = ::EricWeixin::PublicAccount.find_by_id(public_account_id)
       ::EricWeixin::ReplyMessageRule.transaction do
         weixin_user = ::EricWeixin::WeixinUser.where(openid: openid, weixin_public_account_id: public_account.id).first
         if weixin_user.blank?
+          is_new = true
           weixin_user = ::EricWeixin::WeixinUser.new openid: openid,
                                        weixin_public_account_id: public_account.id
           weixin_user.save!
@@ -91,7 +93,7 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
           weixin_user.last_register_channel = channel
           weixin_user.save!
         end
-        weixin_user
+        return weixin_user, is_new
       end
     end
 
