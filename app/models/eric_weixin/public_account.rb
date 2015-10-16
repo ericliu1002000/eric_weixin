@@ -119,6 +119,33 @@ class EricWeixin::PublicAccount < ActiveRecord::Base
     end
   end
 
+  # 获取用户列表，并把最新的用户信息存到数据库.
+  # ===参数说明
+  # * next_openid   #拉取列表的后一个用户的 next_openid，用户列表未拉取完时存在。
+  # ===调用示例
+  # ::EricWeixin::PublicAccount.first.rebuild_users_simple
+  def rebuild_users_simple next_openid = nil
+    token = ::EricWeixin::AccessToken.get_valid_access_token public_account_id: self.id
+    response = if next_openid.blank?
+                 RestClient.get "https://api.weixin.qq.com/cgi-bin/user/get?access_token=#{token}"
+               else
+                 RestClient.get "https://api.weixin.qq.com/cgi-bin/user/get?access_token=#{token}&next_openid=#{next_openid}"
+               end
+    response = JSON.parse response.body
+    if response["count"].to_i > 0
+      response["data"]["openid"].each do |openid|
+        users = ::EricWeixin::WeixinUser.where openid: openid
+        if users.blank?
+
+            ::EricWeixin::WeixinUser.create_weixin_user self.id, openid
+
+        end
+      end
+      tmp_next_openid = response["next_openid"]
+      self.rebuild_users tmp_next_openid unless tmp_next_openid.blank?
+    end
+  end
+
 
   GLOBAL_CODES = {
       -1 => "系统繁忙",

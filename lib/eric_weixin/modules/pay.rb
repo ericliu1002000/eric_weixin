@@ -88,13 +88,18 @@ module EricWeixin::Pay
     BusinessException.raise '请提供mch_key。' if options[:mch_key].blank?
     options[:nonce_str] = SecureRandom.uuid.tr('-', '')
     options[:bill_type] = 'MCHT'
-    sign = generate_sign options, options[:mch_key]
+
+    api_key = options[:mch_key]
+    options.delete(:mch_key)
+    sign = generate_sign options, api_key
+    # sign = generate_sign options, options[:mch_key]
     options[:sign] = sign
+
     pay_load = "<xml>#{options.map { |k, v| "<#{k.to_s}>#{v.to_s}</#{k.to_s}>" }.join}</xml>"
     require 'rest-client'
     ca_path = Rails.root.join("ca/").to_s
     Dir.mkdir ca_path unless Dir.exist? ca_path
-    BusinessException.raise '请下载证书' unless Dir.exist?(ca_path+"apiclient_cert.pem") && Dir.exist?(ca_path+"apiclient_key.pem")
+    BusinessException.raise '请下载证书' unless File.exist?(ca_path+"apiclient_cert.pem") && File.exist?(ca_path+"apiclient_key.pem")
     response = RestClient::Request.execute(method: :post, url: 'https://api.mch.weixin.qq.com/mmpaymkttransfers/gethbinfo',
                                            ssl_client_cert: OpenSSL::X509::Certificate.new(File.read(ca_path+"apiclient_cert.pem")),
                                            ssl_client_key:  OpenSSL::PKey::RSA.new(File.read(ca_path+"apiclient_key.pem"), "passphrase, if any"),

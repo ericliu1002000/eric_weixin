@@ -50,6 +50,7 @@ class EricWeixin::RedpackOrder < ActiveRecord::Base
   end
 
   def get_info
+    return unless self.redpacks.blank?
     EricWeixin::RedpackOrder.transaction do
       options = {}
       options[:mch_billno] = self.mch_billno
@@ -59,29 +60,32 @@ class EricWeixin::RedpackOrder < ActiveRecord::Base
       result = EricWeixin::Pay.gethbinfo options
       pp "************************ 查询红包结果 *****************************"
       pp result
-      return result['err_code'] if result['return_code'] = 'FAIL'
+      return result['err_code'] if result['return_code'] == 'FAIL'
       self.detail_id = result['detail_id']
       self.send_type = result['send_type']
       self.hb_type = result['hb_type']
-      self.total_num = result['Total_num']
-      self.total_amount = result['Total_amount']
+      self.total_num = result['total_num']
+      self.total_amount = result['total_amount']
       self.reason = result['reason']
-      self.send_time = result['Send_time']
-      self.refund_time = result['Refund_time']
-      self.refund_amount = result['Refund_amount']
+      self.send_time = result['send_time']
+      self.refund_time = result['refund_time']
+      self.refund_amount = result['refund_amount']
       self.wishing = result['wishing']
-      self.remark = result['Remark']
-      self.act_name = result['Act_name']
+      self.remark = result['emark']
+      self.act_name = result['act_name']
       self.save!
-      result['hblist'].each do |hbinfo|
+      hbinfo = (result['hblist']['hbinfo'] rescue '')
+
+      unless hbinfo.blank?
         options[:status] = hbinfo['status']
         options[:openid] = hbinfo['openid']
         options[:amount] = hbinfo['amount']
         options[:rcv_time] = hbinfo['rcv_time']
-        redpack = EricWeixin::Redpack.create_redpack options
-        redpack.redpack_order = self
-        redpack.save!
+        options[:weixin_redpack_order_id] = self.id
+        EricWeixin::Redpack.create_redpack options
       end
+
+
     end
   end
 
