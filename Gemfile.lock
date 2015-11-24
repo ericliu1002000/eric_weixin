@@ -1,11 +1,11 @@
 PATH
   remote: .
   specs:
-    eric_weixin (0.2.2)
-      rails (~> 4.1.4)
+    eric_weixin (0.3.0)
+      rails (>= 4.1.4)
 
 GEM
-  remote: http://ruby.taobao.org/
+  remote: https://ruby.taobao.org/
   specs:
     actionmailer (4.1.4)
       actionpack (= 4.1.4)

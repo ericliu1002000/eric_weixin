@@ -232,7 +232,7 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
                 break
               end
             end
-            if rule.key_word_type = 'regularexpr'
+            if rule.key_word_type == 'regularexpr'
               regexp = Regexp.new rule.key_word
               result = regexp.match wx_key_word
               unless result.blank?
