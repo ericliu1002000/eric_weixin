@@ -178,8 +178,15 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
                           else
                             result
                           end
+                        when /event~merchant_order/
 
-                        # 群发发送图文推送后，微信服务器返回的结果
+                          result = ::Weixin::Process.get_merchant_order receive_message
+                          if result == true
+                            ''
+                          else
+                            result
+                          end
+                          # 群发发送图文推送后，微信服务器返回的结果
                         when /event~MASSSENDJOBFINISH/
                           ::EricWeixin::MediaNews.update_media_news_after_sending receive_message
                           ::Weixin::Process.message_send_job_finish receive_message
