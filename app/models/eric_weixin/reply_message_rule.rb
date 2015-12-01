@@ -171,6 +171,7 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
                           if result == true
                             ''
                           end
+
                         when /link~/
                           result = ::Weixin::Process.link_event receive_message
                           if result == true
@@ -178,14 +179,17 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
                           else
                             result
                           end
-                        when /event~merchant_order/
 
+                          # 微信小店订单通知。
+                        when /event~merchant_order/
+                          EricWeixin::Xiaodian::Order.create_order receive_message
                           result = ::Weixin::Process.get_merchant_order receive_message
                           if result == true
                             ''
                           else
                             result
                           end
+
                           # 群发发送图文推送后，微信服务器返回的结果
                         when /event~MASSSENDJOBFINISH/
                           ::EricWeixin::MediaNews.update_media_news_after_sending receive_message

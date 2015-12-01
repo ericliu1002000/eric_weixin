@@ -1,8 +1,9 @@
 class EricWeixin::Xiaodian::Order < ActiveRecord::Base
   self.table_name = 'weixin_xiaodian_orders'
 
+  # 接收订单
   def self.create_order options
-    order = EricWeixin::Xiaodian::Order.where(order_id: options[:order_id]).first
+    order = EricWeixin::Xiaodian::Order.where(order_id: options[:OrderId]).first
     return unless order.blank?
 
     openid = options[:FromUserName]
@@ -25,7 +26,7 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
 
     user_id = user.blank? ? nil : user.id
 
-    order = EricWeixin::Xiaodian::Order.new order_id: options[:order_id],
+    order = EricWeixin::Xiaodian::Order.new order_id: options[:OrderId],
                                             weixin_user_id: user_id,
                                             order_create_time: options[:CreateTime],
                                             order_status: options[:OrderStatus],
@@ -35,5 +36,4 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
                                             openid: openid
     order.save!
   end
-
 end
