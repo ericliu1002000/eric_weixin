@@ -1,0 +1,21 @@
+<h3>订单列表</h3>
+微信小店官方物流公司：邮政EMS、申通快递、中通速递、圆通速递、天天快递、顺丰速运、韵达快运、宅急送、汇通快运、易迅快递
+<table>
+  <thead>
+    <th>订单ID</th><th></th><th></th><th></th>
+  </thead>
+  <tbody>
+    <% @orders.each do |order| %>
+        <tr>
+          <td><%= order.order_id %></td>
+          <td><%= check_box_tag "order_#{order.id}_is_need_delivery", "1", false %>是否需要物流</td>
+          <td id="order_<%= order.id %>_delivery_company_td">
+            <%= select_tag "order_#{order.id}_delivery_company", options_from_collection_for_select(EricWeixin::Xiaodian::Order::DELIVERY_COMPANY.merge("other" => "其他快递公司"), 'first', 'second', order.delivery_company), onchange: 'change_delivery_company()', prompt: '选择快递公司' %>
+          </td>
+          <td id="order_<%= order.id %>_deliver_id_td">
+            <%= text_field_tag "order_#{order.id}_deliver_id", order.delivery_id %>
+          </td>
+        </tr>
+    <% end %>
+  </tbody>
+</table>
