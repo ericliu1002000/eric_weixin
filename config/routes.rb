@@ -9,6 +9,11 @@ EricWeixin::Engine.routes.draw do
 
   namespace :cms do
     namespace :weixin do
+      namespace :xiaodian do
+        resources :orders do
+
+        end
+      end
       resources :public_accounts do
         member do
           get :rebuild_weixin_users
