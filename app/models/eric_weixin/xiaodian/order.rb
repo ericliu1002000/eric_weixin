@@ -158,6 +158,7 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
   # 是否为6.4.5表之外的其它物流公司(0-否，1-是，无该字段默认为不是其它物流公司)
 
   def set_delivery options
+    pp options
     if options["need_delivery"].to_s == "0"
       options = {need_delivery: 0}
     else
@@ -176,7 +177,7 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
       if options["need_delivery"].to_s == "0"
         self.update_attributes delivery_id: "", delivery_company: ""
       else
-        self.update_attributes delivery_id: options["delivery_id"], delivery_company: options["delivery_company"]
+        self.update_attributes delivery_id: options["delivery_track_no"], delivery_company: options["delivery_company"]
       end
     else
       false
