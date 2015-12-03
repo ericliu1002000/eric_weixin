@@ -82,6 +82,7 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
       end
 
 
+
       # 获取订单详情前，weixin_product_id、sku_info、weixin_user_id应该已经有了值
       # weixin_product = EricWeixin::Xiaodian::Product.where( product_id: order_params["product_id"], weixin_public_account_id: self.weixin_public_account_id ).first
       # order_params.merge!("weixin_product_id"=>weixin_product.id) unless weixin_product.blank?
@@ -160,10 +161,10 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
     if options["need_delivery"].to_s == "0"
       options = {need_delivery: 0}
     else
-      BusinessException.raise 'need_delivery不为0时，delivery_track_no字段必填' if options[:delivery_track_no].blank?
-      BusinessException.raise 'need_delivery不为0时，delivery_company字段不可以为空' if options[:delivery_company].blank?
+      BusinessException.raise 'need_delivery不为0时，delivery_track_no字段必填' if options["delivery_track_no"].blank?
+      BusinessException.raise 'need_delivery不为0时，delivery_company字段不可以为空' if options["delivery_company"].blank?
       if options["is_others"].to_s != "1"
-        BusinessException.raise 'need_delivery不为0且is_others不为1时，delivery_company字段必须是规定的快递公司ID' unless DELIVERY_COMPANY.include? options[:delivery_company]
+        BusinessException.raise 'need_delivery不为0且is_others不为1时，delivery_company字段必须是规定的快递公司ID' unless DELIVERY_COMPANY.include? options["delivery_company"]
       end
     end
     token = ::EricWeixin::AccessToken.get_valid_access_token public_account_id: self.weixin_public_account_id
@@ -172,6 +173,11 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
     response = JSON.parse response.body
     if response["errcode"] == 0
       true
+      if options["need_delivery"].to_s == "0"
+        self.update_attributes delivery_id: "", delivery_company: ""
+      else
+        self.update_attributes delivery_id: options["delivery_id"], delivery_company: options["delivery_company"]
+      end
     else
       false
     end

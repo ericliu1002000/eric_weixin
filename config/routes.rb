@@ -11,7 +11,9 @@ EricWeixin::Engine.routes.draw do
     namespace :weixin do
       namespace :xiaodian do
         resources :orders do
-
+          collection do
+            post :save_delivery_info
+          end
         end
       end
       resources :public_accounts do
