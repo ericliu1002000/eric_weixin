@@ -7,6 +7,7 @@ class EricWeixin::PublicAccount < ActiveRecord::Base
   has_one :access_token, :class_name => 'AccessToken', foreign_key: "public_account_id"
   has_many :customs_service_records, class_name: 'CustomsServiceRecord', foreign_key: "weixin_public_account_id"
   has_many :redpacks, foreign_key: "weixin_public_account_id"
+  has_many :orders, class_name: "::EricWeixin::PublicAccount", foreign_key: 'weixin_public_account_id'
 
   #根据微信号名称获取微信账号相关信息
   # ::EricWeixin::PublicAccount.get_public_account_by_name 'dfxt'

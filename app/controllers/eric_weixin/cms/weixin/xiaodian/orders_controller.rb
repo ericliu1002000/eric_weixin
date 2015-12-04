@@ -1,6 +1,9 @@
 class EricWeixin::Cms::Weixin::Xiaodian::OrdersController < EricWeixin::Cms::BaseController
   def index
     @orders = EricWeixin::Xiaodian::Order.all
+    @orders = @orders.where("order_create_time >= ?", params[:start_date].to_time.change(hour:0,min:0,sec:0).to_i) unless params[:start_date].blank?
+    @orders = @orders.where("order_create_time <= ?", params[:end_date].to_time.change(hour:23,min:59,sec:59).to_i) unless params[:end_date].blank?
+    @orders = @orders.order(order_create_time: :desc).paginate(per_page: params[:per_page]||6, page: params[:page]||1)
   end
 
   def save_delivery_info
@@ -21,5 +24,10 @@ class EricWeixin::Cms::Weixin::Xiaodian::OrdersController < EricWeixin::Cms::Bas
       dispose_exception e
       render text: "保存失败: #{get_notice_str}"
     end
+  end
+
+  def download_orders
+    file_name = EricWeixin::Xiaodian::Order.get_excel_of_orders params.permit(:start_date, :end_date)
+    send_file file_name
   end
 end

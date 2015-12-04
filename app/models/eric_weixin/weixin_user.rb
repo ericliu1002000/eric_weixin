@@ -3,6 +3,7 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
   self.table_name = 'weixin_users'
   belongs_to :member_info
   belongs_to :weixin_public_account, :class_name => '::EricWeixin::PublicAccount', :foreign_key => 'weixin_public_account_id'
+  has_many :orders, class_name: "::EricWeixin::Xiaodian::Order"
   validates_uniqueness_of :openid, scope: :weixin_public_account_id
   validates_presence_of :openid, :weixin_public_account_id
 

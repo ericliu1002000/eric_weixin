@@ -13,6 +13,7 @@ EricWeixin::Engine.routes.draw do
         resources :orders do
           collection do
             post :save_delivery_info
+            get :download_orders
           end
         end
       end
