@@ -1,21 +1,121 @@
+<div class="row">
+  <%= form_tag "/eric_weixin/cms/weixin/xiaodian/orders/", method: :get do %>
+      <div class="columns small-2">
+        <label class="inline text-right">订单时间区间</label>
+      </div>
+      <div class="columns small-3">
+        <%= date_field_tag :start_date, params[:start_date] %>
+      </div>
+      <div class="columns small-1 text-center">
+        <label class="inline center">至</label>
+      </div>
+      <div class="columns small-3">
+        <%= date_field_tag :end_date, params[:end_date] %>
+      </div>
+      <div class="columns small-3 text-left">
+        <%= submit_tag '查询', class: "button tiny" %>
+      </div>
+  <% end %>
+</div>
+
 <h3>订单列表</h3>
 微信小店官方物流公司：邮政EMS、申通快递、中通速递、圆通速递、天天快递、顺丰速运、韵达快运、宅急送、汇通快运、易迅快递
 <table>
   <thead>
-    <th>订单ID</th><th></th><th></th><th></th>
+    <th>订单ID</th>
+
+    <th>买家</th><th>购买时间</th><th>宝贝</th><th>宝贝信息</th><th>数量</th><th>收货人</th><th>收货地址</th><th>手机</th>
+
+    <th>是否需要物流</th><th>是否官方物流</th><th>快递公司</th><th>运单号</th><th>操作</th>
   </thead>
   <tbody>
     <% @orders.each do |order| %>
         <tr>
-          <td><%= order.order_id %></td>
-          <td><%= check_box_tag "order_#{order.id}_is_need_delivery", "1", false %>是否需要物流</td>
-          <td id="order_<%= order.id %>_delivery_company_td">
-            <%= select_tag "order_#{order.id}_delivery_company", options_from_collection_for_select(EricWeixin::Xiaodian::Order::DELIVERY_COMPANY.merge("other" => "其他快递公司"), 'first', 'second', order.delivery_company), onchange: 'change_delivery_company()', prompt: '选择快递公司' %>
+          <td style="word-break:break-all"><%= order.order_id %></td>
+          <td style="word-break:break-all"><%= order.weixin_user.nickname %></td>
+          <td style="word-break:break-all"><%= Time.at(order.order_create_time).strftime("%Y-%m-%d %H:%M:%S") %></td>
+          <td style="word-break:break-all"><%= order.product.name %></td>
+          <td style="word-break:break-all"><%= order.product_info %></td>
+          <td style="word-break:break-all"><%= order.product_count %></td>
+          <td style="word-break:break-all"><%= order.receiver_name %></td>
+          <td style="word-break:break-all"><%= order.receiver_province + order.receiver_city + order.receiver_zone + order.receiver_address %></td>
+          <td style="word-break:break-all"><%= order.receiver_mobile %></td>
+          <td style="word-break:break-all">
+            <%= check_box_tag "order_#{order.id}_is_need_delivery", "1", true, onchange: "change_need_delivery(#{order.id})" %>
           </td>
-          <td id="order_<%= order.id %>_deliver_id_td">
-            <%= text_field_tag "order_#{order.id}_deliver_id", order.delivery_id %>
+          <td id="order_<%= order.id %>_is_xiaodian_delivery_td"  style="word-break:break-all">
+            <% is_xiaodian_delivery = EricWeixin::Xiaodian::Order::DELIVERY_COMPANY.keys.include?(order.delivery_company) %>
+            <%= check_box_tag "order_#{order.id}_is_xiaodian_delivery", "1", is_xiaodian_delivery , onchange: "change_is_xiaodian_delivery(#{order.id})" %>
+          </td>
+          <td id="order_<%= order.id %>_delivery_company_td"  style="word-break:break-all">
+            <% if is_xiaodian_delivery %>
+                <%= select_tag "order_#{order.id}_delivery_company", options_from_collection_for_select(EricWeixin::Xiaodian::Order::DELIVERY_COMPANY, 'first', 'second', order.delivery_company), prompt: '选择快递公司' %>
+            <% else %>
+                <%= text_field_tag "order_#{order.id}_delivery_company", order.delivery_company %>
+            <% end %>
+          </td>
+          <td id="order_<%= order.id %>_deliver_id_td"  style="word-break:break-all">
+            <%= text_field_tag "order_#{order.id}_delivery_id", order.delivery_id %>
+          </td>
+          <td id="order_<%= order.id %>_action_td"  style="word-break:break-all">
+            <%= link_to '保存', "javascript:save_delivery_info(#{order.id})", id: "order_#{order.id}_action", class: "button tiny" %>
           </td>
         </tr>
     <% end %>
   </tbody>
 </table>
+<%= will_paginate @collection, renderer: FoundationPagination::Rails %>
+<div class="row">
+  <div class="columns small-12 text-right">
+    <%= link_to '下载订单', "/eric_weixin/cms/weixin/xiaodian/orders/download_orders?start_time=#{params[:start_date]}&end_time=#{params[:end_date]}", class: 'button tiny' %>
+  </div>
+</div>
+
+<script language="javascript">
+  function change_need_delivery(order_id){
+    if(!$("#order_"+order_id+"_is_need_delivery")[0].checked){
+        $("#order_"+order_id+"_is_xiaodian_delivery")[0].style.display = "none";
+        $("#order_"+order_id+"_delivery_company")[0].style.display="none";
+        $("#order_"+order_id+"_delivery_id")[0].style.display="none";
+    } else {
+        $("#order_"+order_id+"_is_xiaodian_delivery")[0].style.display = "inline";
+        $("#order_"+order_id+"_delivery_company")[0].style.display="inline";
+        $("#order_"+order_id+"_delivery_id")[0].style.display="inline";
+    }
+  }
+  function change_is_xiaodian_delivery(order_id){
+      delivery_code = $("#order_"+order_id+"_delivery_company")[0].value;
+      if($("#order_"+order_id+"_is_xiaodian_delivery")[0].checked){
+          select_delivery_company_str = '<select name="order_'+order_id+'_delivery_company" id="order_'+order_id+'_delivery_company">';
+          select_delivery_company_str += '<option value="">选择快递公司</option>';
+          <% EricWeixin::Xiaodian::Order::DELIVERY_COMPANY.each do |dc| %>
+                selected_str = '';
+                if(delivery_code=='<%= dc[0] %>') {
+                    selected_str = 'selected="selected"';
+                }
+                select_delivery_company_str += '<option '+selected_str+' value="'+ '<%= dc[0] %>' +'">'+'<%= dc[1] %>'+'</option>';
+          <% end %>
+          select_delivery_company_str += '</select>';
+          $("#order_"+order_id+"_delivery_company_td").html(select_delivery_company_str);
+      } else {
+          input_delivery_company_str = '<input type="text" name="order_'+order_id+'_delivery_company" id="order_'+order_id+'_delivery_company" value="">';
+          $("#order_"+order_id+"_delivery_company_td").html(input_delivery_company_str);
+      }
+  }
+  function save_delivery_info(order_id){
+      need_delivery = $("#order_"+order_id+"_is_need_delivery")[0].checked ? 1 : 0;
+      is_others = $("#order_"+order_id+"_is_xiaodian_delivery")[0].checked ? 0 : 1;
+      delivery_track_no = $("#order_"+order_id+"_delivery_id")[0].value;
+      delivery_company = $("#order_"+order_id+"_delivery_company")[0].value;
+      $.ajax({
+          url: '/eric_weixin/cms/weixin/xiaodian/orders/save_delivery_info',
+          type: 'post',
+          data: {id: order_id, need_delivery: need_delivery, is_others: is_others, delivery_track_no: delivery_track_no, delivery_company: delivery_company},
+          async: false
+      }).done(
+              function(result){
+                  alert(result);
+              }
+      );
+  }
+</script>

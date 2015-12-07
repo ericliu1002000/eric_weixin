@@ -1,7 +1,7 @@
 class EricWeixin::Xiaodian::Product < ActiveRecord::Base
   self.table_name = 'weixin_xiaodian_products'
   has_and_belongs_to_many :categories, :class_name => 'EricWeixin::Xiaodian::Category', :join_table => "weixin_xiaodian_category_products", :foreign_key => :weixin_xiaodian_product_id, association_foreign_key: :weixin_xiaodian_category_id
-
+  has_many :orders, class_name: "EricWeixin::Xiaodian::Order"
 
   # 同步微信小店所有商品
   # EricWeixin::Xiaodian::Product.get_all_products 'rszx'
