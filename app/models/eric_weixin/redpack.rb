@@ -11,6 +11,7 @@ class EricWeixin::Redpack < ActiveRecord::Base
       "REFUND" => "已退款"
   }
 
+
   def self.create_redpack options
     self.transaction do
       packs = EricWeixin::Redpack.where weixin_redpack_order_id: options[:weixin_redpack_order_id],

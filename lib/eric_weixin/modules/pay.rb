@@ -1,4 +1,6 @@
 module EricWeixin::Pay
+
+  #
   def self.generate_prepay_id options
     required_field = %i(appid mch_id openid attach body out_trade_no total_fee spbill_create_ip notify_url trade_type)
     query_options = {}
@@ -22,6 +24,7 @@ module EricWeixin::Pay
     nil
   end
 
+  # 产生签名
   def self.generate_sign options, api_key
     pp "**************** 签名参数 *********************"
     pp options
@@ -33,7 +36,9 @@ module EricWeixin::Pay
     Digest::MD5.hexdigest("#{query}&key=#{api_key}").upcase
   end
 
-  # 参数
+  #
+  # 发红包,直接调用。
+  # #参数
   # wxappid
   # re_openid
   # total_amount
@@ -77,6 +82,7 @@ module EricWeixin::Pay
     result['xml']
   end
 
+  # 根据红包单号，获取红包基础数据。
   # mch_billno
   # mch_id
   # appid

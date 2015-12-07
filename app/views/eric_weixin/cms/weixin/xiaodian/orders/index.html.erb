@@ -32,7 +32,7 @@
     <% @orders.each do |order| %>
         <tr>
           <td style="word-break:break-all"><%= order.order_id %></td>
-          <td style="word-break:break-all"><%= order.weixin_user.nickname %></td>
+          <td style="word-break:break-all"><%= order.weixin_user.nickname rescue '' %></td>
           <td style="word-break:break-all"><%= Time.at(order.order_create_time).strftime("%Y-%m-%d %H:%M:%S") %></td>
           <td style="word-break:break-all"><%= order.product.name %></td>
           <td style="word-break:break-all"><%= order.product_info %></td>

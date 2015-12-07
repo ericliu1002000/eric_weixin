@@ -27,3 +27,23 @@
 * 图文管理： /eric_weixin/cms/weixin/news_datas
 * 图文素材管理： /eric_weixin/cms/weixin/article_datas
 * 链接管理： /eric_weixin/cms/weixin/url_encodes
+* 微信小店订单设置 /eric_weixin/cms/weixin/xiaodian/orders
+
+
+===微信小店的初始化
+* 首先对所经营的分类进行归类，并且把腾讯分类同步至数据库。为了避免分类过多，一般只同步自己行业的大类，大类编号请自查，如儿童玩具大类，食品类两类更新如下：
+
+EricWeixin::Xiaodian::Category.import_all_categories '公众账号名称，参考 weixin_public_account表', ['538088633','538071212']
+* 更新SKU信息
+
+EricWeixin::Xiaodian::Category.update_sku_info '公众账号名称，参考 weixin_public_account表'
+* 更新商品信息
+
+EricWeixin::Xiaodian::Product.get_all_products '公众账号名称，参考 weixin_public_account表'
+* 同步已有订单信息
+
+EricWeixin::Xiaodian::Order.get_order_list_and_update nil, nil ,nil ,'公众账号名称，参考 weixin_public_account表'
+
+*如果有新商品上架，则需要更新商品与SKU信息。 更新过程见商品列表页面，点击刷新按钮即可。由于接口调用限制，一天之内不要操作超过3次。
+
+
