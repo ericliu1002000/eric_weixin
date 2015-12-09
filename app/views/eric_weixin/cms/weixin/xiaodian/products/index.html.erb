@@ -1,0 +1,82 @@
+
+<h3>产品列表</h3>
+
+
+<%= button_to "刷新产品", 'products/get_all_products', method: :get, class: "button tiny" %>
+
+
+<div class="row">
+  <%= form_tag "/eric_weixin/cms/weixin/xiaodian/products/", method: :get do %>
+    <div class="columns small-2">
+      <label class="inline text-right">起始ID</label>
+    </div>
+    <div class="columns small-3">
+      <%= number_field_tag 'start_id', params[:start_id], placeholder: '输入起始数字ID' %>
+    </div>
+    <div class="columns small-1 text-center">
+      <label class="inline center">终止ID</label>
+    </div>
+    <div class="columns small-3">
+      <%= number_field_tag 'end_id', params[:end_id], placeholder: '输入终止数字ID' %>
+    </div>
+    <div class="columns small-3 text-left">
+      <%= submit_tag "搜索", class: "button tiny" %>
+    </div>
+
+  <% end %>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>商品ID</th>
+      <th>商品名称</th>
+      <th>商品特点</th>
+      <th>SKU信息</th>
+      <th>商品状态</th>
+      <th>公众号</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @products.each do |product| %>
+      <tr>
+        <td><%= product.id %></td>
+        <td><%= product.name %></td>
+        <td>
+          <% str = product.properties %>
+          <% a = str.gsub("=>", ":") %>
+          <% properties = JSON.parse(a) %>
+
+          <% properties.each do |property| %>
+              <%= property['id'] + ':' %>
+              <%= property['vid'] %>
+              <br>
+          <% end %>
+        </td>
+        <td>
+          <% b = product.sku_info.gsub("=>", ":") %>
+          <% sku_infos = JSON.parse b %>
+          <% sku_infos.each do |info| %>
+              <%= info['id'][1, info['id'].length-1] + ':' %>
+              <% info['vid'].each do |vid| %>
+                  <%= vid[1, vid.length-1] %>
+              <% end %>
+              <br>
+          <% end %>
+        </td>
+        <td>
+          <% if product.status == 1 %>
+              <span>上架</span>
+          <% elsif product.status == 2 %>
+              <span>下架</span>
+          <% else %>
+              <span>error</span>
+          <% end %>
+        </td>
+        <td><%= product.weixin_public_account_id %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<%= will_paginate @collection, renderer: FoundationPagination::Rails %>
+
