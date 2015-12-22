@@ -16,6 +16,11 @@ EricWeixin::Engine.routes.draw do
             get :download_orders
           end
         end
+        resources :products do
+          collection do
+            get :get_all_products
+          end
+        end
       end
       resources :public_accounts do
         member do
