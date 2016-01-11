@@ -15,6 +15,7 @@ gemspec :name => 'eric_weixin'
 # gem 'debugger'
 gem 'tinymce-rails'
 gem 'rails', '>= 4.1.4'
+# add_runtime_dependency 'rails', '~> 4.1', '>= 4.1.4'
 gem "multi_xml"
 gem 'nokogiri'
 gem 'rest-client', '1.8.0'

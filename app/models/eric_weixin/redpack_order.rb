@@ -49,6 +49,7 @@ class EricWeixin::RedpackOrder < ActiveRecord::Base
     end
   end
 
+  # 定时使用 redpack_order 实例变量来完善补充红包信息。
   def get_info
     return unless self.redpacks.blank?
     EricWeixin::RedpackOrder.transaction do

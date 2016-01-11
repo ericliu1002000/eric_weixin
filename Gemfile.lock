@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    eric_weixin (0.3.1)
+    eric_weixin (0.3.2)
       rails (>= 4.1.4)
 
 GEM
@@ -126,6 +126,3 @@ DEPENDENCIES
   rest-client (= 1.8.0)
   tinymce-rails
   will_paginate (~> 3.0)
-
-BUNDLED WITH
-   1.10.6

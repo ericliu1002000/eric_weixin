@@ -28,22 +28,31 @@
 * 图文素材管理： /eric_weixin/cms/weixin/article_datas
 * 链接管理： /eric_weixin/cms/weixin/url_encodes
 * 微信小店订单设置 /eric_weixin/cms/weixin/xiaodian/orders
+* 微信小店商品刷新 /eric_weixin/cms/weixin/xiaodian/products
+* 微信用户展示 /eric_weixin/cms/weixin/weixin_users
 
 
 ===微信小店的初始化
 * 首先对所经营的分类进行归类，并且把腾讯分类同步至数据库。为了避免分类过多，一般只同步自己行业的大类，大类编号请自查，如儿童玩具大类，食品类两类更新如下：
-
 EricWeixin::Xiaodian::Category.import_all_categories '公众账号名称，参考 weixin_public_account表', ['538088633','538071212']
 * 更新SKU信息
-
 EricWeixin::Xiaodian::Category.update_sku_info '公众账号名称，参考 weixin_public_account表'
 * 更新商品信息
-
 EricWeixin::Xiaodian::Product.get_all_products '公众账号名称，参考 weixin_public_account表'
 * 同步已有订单信息
-
 EricWeixin::Xiaodian::Order.get_order_list_and_update nil, nil ,nil ,'公众账号名称，参考 weixin_public_account表'
 
-*如果有新商品上架，则需要更新商品与SKU信息。 更新过程见商品列表页面，点击刷新按钮即可。由于接口调用限制，一天之内不要操作超过3次。
+* 如果有新商品上架，则需要更新商品与SKU信息。 更新过程见商品列表页面，点击刷新按钮即可。由于接口调用限制，一天之内不要操作超过3次。
 
-
+===红包的使用
+* 先在项目根目录新建一个名字叫ca的目录，并设置权限，让应用程序可读。 ca目录用于存放微信官方密钥证书，主要用于发红包过程中的通信加密。
+* 在weixin_public_account中设置：mch_id: 商户号， mch_key：在商户后台写的32位的那个密码，host_name_wich_schema： 当前域名，在回调时需要参考此参数。
+* 调用方式：
+EricWeixin::RedpackOrder.create_redpack_order wishing: 'xxx',
+                                              client_ip: '127.0.0.1', # 换成自己服务器ip
+                                              act_name: '过年送红包',
+                                              remark: '一起开心一下，祝新年快乐',
+                                              send_name: 'U果源',
+                                              re_openid: openid, # 收红包人的openid
+                                              total_amount: 100 # 金额： 单位（分）
+* 定时获取红包信息：使用EricWeixin::RedpackOrder的实例调用 get_info 信息。

@@ -61,6 +61,7 @@ module EricWeixin::MultCustomer
   # 发送多客服信息.
   # ====参数说明
   # app_id: 微信公众账号app_id
+  # weixin_number: 微信原始账号，和app_id 二选一必填
   # openid: 接收消息用户的openid
   # message_type: 消息类型：包含以下：text image voice video music  news#
   # data: 值为一个hash， 对应着公众账号里要发送的内容，它的key为msgtype

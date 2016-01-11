@@ -4,7 +4,6 @@ class EricWeixin::Cms::Weixin::Xiaodian::ProductsController < EricWeixin::Cms::B
     @products = @products.where("id >= ?", params[:start_id]) unless params[:start_id].blank?
     @products = @products.where("id <= ?", params[:end_id]) unless params[:end_id].blank?
     @products = @products.order(id: :desc).paginate(per_page: params[:per_page]||6, page: params[:page]||1)
-
   end
 
   def get_all_products
@@ -12,9 +11,6 @@ class EricWeixin::Cms::Weixin::Xiaodian::ProductsController < EricWeixin::Cms::B
       EricWeixin::Xiaodian::Product.get_all_products pb.name
       EricWeixin::Xiaodian::Category.update_sku_info pb.name
     end
-    # self.get_all_products(params[:public_account_name])
-    # EricWeixin::Xiaodian::Category.update_sku_info(params[:public_account_name])
-
     redirect_to 'EricWeixin::Cms::Weixin::Xiaodian::Products#index'
   end
 

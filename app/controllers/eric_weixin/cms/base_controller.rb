@@ -12,7 +12,7 @@ class EricWeixin::Cms::BaseController < EricWeixin::ApplicationController
   end
 
   def need_login
-    redirect_to '/' if current_user.blank?
+    redirect_to '/cms' if current_user.blank?
     return
   end
 

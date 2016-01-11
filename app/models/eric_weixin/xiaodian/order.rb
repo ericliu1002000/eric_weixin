@@ -18,6 +18,7 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
   }
 
   def product_info
+    return '' if self.sku_info.blank?
     info = ""
     list = self.sku_info.split(";")
     list.each do |sku|
@@ -90,6 +91,11 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
   end
 
 
+  def buyer_nick
+    CGI::unescape(self.attributes["buyer_nick"]) rescue '无法正常显示'
+  end
+
+
   # 根据订单ID获取订单详情
   def get_info
     token = ::EricWeixin::AccessToken.get_valid_access_token public_account_id: self.weixin_public_account_id
@@ -101,6 +107,8 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
       ["receiver_zip", "product_id", "buyer_openid"].each do |a|
         order_params.delete a
       end
+
+      order_params["buyer_nick"] = CGI::escape(order_params["buyer_nick"]) if not order_params["buyer_nick"].blank?
 
 
 
