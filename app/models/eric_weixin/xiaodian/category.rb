@@ -9,8 +9,8 @@ class EricWeixin::Xiaodian::Category < ActiveRecord::Base
   # 把所有的产品类型导入数据库。
   # public_account_name: 公众账号名称
   # parent_id: 分类腾讯id#
-  # EricWeixin::Xiaodian::Category.import_all_categories 'rszx', 1
-  # EricWeixin::Xiaodian::Category.import_all_categories 'rszx', ['538088633','538071212'], 1   # 玩具、模型等, 食品/茶叶/特产/滋补品
+
+  # EricWeixin::Xiaodian::Category.import_all_categories 'rszx', ['538088633','538071212']   # 玩具、模型等, 食品/茶叶/特产/滋补品
   def self.import_all_categories public_account_name, first_level_weixin_id = [], parent_id = 1
     EricWeixin::Xiaodian::Category.transaction do
       account = EricWeixin::PublicAccount.get_public_account_by_name public_account_name

@@ -143,7 +143,7 @@ class EricWeixin::PublicAccount < ActiveRecord::Base
         end
       end
       tmp_next_openid = response["next_openid"]
-      self.rebuild_users tmp_next_openid unless tmp_next_openid.blank?
+      self.rebuild_users_simple tmp_next_openid unless tmp_next_openid.blank?
     end
   end
 
