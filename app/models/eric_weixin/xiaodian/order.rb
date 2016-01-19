@@ -51,7 +51,7 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
   def self.create_order options
     order = EricWeixin::Xiaodian::Order.where(order_id: options[:OrderId]).first
     unless order.blank?
-      order.get_info
+      order.delay(:priority => -10).get_info
       return order
     end
 
@@ -85,7 +85,7 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
                                             openid: openid
     order.save!
 
-    order.get_info
+    order.delay(:priority => -10).get_info
 
     order
   end
@@ -114,16 +114,13 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
       ["receiver_zip", "product_id", "buyer_openid"].each do |a|
         order_params.delete a
       end
-
       order_params["buyer_nick"] = CGI::escape(order_params["buyer_nick"]) if not order_params["buyer_nick"].blank?
-
-
-
       # 获取订单详情前，weixin_product_id、sku_info、weixin_user_id应该已经有了值
       # weixin_product = EricWeixin::Xiaodian::Product.where( product_id: order_params["product_id"], weixin_public_account_id: self.weixin_public_account_id ).first
       # order_params.merge!("weixin_product_id"=>weixin_product.id) unless weixin_product.blank?
       # weixin_user = EricWeixin::WeixinUser.where(openid: order_params["buyer_openid"], weixin_public_account_id: self.weixin_public_account_id).first
       # order_params.merge!("weixin_user_id"=>weixin_user.id) unless weixin_user.blank?
+
       order_params = order_params.select{|k,v|["order_status",
                                                "order_total_price",
                                                "order_create_time",
@@ -314,5 +311,4 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
     book.write file_path
     file_path
   end
-
 end

@@ -63,7 +63,6 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
   end
 
   class << self
-
     # ===业务说明：创建、更新微信用户.
     # * 微信用户在关注、取消关注时更新用户信息。
     # * 当用户关注微信时，创建用户。
@@ -89,10 +88,9 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
           weixin_user.save!
           is_new = true
         end
-      end  #因为后续更新用户信息消耗时间较长，在这里必须得提交一次，以便二次创建用户。
-      # todo 可以把下面代码独立成一个小函数，然后放到队列中去做。
-        wx_user_data = public_account.get_user_data_from_weixin_api openid
-        weixin_user.update_attributes(wx_user_data.select{|k,v| ["subscribe", "openid", "nickname", "sex", "language", "city", "province", "country", "headimgurl", "subscribe_time", "remark"].include? k })
+      end
+
+        ::EricWeixin::WeixinUser.delay(:priority => -10).get_info openid
         if not channel.blank?
           weixin_user.first_register_channel = channel if weixin_user.first_register_channel.blank?
           weixin_user.last_register_channel = channel
@@ -100,6 +98,14 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
         end
         return weixin_user, is_new
     end
+
+
+    # 调腾讯接口，完善用户具体信息。
+    def self.get_info openid
+      wx_user_data = public_account.get_user_data_from_weixin_api openid
+      weixin_user.update_attributes(wx_user_data.select{|k,v| ["subscribe", "openid", "nickname", "sex", "language", "city", "province", "country", "headimgurl", "subscribe_time", "remark"].include? k })
+    end
+
 
     # ===获取用户详情.
     # 根据公众账号id和openid获取公众账号详细信息，最后返回json。
