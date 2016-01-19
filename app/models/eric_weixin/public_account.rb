@@ -98,6 +98,50 @@ class EricWeixin::PublicAccount < ActiveRecord::Base
     end
   end
 
+  # 更新数据库现有的微信用户信息,用了微信的批量获取用户数据的接口
+  # ===参数说明
+  # 无
+  # ===调用示例
+  # ::EricWeixin::PublicAccount.first.update_users
+  def update_users
+    openids = self.weixin_users.pluck(:openid, :language)
+    index = 0
+    while index <= openids.count
+      params = {}
+      openid_arr = []
+      openids[index..index+99].each do |op|
+        openid_arr << {
+            :openid => op[0],
+            :lang => op[1]
+        }
+      end
+      index += 100
+      params[:user_list] = openid_arr
+      token = ::EricWeixin::AccessToken.get_valid_access_token public_account_id: self.id
+      response = RestClient.post "https://api.weixin.qq.com/cgi-bin/user/info/batchget?access_token=#{token}", params
+      response = JSON.parse response.body
+      response["user_info_list"].each do |user_info|
+        user = EricWeixin::WeixinUser.find_or_create_by(openid: user_info["openid"], weixin_public_account_id: self.id)
+        if user_info["subscribe"] == 1
+          user_params = user_info.select{|k,v|["subscribe",
+                                               "openid",
+                                               "nickname",
+                                               "sex",
+                                               "language",
+                                               "city",
+                                               "province",
+                                               "country",
+                                               "headimgurl",
+                                               "subscribe_time",
+                                               "remark"].include?(k) && !v.blank?}
+          user.update_attributes user_params
+        else
+          user.update_attributes subscribe: 0
+        end
+      end
+    end unless openids.count == 0
+  end
+
   # 获取用户列表，并把最新的用户信息存到数据库.
   # ===参数说明
   # * next_openid   #拉取列表的后一个用户的 next_openid，用户列表未拉取完时存在。

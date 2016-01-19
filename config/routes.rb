@@ -34,6 +34,7 @@ EricWeixin::Engine.routes.draw do
       resources :weixin_users do
         collection do
           get :quick_get_user_infos
+          get :batch_update_user_infos
         end
         member do
           post :modify_remark
