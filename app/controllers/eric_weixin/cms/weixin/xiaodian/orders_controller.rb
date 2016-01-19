@@ -30,4 +30,10 @@ class EricWeixin::Cms::Weixin::Xiaodian::OrdersController < EricWeixin::Cms::Bas
     file_name = EricWeixin::Xiaodian::Order.get_excel_of_orders params.permit(:start_date, :end_date)
     send_file file_name
   end
+
+  def update_hb_infos
+    EricWeixin::RedpackOrder.delay.update_info_from_wx params[:public_account_id]
+    flash[:success] = '已经将更新红包任务放到队列'
+    redirect_to :index
+  end
 end
