@@ -22,7 +22,7 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
     @target_user = @target_user.where("created_at > ? AND created_at < ?", user[:created_at_start], user[:created_at_end]) unless user[:created_at_start].blank? || user[:created_at_end].blank?
     @target_user = @target_user.where("updated_at > ? AND updated_at < ?", user[:updated_at_start], user[:updated_at_end]) unless user[:updated_at_start].blank? || user[:updated_at_end].blank?
     @target_user = @target_user.where("subscribe = ?", user[:subscribe]) unless user[:subscribe].blank?
-    @target_user = @target_user.where("nickname = ?", CGI::escape(user[:nickname])) unless user[:nickname].blank?
+    @target_user = @target_user.where("nickname = ?", user[:nickname]) unless user[:nickname].blank?
     @target_user = @target_user.where("sex = ?", user[:sex]) unless user[:sex].blank?
     @target_user = @target_user.where("language = ?", user[:language]) unless user[:language].blank?
     @target_user = @target_user.where("city = ?", user[:city]) unless user[:city].blank?
@@ -38,7 +38,7 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
   end
 
   def nickname
-    CGI::unescape(self.attributes["nickname"]) rescue '无法正常显示'
+    self.attributes["nickname"]
   end
 
   ##
@@ -78,9 +78,9 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
     def create_weixin_user(public_account_id, openid, channel=nil)
       is_new = false
       public_account = ::EricWeixin::PublicAccount.find_by_id(public_account_id)
+      weixin_user = ::EricWeixin::WeixinUser.where(openid: openid, weixin_public_account_id: public_account.id).first
       ::EricWeixin::ReplyMessageRule.transaction do
         is_new = false
-        weixin_user = ::EricWeixin::WeixinUser.where(openid: openid, weixin_public_account_id: public_account.id).first
         if weixin_user.blank?
           is_new = true
           weixin_user = ::EricWeixin::WeixinUser.new openid: openid,
@@ -90,7 +90,7 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
         end
       end
 
-        ::EricWeixin::WeixinUser.delay(:priority => -10).get_info openid
+        ::EricWeixin::WeixinUser.delay(:priority => -10).get_info public_account_id, openid
         if not channel.blank?
           weixin_user.first_register_channel = channel if weixin_user.first_register_channel.blank?
           weixin_user.last_register_channel = channel
@@ -101,8 +101,10 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
 
 
     # 调腾讯接口，完善用户具体信息。
-    def self.get_info openid
+    def get_info public_account_id, openid
+      public_account = ::EricWeixin::PublicAccount.find_by_id(public_account_id)
       wx_user_data = public_account.get_user_data_from_weixin_api openid
+      weixin_user = ::EricWeixin::WeixinUser.where(openid: openid, weixin_public_account_id: public_account.id).first
       weixin_user.update_attributes(wx_user_data.select{|k,v| ["subscribe", "openid", "nickname", "sex", "language", "city", "province", "country", "headimgurl", "subscribe_time", "remark"].include? k })
     end
 
@@ -118,7 +120,6 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
       token = ::EricWeixin::AccessToken.get_valid_access_token public_account_id: public_account_id
       response = RestClient.get "https://api.weixin.qq.com/cgi-bin/user/info?access_token=#{token}&openid=#{openid}&lang=zh_CN"
       response = JSON.parse response.body
-      response["nickname"] = CGI::escape(response["nickname"]) if not response["nickname"].blank?
       response
     end
 
@@ -167,7 +168,7 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
     def custom_query options
       users = self.all
       users = users.where(subscribe: options[:subscribe]) unless options[:subscribe].blank?
-      users = users.where("nickname like ?", "%#{CGI::escape(options[:nickname])}%") unless options[:nickname].blank?
+      users = users.where("nickname like ?", "%#{options[:nickname]}%") unless options[:nickname].blank?
       users = users.where(sex: options[:sex]) unless options[:sex].blank?
       users = users.where(city: options[:city]) unless options[:city].blank?
       users = users.where(province: options[:province]) unless options[:province].blank?

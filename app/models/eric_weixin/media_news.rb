@@ -17,7 +17,7 @@ class EricWeixin::MediaNews < ActiveRecord::Base
   #           "thumb_media_id" => article.media_resource.media_id,
   #           "author" => article.author,
   #           "content_source_url" => article.content_source_url,
-  #           "content" => CGI::escape(article.content).force_encoding("UTF-8"),
+  #           "content" => article.content.force_encoding("UTF-8"),
   #           "digest" => article.digest,
   #           "show_cover_pic" => if article.show_cover_pic then 1 else 0 end
   #       }
@@ -52,7 +52,7 @@ class EricWeixin::MediaNews < ActiveRecord::Base
             "thumb_media_id" => article.media_resource.media_id,
             "author" => article.author,
             "content_source_url" => article.content_source_url,
-            "content" => CGI::escape(article.content.gsub("\"","'")),
+            "content" => article.content.gsub("\"","'"),
             "digest" => article.digest,
             "show_cover_pic" => if article.show_cover_pic then 1 else 0 end
         }

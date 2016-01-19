@@ -41,7 +41,7 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
     #处理来自微信端客户所有的处理。
     def process_rule(receive_message, public_account)
       receive_message_log = receive_message.clone
-      receive_message_log[:Content] = CGI::escape(receive_message_log[:Content]) if not receive_message_log[:Content].blank?
+      receive_message_log[:Content] = receive_message_log[:Content] if not receive_message_log[:Content].blank?
       business_type = "#{receive_message[:MsgType]}~#{receive_message[:Event]}"
 
       #兼容腾讯的一个坑....有的是MsgId， 有的是MsgID

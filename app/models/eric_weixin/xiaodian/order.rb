@@ -54,10 +54,8 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
       order.delay(:priority => -10).get_info
       return order
     end
-
     openid = options[:FromUserName]
     user = EricWeixin::WeixinUser.where(openid: openid).first
-
     to_user_name = options[:ToUserName]
     account = EricWeixin::PublicAccount.where(weixin_number: to_user_name).first
 
@@ -91,9 +89,9 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
   end
 
 
-  def buyer_nick
-    CGI::unescape(self.attributes["buyer_nick"]) rescue '无法正常显示'
-  end
+  # def buyer_nick
+  #   CGI::unescape(self.attributes["buyer_nick"]) rescue '无法正常显示'
+  # end
 
 
   # 根据订单ID获取订单详情
@@ -107,13 +105,10 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
       ["receiver_zip", "product_id", "buyer_openid"].each do |a|
         order_params.delete a
       end
-      order_params["buyer_nick"] = CGI::escape(order_params["buyer_nick"]) if not order_params["buyer_nick"].blank?
-      # 获取订单详情前，weixin_product_id、sku_info、weixin_user_id应该已经有了值
-      # weixin_product = EricWeixin::Xiaodian::Product.where( product_id: order_params["product_id"], weixin_public_account_id: self.weixin_public_account_id ).first
-      # order_params.merge!("weixin_product_id"=>weixin_product.id) unless weixin_product.blank?
-      # weixin_user = EricWeixin::WeixinUser.where(openid: order_params["buyer_openid"], weixin_public_account_id: self.weixin_public_account_id).first
-      # order_params.merge!("weixin_user_id"=>weixin_user.id) unless weixin_user.blank?
-      self.update_attributes order_params
+      # order_params["buyer_nick"] = order_params["buyer_nick"] if not order_params["buyer_nick"].blank?
+      # self.update_attributes order_params
+      self.update_attributes order_params.select{|k,v| ['order_id', 'order_status', 'order_total_price', 'order_create_time', 'order_express_price', 'buyer_nick', 'receiver_name', 'receiver_province', 'receiver_city', 'receiver_zone', 'receiver_address', 'receiver_mobile', 'receiver_phone',
+                             'product_name', 'product_name', 'product_sku', 'product_count', 'product_img', 'trans_id'].include? k }
     else
       pp response
       return
@@ -138,6 +133,8 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
     if response["errcode"] == 0
       order_list = response["order_list"]
       order_list.each do |order|
+        orders = EricWeixin::Xiaodian::Order.where order_id: order["order_id"]
+        next unless orders.blank?
         EricWeixin::Xiaodian::Order.create_order OrderId: order["order_id"],
                                                  FromUserName: order["buyer_openid"],
                                                  ToUserName: account.weixin_number,
