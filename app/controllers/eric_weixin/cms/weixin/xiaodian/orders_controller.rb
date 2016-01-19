@@ -32,7 +32,7 @@ class EricWeixin::Cms::Weixin::Xiaodian::OrdersController < EricWeixin::Cms::Bas
   end
 
   def update_hb_infos
-    EricWeixin::RedpackOrder.delay.update_info_from_wx params[:public_account_id]
+    EricWeixin::RedpackOrder.delay(priority: 10).update_info_from_wx params[:public_account_id]
     flash[:success] = '已经将更新红包任务放到队列'
     redirect_to :index
   end
@@ -44,7 +44,7 @@ class EricWeixin::Cms::Weixin::Xiaodian::OrdersController < EricWeixin::Cms::Bas
     params[:start_date] = params[:start_date].to_date.change(hour:0,min:0,sec:0)
     params[:end_date] = params[:end_date].to_date.change(hour:23,min:59,sec:59)
 
-    EricWeixin::Xiaodian::Order.delay.update_order_infos params[:start_date], params[:end_date]
+    EricWeixin::Xiaodian::Order.delay(priority: 10).update_order_infos params[:start_date], params[:end_date]
     flash[:success] = '已经将更新订单信息的任务放到队列'
     redirect_to :index
   end
