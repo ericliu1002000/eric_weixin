@@ -137,9 +137,7 @@ class EricWeixin::PublicAccount < ActiveRecord::Base
       response["data"]["openid"].each do |openid|
         users = ::EricWeixin::WeixinUser.where openid: openid
         if users.blank?
-
             ::EricWeixin::WeixinUser.create_weixin_user self.id, openid
-
         end
       end
       tmp_next_openid = response["next_openid"]
