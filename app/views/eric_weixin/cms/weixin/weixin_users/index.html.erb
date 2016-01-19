@@ -1,4 +1,6 @@
-<%= link_to '快速更新更新微信用户信息', %>
+<% EricWeixin::PublicAccount.all.each do |pa| %>
+    <%= link_to "快速更新#{pa.name}微信用户信息", "/eric_weixin/cms/weixin/weixin_users/quick_get_user_infos?public_account_id=#{pa.id}", class: 'button tiny' %>
+<% end %>
 <h3>用户表</h3>
 <%= form_tag '/eric_weixin/cms/weixin/weixin_users', method: :get do %>
     <div class="row">
