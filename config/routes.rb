@@ -15,6 +15,7 @@ EricWeixin::Engine.routes.draw do
             post :save_delivery_info
             get :download_orders
             get :update_hb_infos
+            get :update_order_infos
           end
         end
         resources :products do

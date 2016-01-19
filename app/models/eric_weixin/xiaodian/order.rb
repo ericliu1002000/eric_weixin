@@ -95,6 +95,13 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
     CGI::unescape(self.attributes["buyer_nick"]) rescue '无法正常显示'
   end
 
+  # 更新指定时间区间的订单信息
+  def self.update_order_infos start_date, end_date
+    self.where("order_create_time between ? and ? ", start_date.to_i, end_date.to_i).each do |order|
+      order.get_info
+    end
+    true
+  end
 
   # 根据订单ID获取订单详情
   def get_info
@@ -117,7 +124,27 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
       # order_params.merge!("weixin_product_id"=>weixin_product.id) unless weixin_product.blank?
       # weixin_user = EricWeixin::WeixinUser.where(openid: order_params["buyer_openid"], weixin_public_account_id: self.weixin_public_account_id).first
       # order_params.merge!("weixin_user_id"=>weixin_user.id) unless weixin_user.blank?
-
+      order_params = order_params.select{|k,v|["order_status",
+                                               "order_total_price",
+                                               "order_create_time",
+                                               "order_express_price",
+                                               "buyer_openid",
+                                               "buyer_nick",
+                                               "receiver_name",
+                                               "receiver_province",
+                                               "receiver_city",
+                                               "receiver_address",
+                                               "receiver_mobile",
+                                               "receiver_phone",
+                                               "product_name",
+                                               "product_price",
+                                               "product_sku",
+                                               "product_count",
+                                               "product_img",
+                                               "delivery_id",
+                                               "delivery_company",
+                                               "trans_id",
+                                               "receiver_zone"].include?(k) && !v.blank? }
       self.update_attributes order_params
     else
       pp response

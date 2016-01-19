@@ -36,4 +36,16 @@ class EricWeixin::Cms::Weixin::Xiaodian::OrdersController < EricWeixin::Cms::Bas
     flash[:success] = '已经将更新红包任务放到队列'
     redirect_to :index
   end
+
+  def update_order_infos
+    # 默认更新本月订单
+    params[:start_date] ||= Time.now.beginning_of_month
+    params[:end_date] ||= Time.now.end_of_month
+    params[:start_date] = params[:start_date].to_date.change(hour:0,min:0,sec:0)
+    params[:end_date] = params[:end_date].to_date.change(hour:23,min:59,sec:59)
+
+    EricWeixin::Xiaodian::Order.delay.update_order_infos params[:start_date], params[:end_date]
+    flash[:success] = '已经将更新订单信息的任务放到队列'
+    redirect_to :index
+  end
 end
