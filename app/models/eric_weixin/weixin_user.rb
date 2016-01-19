@@ -90,6 +90,7 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
           is_new = true
         end
       end  #因为后续更新用户信息消耗时间较长，在这里必须得提交一次，以便二次创建用户。
+      # todo 可以把下面代码独立成一个小函数，然后放到队列中去做。
         wx_user_data = public_account.get_user_data_from_weixin_api openid
         weixin_user.update_attributes(wx_user_data.select{|k,v| ["subscribe", "openid", "nickname", "sex", "language", "city", "province", "country", "headimgurl", "subscribe_time", "remark"].include? k })
         if not channel.blank?
@@ -98,7 +99,6 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
           weixin_user.save!
         end
         return weixin_user, is_new
-
     end
 
     # ===获取用户详情.
