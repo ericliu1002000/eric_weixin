@@ -95,7 +95,7 @@ class EricWeixin::CustomsServiceRecord < ActiveRecord::Base
 
     unless options[:nick_name].blank?
       records = records.joins('LEFT JOIN weixin_users ON weixin_users.openid = weixin_customs_service_records.openid')
-      records = records.where("weixin_users.nickname like ?", "%#{CGI::escape(options[:nick_name])}%")
+      records = records.where("weixin_users.nickname like ?", "%#{options[:nick_name]}%")
     end
 
     records

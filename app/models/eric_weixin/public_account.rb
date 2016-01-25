@@ -138,7 +138,7 @@ class EricWeixin::PublicAccount < ActiveRecord::Base
         else
           user.update_attributes subscribe: 0
         end
-      end
+      end unless response["user_info_list"].blank?
     end unless openids.count == 0
   end
 
@@ -155,6 +155,7 @@ class EricWeixin::PublicAccount < ActiveRecord::Base
                  RestClient.get "https://api.weixin.qq.com/cgi-bin/user/get?access_token=#{token}&next_openid=#{next_openid}"
                end
     response = JSON.parse response.body
+    pp response
     if response["count"].to_i > 0
       response["data"]["openid"].each do |openid|
         ::EricWeixin::WeixinUser.create_weixin_user self.id, openid
@@ -177,6 +178,7 @@ class EricWeixin::PublicAccount < ActiveRecord::Base
                  RestClient.get "https://api.weixin.qq.com/cgi-bin/user/get?access_token=#{token}&next_openid=#{next_openid}"
                end
     response = JSON.parse response.body
+    pp response
     if response["count"].to_i > 0
       response["data"]["openid"].each do |openid|
         users = ::EricWeixin::WeixinUser.where openid: openid

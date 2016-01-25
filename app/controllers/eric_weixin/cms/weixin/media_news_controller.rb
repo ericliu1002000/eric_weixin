@@ -23,7 +23,7 @@ class EricWeixin::Cms::Weixin::MediaNewsController < EricWeixin::Cms::BaseContro
       options[:weixin_public_account_id] = params[:public_account_id]
       options[:nickname] = params[:nickname]
       @weixin_users = ::EricWeixin::WeixinUser.where(weixin_public_account_id: params[:public_account_id])
-      @weixin_users = @weixin_users.where("nickname like ?", "%#{CGI::escape(params[:nickname])}%") unless params[:nickname].blank?
+      @weixin_users = @weixin_users.where("nickname like ?", "%#{params[:nickname]}%") unless params[:nickname].blank?
       render partial: 'select_user'
     rescue Exception=>e
       dispose_exception e
