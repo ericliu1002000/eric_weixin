@@ -93,6 +93,14 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
   #   CGI::unescape(self.attributes["buyer_nick"]) rescue '无法正常显示'
   # end
 
+  # 更新指定时间区间的订单信息
+  # EricWeixin::Xiaodian::Order.update_order_infos
+  def self.update_order_infos start_date, end_date
+    self.where("order_create_time between ? and ? ", start_date.to_time.to_i, end_date.to_time.to_i).each do |order|
+      order.get_info
+    end
+    true
+  end
 
   # 根据订单ID获取订单详情
   def get_info
@@ -105,8 +113,6 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
       ["receiver_zip", "product_id", "buyer_openid"].each do |a|
         order_params.delete a
       end
-      # order_params["buyer_nick"] = order_params["buyer_nick"] if not order_params["buyer_nick"].blank?
-      # self.update_attributes order_params
       self.update_attributes order_params.select{|k,v| ['order_id', 'order_status', 'order_total_price', 'order_create_time', 'order_express_price', 'buyer_nick', 'receiver_name', 'receiver_province', 'receiver_city', 'receiver_zone', 'receiver_address', 'receiver_mobile', 'receiver_phone',
                              'product_name', 'product_name', 'product_sku', 'product_count', 'product_img', 'trans_id'].include? k }
     else

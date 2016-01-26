@@ -19,6 +19,7 @@ Gem::Specification.new do |spec|
   spec.test_files = Dir["test/**/*"]
 
   spec.add_dependency "rails", ">= 4.1.4"
-
-
+  spec.add_dependency "tinymce-rails", "~>4.3.2"
+  spec.add_dependency "foundation-rails", "5.4.3"
+  spec.add_dependency "jquery-ui-rails", "~>5.0.5"
 end

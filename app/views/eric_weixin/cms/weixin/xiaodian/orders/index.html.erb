@@ -1,3 +1,7 @@
+<% EricWeixin::PublicAccount.all.each do |pa| %>
+    <%= link_to "更新#{pa.name}红包信息", "/eric_weixin/cms/weixin/xiaodian/orders/update_hb_infos?public_account_id=#{pa.id}", class: 'button tiny' %>
+<% end %>
+<%= link_to "更新本月的订单", "/eric_weixin/cms/weixin/xiaodian/orders/update_order_infos", class: 'button tiny' %>
 <div class="row">
   <%= form_tag "/eric_weixin/cms/weixin/xiaodian/orders/", method: :get do %>
       <div class="columns small-2">

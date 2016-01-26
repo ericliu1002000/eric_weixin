@@ -14,6 +14,8 @@ EricWeixin::Engine.routes.draw do
           collection do
             post :save_delivery_info
             get :download_orders
+            get :update_hb_infos
+            get :update_order_infos
           end
         end
         resources :products do
@@ -30,6 +32,10 @@ EricWeixin::Engine.routes.draw do
         end
       end
       resources :weixin_users do
+        collection do
+          get :quick_get_user_infos
+          get :batch_update_user_infos
+        end
         member do
           post :modify_remark
         end
