@@ -51,7 +51,7 @@ class EricWeixin::RedpackOrder < ActiveRecord::Base
 
   # 定时使用 redpack_order 实例变量来完善补充红包信息。
   def get_info
-    return unless self.redpacks.blank?
+    return if self.redpacks.blank?
     EricWeixin::RedpackOrder.transaction do
       options = {}
       options[:mch_billno] = self.mch_billno
@@ -91,6 +91,7 @@ class EricWeixin::RedpackOrder < ActiveRecord::Base
   end
 
   # 指定公众号，从微信服务器更新红包信息
+  # EricWeixin::RedpackOrder.update_info_from_wx 1
   def self.update_info_from_wx public_account_id
     self.where("detail_id is null and weixin_public_account_id = ?", public_account_id).each do |r_o|
       r_o.get_info

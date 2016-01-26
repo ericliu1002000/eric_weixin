@@ -118,7 +118,7 @@ class EricWeixin::PublicAccount < ActiveRecord::Base
       index += 100
       params[:user_list] = openid_arr
       token = ::EricWeixin::AccessToken.get_valid_access_token public_account_id: self.id
-      response = RestClient.post "https://api.weixin.qq.com/cgi-bin/user/info/batchget?access_token=#{token}", params
+      response = RestClient.post "https://api.weixin.qq.com/cgi-bin/user/info/batchget?access_token=#{token}", params.to_json
       response = JSON.parse response.body
       response["user_info_list"].each do |user_info|
         user = EricWeixin::WeixinUser.find_or_create_by(openid: user_info["openid"], weixin_public_account_id: self.id)

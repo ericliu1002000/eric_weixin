@@ -94,8 +94,9 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
   # end
 
   # 更新指定时间区间的订单信息
+  # EricWeixin::Xiaodian::Order.update_order_infos
   def self.update_order_infos start_date, end_date
-    self.where("order_create_time between ? and ? ", start_date.to_i, end_date.to_i).each do |order|
+    self.where("order_create_time between ? and ? ", start_date.to_time.to_i, end_date.to_time.to_i).each do |order|
       order.get_info
     end
     true
