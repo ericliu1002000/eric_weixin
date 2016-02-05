@@ -105,7 +105,12 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
       public_account = ::EricWeixin::PublicAccount.find_by_id(public_account_id)
       wx_user_data = public_account.get_user_data_from_weixin_api openid
       weixin_user = ::EricWeixin::WeixinUser.where(openid: openid, weixin_public_account_id: public_account.id).first
-      weixin_user.update_attributes(wx_user_data.select{|k,v| ["subscribe", "openid", "nickname", "sex", "language", "city", "province", "country", "headimgurl", "subscribe_time", "remark"].include? k })
+      pp wx_user_data["subscribe"]
+      if wx_user_data["subscribe"] == 0
+        weixin_user.update_attributes(wx_user_data.select{|k,v| ["subscribe"].include? k })
+      else
+        weixin_user.update_attributes(wx_user_data.select{|k,v| ["subscribe", "openid", "nickname", "sex", "language", "city", "province", "country", "headimgurl", "subscribe_time", "remark"].include? k })
+      end
     end
 
 
