@@ -196,15 +196,6 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
                           ::Weixin::Process.message_send_job_finish receive_message
                           ''
 
-                          # 处理正则式
-                        when /regularexpr~/
-                          result = ::Weixin::Process.regularexpr_event receive_message[:Content], receive_message
-                          if result == true
-                            match_key_words receive_message[:Content], public_account.id, receive_message
-                          else
-                            result
-                          end
-
                         #暂时识别不了的消息
                         else
                           "暂时未处理的场景".to_logger
