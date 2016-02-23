@@ -48,6 +48,12 @@ GEM
     arel (6.0.3)
     builder (3.2.2)
     concurrent-ruby (1.0.0)
+    daemons (1.2.3)
+    delayed_job (4.1.1)
+      activesupport (>= 3.0, < 5.0)
+    delayed_job_active_record (4.1.0)
+      activerecord (>= 3.0, < 5)
+      delayed_job (>= 3.0, < 5)
     domain_name (0.5.25)
       unf (>= 0.0.5, < 1.0.0)
     eric_tools (0.0.6)
@@ -135,6 +141,8 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  daemons
+  delayed_job_active_record
   eric_tools (~> 0.0.6)
   eric_weixin!
   foundation-rails (= 5.4.3)
@@ -145,3 +153,6 @@ DEPENDENCIES
   rest-client (= 1.8.0)
   tinymce-rails
   will_paginate (~> 3.0)
+
+BUNDLED WITH
+   1.11.2
