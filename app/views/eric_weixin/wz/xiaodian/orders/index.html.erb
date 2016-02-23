@@ -27,10 +27,10 @@
             </div>
             <div class="product_info-description">
               <div class="product_info-part">
-                <%= order.sku_info %>
+                数量：<%= order.product_count %>
               </div>
               <div class="product_info-part">
-                ×<%= order.product_count %>
+                <%= "（" + "#{order.sku_info}" + "）"  unless order.sku_info.blank? %>
               </div>
             </div>
           </div>
