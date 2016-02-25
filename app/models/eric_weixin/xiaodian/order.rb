@@ -1,6 +1,6 @@
 class EricWeixin::Xiaodian::Order < ActiveRecord::Base
   self.table_name = 'weixin_xiaodian_orders'
-  belongs_to :weixin_user, class_name: "::EricWeixin::WeixinUser"
+  # belongs_to :weixin_user, class_name: "::EricWeixin::WeixinUser"
   belongs_to :product, class_name: "::EricWeixin::Xiaodian::Product", foreign_key: 'weixin_product_id'
   belongs_to :weixin_public_account, class_name: "::EricWeixin::PublicAccount", foreign_key: 'weixin_public_account_id'
   # 接收订单
@@ -16,6 +16,10 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
       "020huitong" => "汇通快运",
       "zj001yixun" => "易迅快递"
   }
+
+  def weixin_user
+    ::EricWeixin::WeixinUser.find_by_openid self.openid
+  end
 
   def product_info
     return '' if self.sku_info.blank?
@@ -55,7 +59,7 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
       return order
     end
     openid = options[:FromUserName]
-    user = EricWeixin::WeixinUser.where(openid: openid).first
+    # user = EricWeixin::WeixinUser.where(openid: openid).first
     to_user_name = options[:ToUserName]
     account = EricWeixin::PublicAccount.where(weixin_number: to_user_name).first
 
@@ -66,15 +70,15 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
     end
 
 
-    if user.blank?
-      account.rebuild_users_simple
-      user = EricWeixin::WeixinUser.where(openid: openid).first
-    end
+    # if user.blank?
+    #   account.delay.rebuild_users_simple
+    #   # user = EricWeixin::WeixinUser.where(openid: openid).first
+    # end
 
-    user_id = user.blank? ? nil : user.id
+    # user_id = user.blank? ? nil : user.id
 
     order = EricWeixin::Xiaodian::Order.new order_id: options[:OrderId],
-                                            weixin_user_id: user_id,
+
                                             order_create_time: options[:CreateTime],
                                             order_status: options[:OrderStatus],
                                             weixin_product_id: product.id,

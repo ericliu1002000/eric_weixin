@@ -93,7 +93,7 @@ class EricWeixin::RedpackOrder < ActiveRecord::Base
   # 指定公众号，从微信服务器更新红包信息
   # EricWeixin::RedpackOrder.update_info_from_wx 1
   def self.update_info_from_wx public_account_id
-    self.where("detail_id is null and weixin_public_account_id = ?", public_account_id).each do |r_o|
+    self.where("detail_id is null and weixin_public_account_id = ? ", public_account_id).each do |r_o|
       r_o.get_info
     end
     return
