@@ -42,7 +42,7 @@
           <td style="word-break:break-all"><%= order.product_info %></td>
           <td style="word-break:break-all"><%= order.product_count %></td>
           <td style="word-break:break-all"><%= order.receiver_name %></td>
-          <td style="word-break:break-all"><%= order.receiver_province + order.receiver_city + order.receiver_zone + order.receiver_address %></td>
+          <td style="word-break:break-all"><%= "#{order.receiver_province}#{order.receiver_city}#{order.receiver_zone}#{order.receiver_address}" %></td>
           <td style="word-break:break-all"><%= order.receiver_mobile %></td>
           <td style="word-break:break-all">
             <%= check_box_tag "order_#{order.id}_is_need_delivery", "1", true, onchange: "change_need_delivery(#{order.id})" %>
