@@ -13,10 +13,10 @@
         <% end %>
       </select>
       <%= f.check_box :details, checked: "checked" %>
-      <span>以snsapi_base为scope发起的网页授权</span>
+      <span>以snsapi_userinfo为scope发起的网页授权</span>
       <input type="submit" name="commit" class="button right" value="生成微信授权链接"><br>
       <%= f.check_box :only_id %>
-      <span>以snsapi_userinfo为scope发起的网页授权</span><hr/>
+      <span>以snsapi_base为scope发起的网页授权</span><hr/>
     <% end %>
     <%= form_for(cms_weixin_url_encodes_path, remote: true) do |f|%>
       <%= f.label :微信公众号 %>

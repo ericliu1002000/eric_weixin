@@ -1,0 +1,72 @@
+.xiaodian_orders{
+  width: 100%;
+  margin: 0px;
+  height: 100%;
+  background-color: #f2f2f2;
+  .no_xiaodian_order{
+    display: table;
+    height: 100%;
+    width: 100%;
+    text-align: center;
+    .no_order_suggestion{
+      display: table-cell;
+      vertical-align: middle;
+    }
+  }
+  .xiaodian_order{
+    font-size: 12px;
+    background: white;
+    border-bottom: 1px solid #e7e7e7;
+    margin-bottom: .8rem;
+    padding: .17rem .4rem;
+    img{
+      float: left;
+      width: 90px;
+    }
+    .product_info-list{
+
+      .product_info-title{
+        overflow: hidden;
+        .product_info-name{
+          float: left;
+          font-size: 16px;
+        }
+        .product_info-time{
+          float: right;
+          color: #999;
+        }
+      }
+      .product_info-description{
+        overflow: hidden;
+        .product_info-part{
+          float: left;
+          color: #999;
+          margin-right: 10px;
+        }
+      }
+
+    }
+    .user_info-list{
+      overflow: hidden;
+      .user_info-user{
+        overflow: hidden;
+        .user_info-part{
+          float: left;
+          width: 50%;
+        }
+      }
+      .user_info-address{
+        float: left;
+      }
+
+    }
+    .delivery_info-list{
+      overflow: hidden;
+      .delivery_info-part{
+        float: left;
+        width: 50%;
+      }
+    }
+  }
+}
+

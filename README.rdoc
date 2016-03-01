@@ -33,6 +33,8 @@ Gem 中使用了delayed_job 作为队列机制，用来加快响应速度。 在
 * 微信小店商品刷新 /eric_weixin/cms/weixin/xiaodian/products
 * 微信用户展示 /eric_weixin/cms/weixin/weixin_users
 
+===客户展示链接
+* 查看"我的订单" eric_weixin/weixin/orders?openid=<OPENID>
 
 ===微信小店的初始化
 * 首先对所经营的分类进行归类，并且把腾讯分类同步至数据库。为了避免分类过多，一般只同步自己行业的大类，大类编号请自查，如儿童玩具大类，食品类两类更新如下：

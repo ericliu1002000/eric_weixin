@@ -195,6 +195,7 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
                           ::EricWeixin::MediaNews.update_media_news_after_sending receive_message
                           ::Weixin::Process.message_send_job_finish receive_message
                           ''
+
                         #暂时识别不了的消息
                         else
                           "暂时未处理的场景".to_logger

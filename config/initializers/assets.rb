@@ -8,3 +8,4 @@ Rails.application.config.assets.version = '1.0'
 # Rails.application.config.assets.precompile += %w( search.js )
 Rails.application.config.assets.precompile += %w( eric_weixin/cms/base.js )
 Rails.application.config.assets.precompile += %w( eric_weixin/cms/base.css )
+Rails.application.config.assets.precompile += %w( eric_weixin/wz/base.css )

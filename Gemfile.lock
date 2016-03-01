@@ -153,3 +153,6 @@ DEPENDENCIES
   rest-client (= 1.8.0)
   tinymce-rails
   will_paginate (~> 3.0)
+
+BUNDLED WITH
+   1.11.2

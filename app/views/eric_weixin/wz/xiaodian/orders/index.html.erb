@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>微信小店</title>
+    <%= stylesheet_link_tag    "eric_weixin/application", media: "all" %>
+    <%= javascript_include_tag "eric_weixin/application" %>
+    <%= csrf_meta_tags %>
+
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <meta content="telephone=no" name="format-detection">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+  </head>
+  <body>
+    <div class="xiaodian_orders">
+      <% if @orders.blank?  %>
+          <div class="no_xiaodian_order">
+            <div class="no_order_suggestion">
+              您还没有订单 _(:з」∠)_
+              <br>
+              <%= link_to '去小店看看', 'http://mp.weixin.qq.com/bizmall/mallshelf?id=&t=mall/list&biz=MzA5MDIwMDI4Mg==&shelf_id=3&showwxpaytitle=1#wechat_redirect' %>
+            </div>
+
+          </div>
+      <% else %>
+          <% @orders.each do |order| %>
+              <div class="xiaodian_order">
+
+                <div class="product_info-list">
+                  <div class="product_info-title">
+                    <div class="product_info-name">
+                      <%= order.product_name %>
+                    </div>
+                    <div class="product_info-time">
+                      <%= Time.at(order.order_create_time).strftime("%Y-%m-%d %H:%M") %>
+                    </div>
+                  </div>
+                  <div class="product_info-description">
+                    <div class="product_info-part">
+                      数量：<%= order.product_count %>
+                    </div>
+                    <div class="product_info-part">
+                      <%= "（" + "#{order.sku_info}" + "）"  unless order.sku_info.blank? %>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="user_info-list">
+                  <div class="user_info-user">
+                    <div class="user_info-part">
+                      姓名：<%= order.receiver_name %>
+                    </div>
+                    <div class="user_info-part">
+                      手机号：<%= order.receiver_mobile || order.receiver_phone %>
+                    </div>
+                  </div>
+                  <div class="user_info-address">
+                    收货地址：<%= order.receiver_address %>
+                  </div>
+                </div>
+
+
+                <div class="delivery_info-list">
+                  <div class="delivery_info-part">
+                    快递信息：<%= order.delivery_company %>
+                  </div>
+                  <div class="delivery_info-part">
+                    <%= order.delivery_id %>
+                  </div>
+                </div>
+              </div>
+          <% end %>
+
+          <%= will_paginate @collections, renderer: FoundationPagination::Rails %>
+      <% end %>
+
+    </div>
+  </body>
+</html>
+
+
+
+
