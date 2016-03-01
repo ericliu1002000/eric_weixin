@@ -2,8 +2,8 @@
     <%= link_to "更新#{pa.name}红包信息", "/eric_weixin/cms/weixin/xiaodian/orders/update_hb_infos?public_account_id=#{pa.id}", class: 'button tiny' %>
 <% end %>
 <%= link_to "更新本月的订单", "/eric_weixin/cms/weixin/xiaodian/orders/update_order_infos", class: 'button tiny' %>
+<%= form_tag "/eric_weixin/cms/weixin/xiaodian/orders/", method: :get do %>
 <div class="row">
-  <%= form_tag "/eric_weixin/cms/weixin/xiaodian/orders/", method: :get do %>
       <div class="columns small-2">
         <label class="inline text-right">订单时间区间</label>
       </div>
@@ -13,15 +13,19 @@
       <div class="columns small-1 text-center">
         <label class="inline center">至</label>
       </div>
-      <div class="columns small-3">
+      <div class="columns small-3 end">
         <%= date_field_tag :end_date, params[:end_date] %>
       </div>
-      <div class="columns small-3 text-left">
-        <%= submit_tag '查询', class: "button tiny" %>
-      </div>
-  <% end %>
 </div>
-
+<div class="row">
+  <div class="columns small-6">
+    <%= check_box_tag :need_deliver, '1', params[:commit]!='查询'&&params[:need_deliver].blank? ? true : params[:need_deliver]=='1' %><label class="inline small-3">需要发货</label>
+  </div>
+  <div class="columns small-6 end">
+    <%= submit_tag '查询', class: 'tiny button' %>
+  </div>
+</div>
+  <% end %>
 <h3>订单列表</h3>
 微信小店官方物流公司：邮政EMS、申通快递、中通速递、圆通速递、天天快递、顺丰速运、韵达快运、宅急送、汇通快运、易迅快递
 <table>
@@ -38,7 +42,7 @@
           <td style="word-break:break-all"><%= order.order_id %></td>
           <td style="word-break:break-all"><%= order.weixin_user.nickname rescue '' %></td>
           <td style="word-break:break-all"><%= Time.at(order.order_create_time).strftime("%Y-%m-%d %H:%M:%S") %></td>
-          <td style="word-break:break-all"><%= order.product.name %></td>
+          <td style="word-break:break-all"><%= order.product.name rescue 'error' %></td>
           <td style="word-break:break-all"><%= order.product_info %></td>
           <td style="word-break:break-all"><%= order.product_count %></td>
           <td style="word-break:break-all"><%= order.receiver_name %></td>
@@ -71,7 +75,7 @@
 <%= will_paginate @collection, renderer: FoundationPagination::Rails %>
 <div class="row">
   <div class="columns small-12 text-right">
-    <%= link_to '下载订单', "/eric_weixin/cms/weixin/xiaodian/orders/download_orders?start_time=#{params[:start_date]}&end_time=#{params[:end_date]}", class: 'button tiny' %>
+    <%= link_to '下载订单', "/eric_weixin/cms/weixin/xiaodian/orders/download_orders?start_time=#{params[:start_date]}&end_time=#{params[:end_date]}&need_deliver=#{params[:need_deliver]}", class: 'button tiny' %>
   </div>
 </div>
 
