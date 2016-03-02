@@ -4,24 +4,45 @@
 <%= link_to "更新本月的订单", "/eric_weixin/cms/weixin/xiaodian/orders/update_order_infos", class: 'button tiny' %>
 <%= form_tag "/eric_weixin/cms/weixin/xiaodian/orders/", method: :get do %>
 <div class="row">
-      <div class="columns small-2">
-        <label class="inline text-right">订单时间区间</label>
-      </div>
-      <div class="columns small-3">
-        <%= date_field_tag :start_date, params[:start_date] %>
-      </div>
-      <div class="columns small-1 text-center">
-        <label class="inline center">至</label>
-      </div>
-      <div class="columns small-3 end">
-        <%= date_field_tag :end_date, params[:end_date] %>
-      </div>
+  <div class="columns small-2">
+  <label class="inline text-right">订单时间区间</label>
+</div>
+  <div class="columns small-3">
+    <%= date_field_tag :start_date, params[:start_date] %>
+  </div>
+  <div class="columns small-1 text-center">
+    <label class="inline center">至</label>
+  </div>
+  <div class="columns small-3 end">
+    <%= date_field_tag :end_date, params[:end_date] %>
+  </div>
+  <div class="columns small-2">
+    <%= select_tag :deliver_status, options_for_select({ '未发货' => 1, '已发货' => 2}), prompt: '全部发货状态' %>
+    <%#= check_box_tag :need_deliver, '1', params[:commit]!='查询'&&params[:need_deliver].blank? ? true : params[:need_deliver]=='1' %><!--<label class="inline small-3">需要发货</label>-->
+  </div>
 </div>
 <div class="row">
-  <div class="columns small-6">
-    <%= check_box_tag :need_deliver, '1', params[:commit]!='查询'&&params[:need_deliver].blank? ? true : params[:need_deliver]=='1' %><label class="inline small-3">需要发货</label>
+  <div class="columns small-1">
+    <label class="inline text-right">昵称</label>
   </div>
-  <div class="columns small-6 end">
+  <div class="columns small-2">
+    <%= text_field_tag :buyer_nick, params[:buyer_nick] %>
+  </div>
+  <div class="columns small-2">
+    <label class="inline text-right">收货人姓名</label>
+  </div>
+  <div class="columns small-2">
+    <%= text_field_tag :receiver_name, params[:receiver_name] %>
+  </div>
+  <div class="columns small-2">
+    <label class="inline text-right">手机号</label>
+  </div>
+  <div class="columns small-2">
+    <%= text_field_tag :receiver_mobile, params[:receiver_mobile] %>
+  </div>
+
+
+  <div class="columns small-2 end">
     <%= submit_tag '查询', class: 'tiny button' %>
   </div>
 </div>
@@ -32,29 +53,31 @@
   <thead>
     <th>订单ID</th>
 
-    <th>买家</th><th>购买时间</th><th>宝贝</th><th>宝贝信息</th><th>数量</th><th>收货人</th><th>收货地址</th><th>手机</th>
+    <th>买家</th><th>购买时间</th><th>宝贝</th><th>宝贝信息</th><th>数量</th><th>收货信息</th>
 
-    <th>是否需要物流</th><th>是否官方物流</th><th>快递公司</th><th>运单号</th><th>操作</th>
+    <th>是否需要物流</th><!--<th>是否官方物流</th>--><th>快递公司</th><th>运单号</th><th>操作</th>
   </thead>
   <tbody>
     <% @orders.each do |order| %>
         <tr>
           <td style="word-break:break-all"><%= order.order_id %></td>
-          <td style="word-break:break-all"><%= order.weixin_user.nickname rescue '' %></td>
+          <td style="word-break:break-all"><%= order.buyer_nick rescue '' %></td>
           <td style="word-break:break-all"><%= Time.at(order.order_create_time).strftime("%Y-%m-%d %H:%M:%S") %></td>
           <td style="word-break:break-all"><%= order.product.name rescue 'error' %></td>
           <td style="word-break:break-all"><%= order.product_info %></td>
           <td style="word-break:break-all"><%= order.product_count %></td>
-          <td style="word-break:break-all"><%= order.receiver_name %></td>
-          <td style="word-break:break-all"><%= "#{order.receiver_province}#{order.receiver_city}#{order.receiver_zone}#{order.receiver_address}" %></td>
-          <td style="word-break:break-all"><%= order.receiver_mobile %></td>
+          <td style="word-break:break-all">
+            <%= order.receiver_name %>
+            <%= order.receiver_mobile %>
+            <%= "#{order.receiver_province}#{order.receiver_city}#{order.receiver_zone}#{order.receiver_address}" %>
+          </td>
           <td style="word-break:break-all">
             <%= check_box_tag "order_#{order.id}_is_need_delivery", "1", true, onchange: "change_need_delivery(#{order.id})" %>
           </td>
-          <td id="order_<%= order.id %>_is_xiaodian_delivery_td"  style="word-break:break-all">
-            <% is_xiaodian_delivery = EricWeixin::Xiaodian::Order::DELIVERY_COMPANY.keys.include?(order.delivery_company) %>
-            <%= check_box_tag "order_#{order.id}_is_xiaodian_delivery", "1", is_xiaodian_delivery , onchange: "change_is_xiaodian_delivery(#{order.id})" %>
-          </td>
+          <!--<td id="order_<%= order.id %>_is_xiaodian_delivery_td"  style="word-break:break-all">-->
+            <!--<% is_xiaodian_delivery = EricWeixin::Xiaodian::Order::DELIVERY_COMPANY.keys.include?(order.delivery_company) %>-->
+            <!--<%#= check_box_tag "order_#{order.id}_is_xiaodian_delivery", "1", is_xiaodian_delivery , onchange: "change_is_xiaodian_delivery(#{order.id})" %>-->
+          <!--</td>-->
           <td id="order_<%= order.id %>_delivery_company_td"  style="word-break:break-all">
             <% if is_xiaodian_delivery %>
                 <%= select_tag "order_#{order.id}_delivery_company", options_from_collection_for_select(EricWeixin::Xiaodian::Order::DELIVERY_COMPANY, 'first', 'second', order.delivery_company), prompt: '选择快递公司' %>
