@@ -231,7 +231,7 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
     book = Spreadsheet::Workbook.new
 
     sheet1 = book.create_worksheet name: '订单表'
-    sheet1.row(0).push '买家昵称', '订单ID', '产品名称', '收货人', '省', '城市', '区', '地址', '移动电话', '固定电话', '是否是粉丝'
+    sheet1.row(0).push '买家昵称', '订单ID', '产品名称', '收货人', '省', '城市', '区', '地址', '移动电话', '固定电话', '是否是粉丝', '订单数量', '总金额', '运费','sku'
     # sheet1.row(0)[0] = "id"
     # sheet1.row(0)[1] = "买家昵称"
     # sheet1.row(0)[2] = "订单ID"
@@ -277,7 +277,11 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
                                    order.receiver_address,
                                    order.receiver_mobile,
                                    order.receiver_phone,
-                                   is_fan
+                                   is_fan,
+                                   order.product_count,
+                                   order.order_total_price.to_f/100,
+                                   order.product_sku
+
       # sheet1.row(current_row)[0] = order.id
       # sheet1.row(current_row)[1] = order.weixin_user.nickname rescue ''
       # sheet1.row(current_row)[2] = order.order_id
