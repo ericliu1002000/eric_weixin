@@ -3,13 +3,18 @@ class EricWeixin::Cms::Weixin::Xiaodian::OrdersController < EricWeixin::Cms::Bas
     @orders = EricWeixin::Xiaodian::Order.all
     @orders = @orders.where("order_create_time >= ?", params[:start_date].to_time.change(hour:0,min:0,sec:0).to_i) unless params[:start_date].blank?
     @orders = @orders.where("order_create_time <= ?", params[:end_date].to_time.change(hour:23,min:59,sec:59).to_i) unless params[:end_date].blank?
-    pp "class:#{params[:need_deliver].class}, #{params[:need_deliver]} "
-    params[:need_deliver] = '1' if params[:commit] != '查询'
-    if params[:need_deliver] == '1'
-      @orders = @orders.where("delivery_id is null or delivery_id = '' or delivery_company is null or delivery_company = '' ")
-    else
-      @orders = @orders.where("delivery_id is not null and delivery_id <> '' and delivery_company is not null and delivery_company <> '' ")
-    end
+    @orders = @orders.where("buyer_nick LIKE ?", params[:buyer_nick]) unless params[:buyer_nick].blank?
+    @orders = @orders.where("receiver_name LIKE ?", params[:receiver_name]) unless params[:receiver_name].blank?
+    @orders = @orders.where("receiver_mobile = ?", params[:receiver_mobile]) unless params[:receiver_mobile].blank?
+    @orders = @orders.where("delivery_id is null or delivery_id = '' or delivery_company is null or delivery_company = '' ") if params[:deliver_status] == 1
+    @orders = @orders.where("delivery_id is not null and delivery_id <> '' and delivery_company is not null and delivery_company <> '' ") if params[:deliver_status] == 2
+    # pp "class:#{params[:need_deliver].class}, #{params[:need_deliver]} "
+    # params[:need_deliver] = '1' if params[:commit] != '查询'
+    # if params[:need_deliver] == '1'
+    #   @orders = @orders.where("delivery_id is null or delivery_id = '' or delivery_company is null or delivery_company = '' ")
+    # else
+    #   @orders = @orders.where("delivery_id is not null and delivery_id <> '' and delivery_company is not null and delivery_company <> '' ")
+    # end
     @orders = @orders.order(order_create_time: :desc).paginate(per_page: params[:per_page]||6, page: params[:page]||1)
   end
 
