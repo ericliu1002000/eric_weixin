@@ -217,14 +217,7 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
   end
 
   def self.get_excel_of_orders options
-    orders = self.all
-    orders = orders.where("order_create_time >= ?", options[:start_date].to_time.change(hour:0,min:0,sec:0).to_i) unless options[:start_date].blank?
-    orders = orders.where("order_create_time <= ?", options[:end_date].to_time.change(hour:23,min:59,sec:59).to_i) unless options[:end_date].blank?
-    orders = orders.where("buyer_nick LIKE ?", "%#{options[:buyer_nick]}%") unless options[:buyer_nick].blank?
-    orders = orders.where("receiver_name LIKE ?", "%#{options[:receiver_name]}%") unless options[:receiver_name].blank?
-    orders = orders.where("receiver_mobile = ?", options[:receiver_mobile]) unless options[:receiver_mobile].blank?
-    orders = orders.where("delivery_id is null or delivery_id = '' or delivery_company is null or delivery_company = '' ") if options[:deliver_status] == '1'
-    orders = orders.where("delivery_id is not null and delivery_id <> '' and delivery_company is not null and delivery_company <> '' ") if options[:deliver_status] == '2'
+    orders = self.order_query options
     # if options[:need_deliver] == '1'
     #   orders = orders.where("delivery_id is null or delivery_id = '' or delivery_company is null or delivery_company = '' ")
     # else
@@ -321,5 +314,24 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
     file_path = File.join(dir,"#{Time.now.strftime("%Y%m%dT%H%M%S")}订单.xls")
     book.write file_path
     file_path
+  end
+
+
+  # order查询,支持以下参数:
+  #   start_date, end_date  起始日期, 终止日期
+  #   buyer_nick 买家昵称
+  #   receiver_name 收货人姓名
+  #   receiver_mobile 收货人手机
+  #   deliver_status 发货状态, (1-未发货, 2-已发货)
+  def self.order_query options
+    orders = self.all
+    orders = orders.where("order_create_time >= ?", options[:start_date].to_time.change(hour:0,min:0,sec:0).to_i) unless options[:start_date].blank?
+    orders = orders.where("order_create_time <= ?", options[:end_date].to_time.change(hour:23,min:59,sec:59).to_i) unless options[:end_date].blank?
+    orders = orders.where("buyer_nick LIKE ?", "%#{options[:buyer_nick]}%") unless options[:buyer_nick].blank?
+    orders = orders.where("receiver_name LIKE ?", "%#{options[:receiver_name]}%") unless options[:receiver_name].blank?
+    orders = orders.where("receiver_mobile = ?", options[:receiver_mobile]) unless options[:receiver_mobile].blank?
+    orders = orders.where("delivery_id is null or delivery_id = '' or delivery_company is null or delivery_company = '' ") if options[:deliver_status] == 1.to_s
+    orders = orders.where("delivery_id is not null and delivery_id <> '' and delivery_company is not null and delivery_company <> '' ") if options[:deliver_status] == 2.to_s
+    orders
   end
 end
