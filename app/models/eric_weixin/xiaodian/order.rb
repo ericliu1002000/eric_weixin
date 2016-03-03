@@ -216,14 +216,15 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
     end
   end
 
+  # need_deliver 1:未发货  0 已发货
   def self.get_excel_of_orders options
     orders = self.all
     orders = orders.where("order_create_time >= ?", options[:start_date].to_time.change(hour:0,min:0,sec:0).to_i) unless options[:start_date].blank?
     orders = orders.where("order_create_time <= ?", options[:end_date].to_time.change(hour:23,min:59,sec:59).to_i) unless options[:end_date].blank?
-    if options[:need_deliver] == '1'
-      orders = orders.where("delivery_id is null or delivery_id = '' or delivery_company is null or delivery_company = '' ")
+    if options[:need_deliver].to_i == 1
+      orders = orders.where("delivery_id is null")
     else
-      orders = orders.where("delivery_id is not null and delivery_id <> '' and delivery_company is not null and delivery_company <> '' ")
+      orders = orders.where("delivery_id is not null ")
     end
     orders = orders.order(order_create_time: :desc)
 
@@ -231,7 +232,7 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
     book = Spreadsheet::Workbook.new
 
     sheet1 = book.create_worksheet name: '订单表'
-    sheet1.row(0).push '买家昵称', '订单ID', '产品名称', '收货人', '省', '城市', '区', '地址', '移动电话', '固定电话', '是否是粉丝', '订单数量', '总金额', '运费','sku'
+    sheet1.row(0).push '买家昵称', '订单ID', '产品名称', '收货人', '省', '城市', '区', '地址', '移动电话', '固定电话', '是否是粉丝', '订单数量', '总金额', 'sku'
     # sheet1.row(0)[0] = "id"
     # sheet1.row(0)[1] = "买家昵称"
     # sheet1.row(0)[2] = "订单ID"

@@ -40,7 +40,7 @@
                       数量：<%= order.product_count %>
                     </div>
                     <div class="product_info-part">
-                      <% sku_info = order.sku_info.gsub(/[$]/, '$' => '') %>
+                      <% sku_info = if order.sku_info.blank? then '' else order.sku_info.gsub(/[$]/, '$' => '') end %>
                       <%= "(#{sku_info})" unless order.sku_info.blank? %>
                     </div>
                   </div>

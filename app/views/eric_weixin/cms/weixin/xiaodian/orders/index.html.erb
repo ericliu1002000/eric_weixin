@@ -135,13 +135,13 @@
   }
   function save_delivery_info(order_id){
       need_delivery = $("#order_"+order_id+"_is_need_delivery")[0].checked ? 1 : 0;
-      is_others = $("#order_"+order_id+"_is_xiaodian_delivery")[0].checked ? 0 : 1;
+//      is_others = $("#order_"+order_id+"_is_xiaodian_delivery")[0].checked ? 0 : 1;
       delivery_track_no = $("#order_"+order_id+"_delivery_id")[0].value;
       delivery_company = $("#order_"+order_id+"_delivery_company")[0].value;
       $.ajax({
           url: '/eric_weixin/cms/weixin/xiaodian/orders/save_delivery_info',
           type: 'post',
-          data: {id: order_id, need_delivery: need_delivery, is_others: is_others, delivery_track_no: delivery_track_no, delivery_company: delivery_company},
+          data: {id: order_id, need_delivery: need_delivery, is_others: 1, delivery_track_no: delivery_track_no, delivery_company: delivery_company},
           async: false
       }).done(
               function(result){
