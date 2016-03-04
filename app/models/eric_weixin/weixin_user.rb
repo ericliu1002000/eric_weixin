@@ -1,5 +1,5 @@
 class EricWeixin::WeixinUser < ActiveRecord::Base
-  SEX = {1=>'男' , 2=>'女', 0=>'未知'}
+  SEX = {1 => '男', 2 => '女', 0 => '未知'}
   self.table_name = 'weixin_users'
   belongs_to :member_info
   belongs_to :weixin_public_account, :class_name => '::EricWeixin::PublicAccount', :foreign_key => 'weixin_public_account_id'
@@ -84,19 +84,19 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
         if weixin_user.blank?
           is_new = true
           weixin_user = ::EricWeixin::WeixinUser.new openid: openid,
-                                       weixin_public_account_id: public_account.id
+                                                     weixin_public_account_id: public_account.id
           weixin_user.save!
           is_new = true
         end
       end
 
-        ::EricWeixin::WeixinUser.delay(:priority => -10).get_info public_account_id, openid
-        if not channel.blank?
-          weixin_user.first_register_channel = channel if weixin_user.first_register_channel.blank?
-          weixin_user.last_register_channel = channel
-          weixin_user.save!
-        end
-        return weixin_user, is_new
+      ::EricWeixin::WeixinUser.delay(:priority => -10).get_info public_account_id, openid
+      if not channel.blank?
+        weixin_user.first_register_channel = channel if weixin_user.first_register_channel.blank?
+        weixin_user.last_register_channel = channel
+        weixin_user.save!
+      end
+      return weixin_user, is_new
     end
 
 
@@ -107,9 +107,9 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
       weixin_user = ::EricWeixin::WeixinUser.where(openid: openid, weixin_public_account_id: public_account.id).first
       pp wx_user_data["subscribe"]
       if wx_user_data["subscribe"] == 0
-        weixin_user.update_attributes(wx_user_data.select{|k,v| ["subscribe"].include? k })
+        weixin_user.update_attributes(wx_user_data.select { |k, v| ["subscribe"].include? k })
       else
-        weixin_user.update_attributes(wx_user_data.select{|k,v| ["subscribe", "openid", "nickname", "sex", "language", "city", "province", "country", "headimgurl", "subscribe_time", "remark"].include? k })
+        weixin_user.update_attributes(wx_user_data.select { |k, v| ["subscribe", "openid", "nickname", "sex", "language", "city", "province", "country", "headimgurl", "subscribe_time", "remark"].include? k })
       end
     end
 
@@ -135,11 +135,22 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
         csv << ["订阅状态", "openid", "昵称", "性别", "语言", "城市", "省份", "国家", "订阅时间"]
         weixin_users.each do |weixin_user|
           user_fields = []
-          user_fields << (weixin_user.follow_status ? '订阅': '取消订阅')
+          user_fields << (weixin_user.follow_status ? '订阅' : '取消订阅')
           user_fields << weixin_user.openid
           user_fields << weixin_user.nickname
-          user_fields << case weixin_user.sex when 1 then '男' when 2 then '女' else '未知' end
-          user_fields << case weixin_user.language when 'zh_CN' then '简体中文' when 'zh_TW' then '繁体中文' when 'en' then '英文' else '其它' end
+          user_fields << case weixin_user.sex when 1 then
+                                                '男' when 2 then
+                                                      '女'
+                           else
+                             '未知'
+                         end
+          user_fields << case weixin_user.language when 'zh_CN' then
+                                                     '简体中文' when 'zh_TW' then
+                                                              '繁体中文' when 'en' then
+                                                                       '英文'
+                           else
+                             '其它'
+                         end
           user_fields << weixin_user.city
           user_fields << weixin_user.province
           user_fields << weixin_user.country
