@@ -17,7 +17,7 @@
     <%= date_field_tag :end_date, params[:end_date] %>
   </div>
   <div class="columns small-2">
-    <%= select_tag :deliver_status, options_for_select({ '未发货' => 1, '已发货' => 2}), prompt: '全部发货状态' %>
+    <%= select_tag :deliver_status, options_for_select({ '未发货' => 1, '已发货' => 2}, params[:deliver_status]), prompt: '全部发货状态' %>
     <%#= check_box_tag :need_deliver, '1', params[:commit]!='查询'&&params[:need_deliver].blank? ? true : params[:need_deliver]=='1' %><!--<label class="inline small-3">需要发货</label>-->
   </div>
 </div>
@@ -49,44 +49,56 @@
   <% end %>
 <h3>订单列表</h3>
 微信小店官方物流公司：邮政EMS、申通快递、中通速递、圆通速递、天天快递、顺丰速运、韵达快运、宅急送、汇通快运、易迅快递
-<table>
+<table style="width: 113%; table-layout: auto;" >
   <thead>
     <th>订单ID</th>
 
-    <th>买家</th><th>购买时间</th><th>宝贝</th><th>宝贝信息</th><th>数量</th><th>收货信息</th>
+    <th>昵称</th><th>购买时间</th><th>宝贝</th><th>宝贝信息</th><th>数量</th><th>收货信息</th>
 
-    <th>是否需要物流</th><!--<th>是否官方物流</th>--><th>快递公司</th><th>运单号</th><th>操作</th>
+    <th>需物流</th><th>官方物流</th><th>快递公司</th><th>运单号</th><th>操作</th>
   </thead>
   <tbody>
     <% @orders.each do |order| %>
         <tr>
           <td style="word-break:break-all"><%= order.order_id %></td>
           <td style="word-break:break-all"><%= order.buyer_nick rescue '' %></td>
-          <td style="word-break:break-all"><%= Time.at(order.order_create_time).strftime("%Y-%m-%d %H:%M:%S") %></td>
+          <td style="word-break:break-all"><%= Time.at(order.order_create_time).strftime("%Y-%m-%d %H:%M") %></td>
           <td style="word-break:break-all"><%= order.product.name rescue 'error' %></td>
           <td style="word-break:break-all"><%= order.product_info %></td>
           <td style="word-break:break-all"><%= order.product_count %></td>
           <td style="word-break:break-all">
             <%= order.receiver_name %>
-            <%= order.receiver_mobile %>
+            <%= order.receiver_mobile %><br>
             <%= "#{order.receiver_province}#{order.receiver_city}#{order.receiver_zone}#{order.receiver_address}" %>
           </td>
-          <td style="word-break:break-all">
+          <td style="word-break:break-all; width:12px">
             <%= check_box_tag "order_#{order.id}_is_need_delivery", "1", true, onchange: "change_need_delivery(#{order.id})" %>
           </td>
-          <!--<td id="order_<%= order.id %>_is_xiaodian_delivery_td"  style="word-break:break-all">-->
-            <!--<% is_xiaodian_delivery = EricWeixin::Xiaodian::Order::DELIVERY_COMPANY.keys.include?(order.delivery_company) %>-->
-            <!--<%#= check_box_tag "order_#{order.id}_is_xiaodian_delivery", "1", is_xiaodian_delivery , onchange: "change_is_xiaodian_delivery(#{order.id})" %>-->
-          <!--</td>-->
+          <td id="order_<%= order.id %>_is_xiaodian_delivery_td"  style="word-break:break-all">
+            <% is_xiaodian_delivery = EricWeixin::Xiaodian::Order::DELIVERY_COMPANY.keys.include?(order.delivery_company) %>
+            <%= check_box_tag "order_#{order.id}_is_xiaodian_delivery", "1", is_xiaodian_delivery , onchange: "change_is_xiaodian_delivery(#{order.id})" %>
+          </td>
           <td id="order_<%= order.id %>_delivery_company_td"  style="word-break:break-all">
             <% if is_xiaodian_delivery %>
-                <%= select_tag "order_#{order.id}_delivery_company", options_from_collection_for_select(EricWeixin::Xiaodian::Order::DELIVERY_COMPANY, 'first', 'second', order.delivery_company), prompt: '选择快递公司' %>
+              <%= select_tag "order_#{order.id}_delivery_company", options_from_collection_for_select(EricWeixin::Xiaodian::Order::DELIVERY_COMPANY, 'first', 'second', order.delivery_company), prompt: '选择快递公司' %>
+            <% elsif order.delivery_company.blank? %>
+              <%= text_field_tag "order_#{order.id}_delivery_company" %>
             <% else %>
+              <span id="<%= order.id %>_delivery_com_show" onclick="update_delivery('<%=order.id %>');"><%= order.delivery_company %></span>
+              <span id="<%= order.id %>_delivery_com_input_span" style="display: none">
                 <%= text_field_tag "order_#{order.id}_delivery_company", order.delivery_company %>
+              </span>
             <% end %>
           </td>
           <td id="order_<%= order.id %>_deliver_id_td"  style="word-break:break-all">
-            <%= text_field_tag "order_#{order.id}_delivery_id", order.delivery_id %>
+            <% if order.delivery_id.blank? %>
+              <%= text_field_tag "order_#{order.id}_delivery_id" %>
+            <% else %>
+              <span id="<%= order.id %>_delivery_show" onclick="update_delivery('<%=order.id %>');"><%= order.delivery_id %></span>
+              <span id="<%= order.id %>_delivery_input_span" style="display: none">
+                <%= text_field_tag "order_#{order.id}_delivery_id", order.delivery_id %>
+              </span>
+            <% end %>
           </td>
           <td id="order_<%= order.id %>_action_td"  style="word-break:break-all">
             <%= link_to '保存', "javascript:save_delivery_info(#{order.id})", id: "order_#{order.id}_action", class: "button tiny" %>
@@ -98,7 +110,7 @@
 <%= will_paginate @collection, renderer: FoundationPagination::Rails %>
 <div class="row">
   <div class="columns small-12 text-right">
-    <%= link_to '下载订单', "/eric_weixin/cms/weixin/xiaodian/orders/download_orders?start_time=#{params[:start_date]}&end_time=#{params[:end_date]}&need_deliver=#{params[:need_deliver]}", class: 'button tiny' %>
+    <%= link_to '下载订单', "/eric_weixin/cms/weixin/xiaodian/orders/download_orders?start_time=#{params[:start_date]}&end_time=#{params[:end_date]}&deliver_status=#{params[:deliver_status]}&buyer_nick=#{params[:buyer_nick]}&receiver_name=#{params[:receiver_name]}&receiver_mobile=#{params[:receiver_mobile]}", class: 'button tiny' %>
   </div>
 </div>
 
@@ -148,5 +160,11 @@
                   alert(result);
               }
       );
+  }
+  function update_delivery(id) {
+    $("#" + id + "_delivery_show").toggle();
+    $("#" + id + "_delivery_input_span").toggle();
+    $("#" + id + "_delivery_com_show").toggle();
+    $("#" + id + "_delivery_com_input_span").toggle();
   }
 </script>
