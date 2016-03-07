@@ -1,5 +1,5 @@
-source 'https://rubygems.org'
-# source 'https://ruby.taobao.org'
+# source 'https://rubygems.org'
+source 'https://ruby.taobao.org'
 
 # Declare your gem's dependencies in eric_weixin.gemspec.
 # Bundler will treat runtime dependencies like base dependencies, and
