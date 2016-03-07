@@ -18,6 +18,7 @@ EricWeixin::Engine.routes.draw do
             get :download_orders
             get :update_hb_infos
             get :update_order_infos
+            post :update_delivery_info_by_excel
           end
         end
         resources :products do
