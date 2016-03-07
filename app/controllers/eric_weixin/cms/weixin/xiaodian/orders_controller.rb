@@ -1,13 +1,6 @@
 class EricWeixin::Cms::Weixin::Xiaodian::OrdersController < EricWeixin::Cms::BaseController
   def index
     @orders = EricWeixin::Xiaodian::Order.order_query params
-    # pp "class:#{params[:need_deliver].class}, #{params[:need_deliver]} "
-    # params[:need_deliver] = '1' if params[:commit] != '查询'
-    # if params[:need_deliver] == '1'
-    #   @orders = @orders.where("delivery_id is null or delivery_id = '' or delivery_company is null or delivery_company = '' ")
-    # else
-    #   @orders = @orders.where("delivery_id is not null and delivery_id <> '' and delivery_company is not null and delivery_company <> '' ")
-    # end
     @orders = @orders.order(order_create_time: :desc).paginate(per_page: params[:per_page]||6, page: params[:page]||1)
   end
 
@@ -53,4 +46,21 @@ class EricWeixin::Cms::Weixin::Xiaodian::OrdersController < EricWeixin::Cms::Bas
     flash[:success] = '已经将更新订单信息的任务放到队列'
     redirect_to action: :index
   end
+
+  def update_delivery_info_by_excel
+    begin
+      if params[:file].blank?
+        flash[:alert] = '请先选择文件,再更新快递单信息'
+        redirect_to action: :index
+        return
+      end
+      flash[:success] = EricWeixin::Xiaodian::Order.update_delivery_info_by_excel params[:file]
+      redirect_to action: :index
+    rescue Exception=> e
+      dispose_exception e
+      flash[:alert] = get_notice_str
+      redirect_to action: :index
+    end
+  end
+
 end

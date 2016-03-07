@@ -190,7 +190,7 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
   # 是否为6.4.5表之外的其它物流公司(0-否，1-是，无该字段默认为不是其它物流公司)
 
   def set_delivery options
-    pp options
+    # pp options
     if options["need_delivery"].to_s == "0"
       options = {need_delivery: 0}
     else
@@ -205,12 +205,12 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
     response = RestClient.post "https://api.weixin.qq.com/merchant/order/setdelivery?access_token=#{token}", options.to_json
     response = JSON.parse response.body
     if response["errcode"] == 0
-      true
       if options["need_delivery"].to_s == "0"
         self.update_attributes delivery_id: "", delivery_company: ""
       else
         self.update_attributes delivery_id: options["delivery_track_no"], delivery_company: options["delivery_company"]
       end
+      true
     else
       false
     end
@@ -230,34 +230,8 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
     book = Spreadsheet::Workbook.new
 
     sheet1 = book.create_worksheet name: '订单表'
-    sheet1.row(0).push '买家昵称', '订单ID', '产品名称', '数量', '收货人', '省', '城市', '区', '地址', '移动电话', '固定电话', '是否是粉丝', '订单时间', '快递费(单位:元)', '总金额(单位:元)'
-    # sheet1.row(0)[0] = "id"
-    # sheet1.row(0)[1] = "买家昵称"
-    # sheet1.row(0)[2] = "订单ID"
-    # sheet1.row(0)[3] = "产品名称"
-    # sheet1.row(0)[4] = "sku"
-    # sheet1.row(0)[5] = "订单状态"
-    # sheet1.row(0)[6] = "总金额"
-    # sheet1.row(0)[7] = "订单生成时间"
-    # sheet1.row(0)[8] = "快递费"
-    # sheet1.row(0)[9] = "昵称"
-    # sheet1.row(0)[10] = "收货人"
-    # sheet1.row(0)[11] = "省"
-    # sheet1.row(0)[12] = "城市"
-    # sheet1.row(0)[13] = "区"
-    # sheet1.row(0)[14] = "地址"
-    # sheet1.row(0)[15] = "移动电话"
-    # sheet1.row(0)[16] = "固定电话"
-    # sheet1.row(0)[17] = "产品名"
-    # sheet1.row(0)[18] = "单价"
-    # sheet1.row(0)[19] = "产品sku"
-    # sheet1.row(0)[20] = "数量"
-    # sheet1.row(0)[21] = "产品图片url"
-    # sheet1.row(0)[22] = "运单ID"
-    # sheet1.row(0)[23] = "快递公司"
-    # sheet1.row(0)[24] = "交易ID"
-    # sheet1.row(0)[25] = "openid"
-    # sheet1.row(0)[26] = "公众号名称"
+    sheet1.row(0).push '产品名称', '数量', '收货人', '移动电话', '快递公司', '快递单号', '买家昵称', '订单ID', '固定电话', '省', '城市', '区', '地址', '是否是粉丝', '订单时间', '快递费(单位:元)', '总金额(单位:元)'
+
     current_row = 1
     orders.each do |order|
       wx_user = order.weixin_user
@@ -266,48 +240,23 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
                 else
                   '否'
                 end
-      sheet1.row(current_row).push order.buyer_nick,
-                                   order.order_id,
-                                   (begin order.product.name rescue '' end),
+      sheet1.row(current_row).push (begin order.product.name rescue '' end),
                                    order.product_count,
                                    order.receiver_name,
+                                   order.receiver_mobile,
+                                   order.delivery_company,
+                                   order.delivery_id,
+                                   order.buyer_nick,
+                                   order.order_id,
+                                   order.receiver_phone,
                                    order.receiver_province,
                                    order.receiver_city,
                                    order.receiver_zone,
                                    order.receiver_address,
-                                   order.receiver_mobile,
-                                   order.receiver_phone,
                                    is_fan,
                                    Time.at(order.order_create_time).strftime("%Y-%m-%d %H:%M:%S"),
                                    order.order_express_price.to_f/100,
                                    order.order_total_price.to_f/100
-      # sheet1.row(current_row)[0] = order.id
-      # sheet1.row(current_row)[1] = order.weixin_user.nickname rescue ''
-      # sheet1.row(current_row)[2] = order.order_id
-      # sheet1.row(current_row)[3] = order.product.name rescue ''
-      # sheet1.row(current_row)[4] = order.product_info rescue ''
-      # sheet1.row(current_row)[5] = order.order_status
-      # sheet1.row(current_row)[6] = (order.order_total_price/100.0).round(2) rescue ''
-      # sheet1.row(current_row)[7] = Time.at(order.order_create_time).strftime("%Y-%m-%d %H:%M:%S") rescue ''
-      # sheet1.row(current_row)[8] = (order.order_express_price/100.0).round(2) rescue ''
-      # sheet1.row(current_row)[9] = order.buyer_nick rescue ''
-      # sheet1.row(current_row)[10] = order.receiver_name
-      # sheet1.row(current_row)[11] = order.receiver_province
-      # sheet1.row(current_row)[12] = order.receiver_city
-      # sheet1.row(current_row)[13] = order.receiver_zone
-      # sheet1.row(current_row)[14] = order.receiver_address
-      # sheet1.row(current_row)[15] = order.receiver_mobile
-      # sheet1.row(current_row)[16] = order.receiver_phone
-      # sheet1.row(current_row)[17] = order.product_name
-      # sheet1.row(current_row)[18] = (order.product_price/100.0).round(2) rescue ''
-      # sheet1.row(current_row)[19] = order.product_sku
-      # sheet1.row(current_row)[20] = order.product_count
-      # sheet1.row(current_row)[21] = order.product_img
-      # sheet1.row(current_row)[22] = order.delivery_id
-      # sheet1.row(current_row)[23] = self::DELIVERY_COMPANY[order.delivery_company]||order.delivery_company rescue ''
-      # sheet1.row(current_row)[24] = order.trans_id
-      # sheet1.row(current_row)[25] = order.openid
-      # sheet1.row(current_row)[26] = order.weixin_public_account.name
       current_row += 1
     end
     dir = Rails.root.join('public', 'downloads')
@@ -324,6 +273,9 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
   #   receiver_name 收货人姓名
   #   receiver_mobile 收货人手机
   #   deliver_status 发货状态, (1-未发货, 2-已发货)
+  #   delivery_id 快递单号
+  #   receiver_address 地址
+  #   receiver_city  城市
   def self.order_query options
     orders = self.all
     orders = orders.where("order_create_time >= ?", options[:start_date].to_time.change(hour:0,min:0,sec:0).to_i) unless options[:start_date].blank?
@@ -331,8 +283,70 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
     orders = orders.where("buyer_nick LIKE ?", "%#{options[:buyer_nick]}%") unless options[:buyer_nick].blank?
     orders = orders.where("receiver_name LIKE ?", "%#{options[:receiver_name]}%") unless options[:receiver_name].blank?
     orders = orders.where("receiver_mobile = ?", options[:receiver_mobile]) unless options[:receiver_mobile].blank?
+    orders = orders.where("delivery_id like ?", "%#{options[:delivery_id]}%") unless options[:delivery_id].blank?
+    orders = orders.where("receiver_address like ?", "%#{options[:receiver_address]}%") unless options[:receiver_address].blank?
+    orders = orders.where("receiver_city like ?", "%#{options[:receiver_city]}%") unless options[:receiver_city].blank?
     orders = orders.where("delivery_id is null or delivery_id = '' or delivery_company is null or delivery_company = '' ") if options[:deliver_status] == 1.to_s
     orders = orders.where("delivery_id is not null and delivery_id <> '' and delivery_company is not null and delivery_company <> '' ") if options[:deliver_status] == 2.to_s
     orders
+  end
+
+  # 通过excel文件更新微信小店订单快递信息，包括快递公司与快递单号
+  def self.update_delivery_info_by_excel file
+    self.transaction do
+      Spreadsheet.client_encoding = 'UTF-8'
+      dir = 'public/temp'
+      Dir.mkdir dir unless Dir.exist? dir
+      path = Rails.root.join(dir, file.original_filename)
+      File.open(path, 'wb') do |f|
+        f.write(file.read)
+      end
+      book = Spreadsheet.open path
+      sheet = book.worksheet 0
+
+      # 遍历到订单ID列
+      order_id_col = -1
+      delivery_company_col = -1
+      delivery_order_id_col = -1
+      100.times do |i|
+        order_id_col = i if sheet.row(0)[i] == '订单ID'
+        delivery_company_col = i if sheet.row(0)[i] == '快递公司'
+        delivery_order_id_col = i if sheet.row(0)[i] == '快递单号'
+        break if order_id_col != -1 && delivery_company_col != -1 && delivery_order_id_col != -1
+      end
+
+      BusinessException.raise '请确保excel文件第一列包含以下列名：订单ID、快递公司、快递单号' if order_id_col == -1 || delivery_company_col == -1 || delivery_order_id_col == -1
+      success_count = 0
+      total_count = 0
+      sheet.each_with_index do |row, index|
+        next if index == 0
+        total_count += 1
+        # 以下几种情况会跳过
+        # * 订单ID不正确
+        # * 没有快递公司
+        # * 没有快递单号
+        # * 数据库中快递小店订单的快递公司已经存在
+        # * 数据库中快递小店订单的快递单号已经存在
+        order_id = row[order_id_col]
+        xiaodian_order = self.find_by_order_id(order_id)
+        next if xiaodian_order.blank?
+        next if row[delivery_company_col].blank? || row[delivery_order_id_col].blank?
+        next if !xiaodian_order.delivery_company.blank? || !xiaodian_order.delivery_id.blank?
+
+        # 过五关、斩六将后，终于可以更新快递信息了
+        delivery_order_id = row[delivery_order_id_col].is_a?(Float) ? row[delivery_order_id_col].to_i.to_s : row[delivery_order_id_col].to_s
+        options = {
+            "delivery_company" => row[delivery_company_col].to_s,
+            "delivery_track_no" => delivery_order_id,
+            "need_delivery" => 1,
+            "is_others" => 1
+        }
+        result = xiaodian_order.set_delivery options
+        success_count += 1 if result
+      end
+      # 删除临时文件
+      File.delete path
+      "共#{total_count}条记录，更新成功#{success_count}条。"
+    end
   end
 end

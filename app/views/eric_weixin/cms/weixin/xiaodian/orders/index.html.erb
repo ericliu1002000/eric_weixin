@@ -5,24 +5,27 @@
 <%= form_tag "/eric_weixin/cms/weixin/xiaodian/orders/", method: :get do %>
 <div class="row">
   <div class="columns small-2">
-  <label class="inline text-right">订单时间区间</label>
+  <label class="inline text-right">时间区间</label>
 </div>
-  <div class="columns small-3">
+  <div class="columns small-2">
     <%= date_field_tag :start_date, params[:start_date] %>
   </div>
-  <div class="columns small-1 text-center">
+  <div class="columns small-2 text-center">
     <label class="inline center">至</label>
   </div>
-  <div class="columns small-3 end">
+  <div class="columns small-2 end">
     <%= date_field_tag :end_date, params[:end_date] %>
   </div>
   <div class="columns small-2">
-    <%= select_tag :deliver_status, options_for_select({ '未发货' => 1, '已发货' => 2}, params[:deliver_status]), prompt: '全部发货状态' %>
+    <label class="inline text-right">发货状态</label>
+  </div>
+  <div class="columns small-2">
+    <%= select_tag :deliver_status, options_for_select({ '未发货' => 1, '已发货' => 2}, params[:deliver_status]), prompt: '全部' %>
     <%#= check_box_tag :need_deliver, '1', params[:commit]!='查询'&&params[:need_deliver].blank? ? true : params[:need_deliver]=='1' %><!--<label class="inline small-3">需要发货</label>-->
   </div>
 </div>
 <div class="row">
-  <div class="columns small-1">
+  <div class="columns small-2">
     <label class="inline text-right">昵称</label>
   </div>
   <div class="columns small-2">
@@ -40,12 +43,32 @@
   <div class="columns small-2">
     <%= text_field_tag :receiver_mobile, params[:receiver_mobile] %>
   </div>
-
-
-  <div class="columns small-2 end">
-    <%= submit_tag '查询', class: 'tiny button' %>
-  </div>
 </div>
+    <div class="row">
+      <div class="columns small-2">
+        <label class="inline text-right">快递单号</label>
+      </div>
+      <div class="columns small-2">
+        <%= text_field_tag :delivery_id, params[:delivery_id] %>
+      </div>
+      <div class="columns small-2">
+        <label class="inline text-right">城市</label>
+      </div>
+      <div class="columns small-2">
+        <%= text_field_tag :receiver_city, params[:receiver_city] %>
+      </div>
+      <div class="columns small-2">
+        <label class="inline text-right">地址</label>
+      </div>
+      <div class="columns small-2">
+        <%= text_field_tag :receiver_address, params[:receiver_address] %>
+      </div>
+    </div>
+    <div class="row">
+        <div class="columns small-12 text-right">
+          <%= submit_tag '查询', class: 'tiny button' %>
+        </div>
+    </div>
   <% end %>
 <h3>订单列表</h3>
 微信小店官方物流公司：邮政EMS、申通快递、中通速递、圆通速递、天天快递、顺丰速运、韵达快运、宅急送、汇通快运、易迅快递
@@ -114,6 +137,19 @@
   </div>
 </div>
 
+<%= form_tag '/eric_weixin/cms/weixin/xiaodian/orders/update_delivery_info_by_excel', multipart: true, method: 'post' do %>
+<div class="row">
+  <div class="columns small-5 text-right">
+    <label class="inline">包含快递单信息的excel文件(仅支持xls格式)</label>
+  </div>
+  <div class="columns small-3">
+    <%= file_field_tag 'file' %>
+  </div>
+  <div class="columns small-4 text-left">
+    <%= submit_tag '更新快递单信息', class: 'button tiny' %>
+  </div>
+</div>
+<% end %>
 <script language="javascript">
   function change_need_delivery(order_id){
     if(!$("#order_"+order_id+"_is_need_delivery")[0].checked){
