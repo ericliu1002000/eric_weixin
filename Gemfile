@@ -1,5 +1,6 @@
 # source 'https://rubygems.org'
-source 'https://ruby.taobao.org'
+# source 'https://ruby.taobao.org'
+source 'https://gems.ruby-china.org'
 
 # Declare your gem's dependencies in eric_weixin.gemspec.
 # Bundler will treat runtime dependencies like base dependencies, and
@@ -25,3 +26,9 @@ gem 'jquery-rails'
 gem 'eric_tools', '~> 0.0.6'
 gem 'daemons'  # delayed_job 使用的延时进程
 gem 'delayed_job_active_record'
+
+# 产生条码
+gem 'barby'
+
+# barby内将条码生成png的依赖
+gem 'chunky_png'
