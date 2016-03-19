@@ -86,8 +86,10 @@
           <!--<td style="word-break:break-all"><%#= order.order_id %></td>-->
           <td>
             <%= order.order_id %>
-            <% file_path = order.create_barcode %>
-            <%= image_tag file_path, height: '80', width: '150' %>
+            <% unless order.delivery_id.blank? %>
+              <% file_path = order.create_barcode %>
+              <%= image_tag file_path, height: '80', width: '150' %>
+            <% end %>
           </td>
           <td style="word-break:break-all"><%= order.buyer_nick rescue '' %></td>
           <td style="word-break:break-all"><%= Time.at(order.order_create_time).strftime("%Y-%m-%d %H:%M") %></td>
