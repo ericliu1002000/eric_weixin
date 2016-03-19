@@ -27,8 +27,7 @@ gem 'eric_tools', '~> 0.0.6'
 gem 'daemons'  # delayed_job 使用的延时进程
 gem 'delayed_job_active_record'
 
-# 产生条码
+# 生产条码\二维码, 以及两个依赖gem
 gem 'barby'
-
-# barby内将条码生成png的依赖
 gem 'chunky_png'
+gem 'rqrcode'

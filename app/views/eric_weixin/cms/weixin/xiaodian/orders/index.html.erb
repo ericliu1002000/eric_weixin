@@ -74,7 +74,7 @@
 微信小店官方物流公司：邮政EMS、申通快递、中通速递、圆通速递、天天快递、顺丰速运、韵达快运、宅急送、汇通快运、易迅快递
 <table style="width: 113%; table-layout: auto;" >
   <thead>
-    <th>订单ID</th>
+    <th>订单ID/快递码</th>
 
     <th>昵称</th><th>购买时间</th><th>宝贝</th><th>宝贝信息</th><th>数量</th><th>收货信息</th>
 
@@ -83,7 +83,12 @@
   <tbody>
     <% @orders.each do |order| %>
         <tr>
-          <td style="word-break:break-all"><%= order.order_id %></td>
+          <!--<td style="word-break:break-all"><%#= order.order_id %></td>-->
+          <td>
+            <%= order.order_id %>
+            <% file_path = order.create_barcode %>
+            <%= image_tag file_path, height: '80', width: '150' %>
+          </td>
           <td style="word-break:break-all"><%= order.buyer_nick rescue '' %></td>
           <td style="word-break:break-all"><%= Time.at(order.order_create_time).strftime("%Y-%m-%d %H:%M") %></td>
           <td style="word-break:break-all"><%= order.product.name rescue 'error' %></td>
