@@ -84,7 +84,7 @@
     <% @orders.each do |order| %>
         <tr>
           <!--<td style="word-break:break-all"><%#= order.order_id %></td>-->
-          <td>
+          <td width="170px">
             <%= order.order_id %>
             <% unless order.delivery_id.blank? %>
               <% file_path = order.create_barcode %>
