@@ -353,11 +353,11 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
     end
   end
 
-  # 生成订单的快递号条码, 图片保存在 ddc_system/public/uploads/barcode/ 文件夹中, 文件名是订单ID
+  # 生成订单的快递号条码, 图片保存在 ddc_system/public/uploads/barcode/ 文件夹中,
   def create_barcode
     delivery_id = self.delivery_id
     order_id = self.id
-    file_name = "order_#{order_id}.png"
+    file_name = "order_delivery_id_#{delivery_id}.png"
     options = {
         :content => delivery_id.to_s,
         :file_path => Rails.root.join('public', 'uploads/barcode', file_name)
