@@ -356,12 +356,14 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
   # 生成订单的快递号条码, 图片保存在 ddc_system/public/uploads/barcode/ 文件夹中, 需要定时清除!
   def create_barcode
     delivery_id = self.delivery_id
-    order_id = self.id
     file_name = "order_delivery_id_#{delivery_id}.png"
     options = {
         :content => delivery_id.to_s,
         :file_path => Rails.root.join('public', 'uploads/barcode', file_name)
     }
+    Dir.mkdir Rails.root.join('public/uploads') unless Dir.exist? Rails.root.join('public/uploads')
+    Dir.mkdir Rails.root.join('public/uploads/barcode') unless Dir.exist? Rails.root.join('public/uploads/barcode')
+
     BarbyTools.create_barcode options # 使用tools里面的方法,代替下面这个注释过的代码块
     # barcode = Barby::Code128B.new(delivery_id.to_s)
     # blob = Barby::PngOutputter.new(barcode).to_png(:height => 20, :margin => 5) # 初始png数据
