@@ -40,8 +40,25 @@
                       数量：<%= order.product_count %>
                     </div>
                     <div class="product_info-part">
-                      <% sku_info = order.sku_info.gsub(/[$]/, '$' => '') unless order.sku_info.blank? %>
-                      <%= "(#{sku_info})" unless order.sku_info.blank? %>
+                      <% unless order.sku_info.blank? %>
+                        <% result_array = [] %>
+                        <% sku_array = order.sku_info.split(';') %>
+                        <% sku_array.each do |sku| %>
+                          <% sku_pair = sku.split(':') %>
+                          <% sku_k = sku_pair[0] %>
+                          <% sku_v = sku_pair[1] %>
+                          <% if sku_k =~ /^\d{10}$/ %>
+                            <% sku_result_k = EricWeixin::Xiaodian::SkuName.where(:wx_name_id => sku_k.to_s).first.name %>
+                            <% sku_result_v = EricWeixin::Xiaodian::SkuValue.where(:wx_value_id => sku_v).first.name %>
+                          <% else %>
+                            <% sku_result_k = sku_k.gsub(/[$]/, '$' => '') %>
+                            <% sku_result_v = sku_v.gsub(/[$]/, '$' => '') %>
+                          <% end %>
+                          <% single_result = "#{sku_result_k}: #{sku_result_v}" %>
+                          <% result_array << single_result %>
+                        <% end %>
+                        <%= result_array.join('; ') %>
+                      <% end %>
                     </div>
                   </div>
                 </div>
