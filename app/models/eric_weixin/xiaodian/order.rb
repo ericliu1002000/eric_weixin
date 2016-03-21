@@ -1,4 +1,7 @@
 class EricWeixin::Xiaodian::Order < ActiveRecord::Base
+  # require 'barby/barcode/code_128'
+  # require 'barby/outputter/png_outputter'
+
   self.table_name = 'weixin_xiaodian_orders'
   # belongs_to :weixin_user, class_name: "::EricWeixin::WeixinUser"
   belongs_to :product, class_name: "::EricWeixin::Xiaodian::Product", foreign_key: 'weixin_product_id'
@@ -349,4 +352,25 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
       "共#{total_count}条记录，更新成功#{success_count}条。"
     end
   end
+
+  # 生成订单的快递号条码, 图片保存在 ddc_system/public/uploads/barcode/ 文件夹中, 需要定时清除!
+  def create_barcode
+    delivery_id = self.delivery_id
+    order_id = self.id
+    file_name = "order_delivery_id_#{delivery_id}.png"
+    options = {
+        :content => delivery_id.to_s,
+        :file_path => Rails.root.join('public', 'uploads/barcode', file_name)
+    }
+    BarbyTools.create_barcode options # 使用tools里面的方法,代替下面这个注释过的代码块
+    # barcode = Barby::Code128B.new(delivery_id.to_s)
+    # blob = Barby::PngOutputter.new(barcode).to_png(:height => 20, :margin => 5) # 初始png数据
+    # file_path = Rails.root.join('public', 'uploads/barcode', file_name)
+    # File.open(file_path, 'wb'){|f|
+    #   f.write blob.force_encoding("ISO-8859-1")
+    # }
+    simple_file_path = "/uploads/barcode/#{file_name}"
+    simple_file_path
+  end
+
 end
