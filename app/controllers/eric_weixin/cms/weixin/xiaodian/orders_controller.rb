@@ -1,7 +1,7 @@
 class EricWeixin::Cms::Weixin::Xiaodian::OrdersController < EricWeixin::Cms::BaseController
   def index
     @orders = EricWeixin::Xiaodian::Order.order_query params
-    @orders = @orders.order(order_create_time: :desc).paginate(per_page: params[:per_page]||6, page: params[:page]||1)
+    @orders = @orders.order(order_create_time: :desc).paginate(per_page: params[:per_page]||10, page: params[:page]||1)
   end
 
   def save_delivery_info

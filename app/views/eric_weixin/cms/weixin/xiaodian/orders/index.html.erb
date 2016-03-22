@@ -72,9 +72,9 @@
   <% end %>
 <h3>订单列表</h3>
 微信小店官方物流公司：邮政EMS、申通快递、中通速递、圆通速递、天天快递、顺丰速运、韵达快运、宅急送、汇通快运、易迅快递
-<table style="width: 113%; table-layout: auto;" >
+<table style="width: 140%; table-layout: auto; margin-left: -140px" >
   <thead>
-    <th>订单ID/快递码</th>
+    <th>订单ID</th>
 
     <th>昵称</th><th>购买时间</th><th>宝贝</th><th>宝贝信息</th><th>数量</th><th>收货信息</th>
 
@@ -83,6 +83,7 @@
   <tbody>
     <% @orders.each do |order| %>
         <tr>
+<<<<<<< HEAD
           <!--<td style="word-break:break-all"><%#= order.order_id %></td>-->
           <td width="170px">
             <%= order.order_id %>
@@ -91,6 +92,9 @@
               <%= image_tag file_path, height: '80', width: '150' %>
             <% end %>
           </td>
+=======
+          <td style="word-break:break-all"><%= order.order_id %></td>
+>>>>>>> 0bc8d1de2b6cf19aaad1966e4ea972ad8b0b5773
           <td style="word-break:break-all"><%= order.buyer_nick rescue '' %></td>
           <td style="word-break:break-all"><%= Time.at(order.order_create_time).strftime("%Y-%m-%d %H:%M") %></td>
           <td style="word-break:break-all"><%= order.product.name rescue 'error' %></td>
@@ -120,7 +124,7 @@
               </span>
             <% end %>
           </td>
-          <td id="order_<%= order.id %>_deliver_id_td"  style="word-break:break-all">
+          <td id="order_<%= order.id %>_deliver_id_td"  style="word-break:break-all" width="170px">
             <% if order.delivery_id.blank? %>
               <%= text_field_tag "order_#{order.id}_delivery_id" %>
             <% else %>
@@ -129,11 +133,30 @@
                 <%= text_field_tag "order_#{order.id}_delivery_id", order.delivery_id %>
               </span>
             <% end %>
+
+            <% unless order.delivery_id.blank? %>
+              <% file_path = order.create_barcode %>
+              <%= image_tag file_path, height: '60', width: '150' %>
+            <% end %>
           </td>
           <td id="order_<%= order.id %>_action_td"  style="word-break:break-all">
             <%= link_to '保存', "javascript:save_delivery_info(#{order.id})", id: "order_#{order.id}_action", class: "button tiny" %>
           </td>
         </tr>
+
+        <!--<tr>-->
+          <!--<td class="row">-->
+            <!--<div class="large-6 columns">-->
+              <!--<%= order.order_id %>-->
+            <!--</div>-->
+            <!--<div class="large-6 columns">-->
+              <!--<%#= Time.at(order.order_create_time).strftime("%Y-%m-%d %H:%M") %>-->
+            <!--</div>-->
+          <!--</td>-->
+          <!--<td class="row">-->
+
+          <!--</td>-->
+        <!--</tr>-->
     <% end %>
   </tbody>
 </table>
