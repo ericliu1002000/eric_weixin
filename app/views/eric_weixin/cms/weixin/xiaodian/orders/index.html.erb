@@ -83,18 +83,9 @@
   <tbody>
     <% @orders.each do |order| %>
         <tr>
-<<<<<<< HEAD
-          <!--<td style="word-break:break-all"><%#= order.order_id %></td>-->
-          <td width="170px">
-            <%= order.order_id %>
-            <% unless order.delivery_id.blank? %>
-              <% file_path = order.delivery_id_barcode %>
-              <%= image_tag file_path, height: '80', width: '150' %>
-            <% end %>
-          </td>
-=======
+
           <td style="word-break:break-all"><%= order.order_id %></td>
->>>>>>> 0bc8d1de2b6cf19aaad1966e4ea972ad8b0b5773
+
           <td style="word-break:break-all"><%= order.buyer_nick rescue '' %></td>
           <td style="word-break:break-all"><%= Time.at(order.order_create_time).strftime("%Y-%m-%d %H:%M") %></td>
           <td style="word-break:break-all"><%= order.product.name rescue 'error' %></td>
