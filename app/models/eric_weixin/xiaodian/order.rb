@@ -354,7 +354,7 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
   end
 
   # 生成订单的快递号条码, 图片保存在 ddc_system/public/uploads/barcode/ 文件夹中, 需要定时清除!
-  def create_barcode
+  def delivery_id_barcode
     delivery_id = self.delivery_id
     file_name = "order_delivery_id_#{delivery_id}.png"
     options = {

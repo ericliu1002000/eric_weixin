@@ -1,6 +1,6 @@
-# source 'https://rubygems.org'
+source 'https://rubygems.org'
 # source 'https://ruby.taobao.org'
-source 'https://gems.ruby-china.org'
+# source 'https://gems.ruby-china.org'
 
 # Declare your gem's dependencies in eric_weixin.gemspec.
 # Bundler will treat runtime dependencies like base dependencies, and
@@ -23,7 +23,7 @@ gem 'rest-client', '1.8.0'
 gem 'foundation-rails', '5.4.3'
 gem 'will_paginate', '~> 3.0'
 gem 'jquery-rails'
-gem 'eric_tools', '~> 0.0.6'
+gem 'eric_tools', '~> 0.0.7'
 gem 'daemons'  # delayed_job 使用的延时进程
 gem 'delayed_job_active_record'
 
