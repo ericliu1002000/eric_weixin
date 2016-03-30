@@ -22,10 +22,10 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "foundation-rails", "5.4.3"
   spec.add_dependency "jquery-ui-rails", "~>5.0.5"
-  spec.add_dependency "rest-client", '1.8.0'
+  spec.add_dependency "rest-client", "1.8.0"
   spec.add_dependency "tinymce-rails"
   spec.add_dependency "will_paginate-foundation"
-  spec.add_dependency "eric_tools', '~> 0.0.7"
+  spec.add_dependency "eric_tools", "~> 0.0.7"
   spec.add_dependency "exception_notification"
   spec.add_dependency "multi_xml"
   spec.add_dependency "nokogiri"
