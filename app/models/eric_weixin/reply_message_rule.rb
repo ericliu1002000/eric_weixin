@@ -246,10 +246,10 @@ class EricWeixin::ReplyMessageRule < ActiveRecord::Base
             end
             if rule.key_word_type == 'regularexpr'
               # 一个正则式类型的关键字, 可以是以空格隔开的几个词, 如果其中有匹配的,就使用这条规则
-              wxwords = wx_key_word.split(' ')
-              regexp = Regexp.new rule.key_word
-              wxwords.each do |word|
-                r = regexp.match word
+              keywords = rule.key_word.split(' ')
+              keywords.each do |key|
+                regexp = Regexp.new key
+                r = regexp.match wx_key_word
                 unless r.blank?
                   reply_message_rule = rule
                   break
