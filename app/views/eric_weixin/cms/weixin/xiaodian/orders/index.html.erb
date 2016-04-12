@@ -126,7 +126,7 @@
             <% end %>
 
             <% unless order.delivery_id.blank? %>
-              <% file_path = order.create_barcode %>
+              <% file_path = order.delivery_id_barcode %>
               <%= image_tag file_path, height: '60', width: '150' %>
             <% end %>
           </td>
