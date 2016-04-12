@@ -191,49 +191,9 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
       users = users.where(weixin_public_account_id: options[:weixin_public_account_id]) unless options[:weixin_public_account_id].blank?
       users = users.where("subscribe_time >= ?", options[:start_date].to_date.to_time.to_i) unless options[:start_date].blank?
       users = users.where("subscribe_time <= ?", (options[:end_date].to_date+1.day).to_time.to_i) unless options[:end_date].blank?
-
-      # 模糊搜索订阅微信号的来源渠道
-      prefix = 'qrscene_'
-      unless options[:last_register_channel].blank?
-        lrc = options[:last_register_channel]
-        lrc_qrcode = EricWeixin::TwoDimensionCode.where("scene_str LIKE ? OR action_info LIKE ?", "%#{lrc}%", "%#{lrc}%").first
-        pp lrc_qrcode
-        unless lrc_qrcode.blank?
-          new_lrc_qrcode = "#{prefix}#{lrc_qrcode.scene_str}"
-          users = users.where("last_register_channel = ?", new_lrc_qrcode)
-          pp new_lrc_qrcode
-          pp users
-        end
-      end
-      unless options[:first_register_channel].blank?
-        frc = options[:first_register_channel]
-        frc_qrcode = EricWeixin::TwoDimensionCode.where("scene_str LIKE ? OR action_info LIKE ?", "%#{frc}%", "%#{frc}%").first
-        unless frc_qrcode.blank?
-          new_frc_qrcode = "#{prefix}#{frc_qrcode.scene_str}"
-          users = users.where("first_register_channel = ?", new_frc_qrcode)
-        end
-      end
+      users = users.where("last_register_channel = ?", options[:last_register_channel]) unless options[:last_register_channel].blank?
+      users = users.where("first_register_channel = ?", options[:first_register_channel]) unless options[:first_register_channel].blank?
       users
-    end
-  end
-
-
-  # 本方法将注册方式处理为, 人类可读形式.
-  # 此处注册方式register_channel对应微信文档中EventKey
-  # 暂时只有一种情况, 未注册用户扫描带参数二维码, 触发subscribe事件, 返回的EventKey中, qrscene_为前缀，后面为二维码的参数值
-  # 如果是长时间二维码, 就返回二维码对应文字说明; 如果是短时间二维码(无说明), 就返回对应数字编号
-  def translate_register_channel option
-    target_channel = if option == "last_register_channel"
-                       self.last_register_channel
-                     elsif option == "first_register_channel"
-                       self.first_register_channel
-                     end
-    return '' if target_channel.blank?
-    if target_channel.match /qrscene_/
-      qrparam = target_channel.gsub(/qrscene_/, '')
-      qrcode = EricWeixin::TwoDimensionCode.where('scene_str = ?', qrparam).first
-      action_info = qrcode.action_info unless qrcode.blank?
-      return action_info.blank? ? qrparam : action_info
     end
   end
 end

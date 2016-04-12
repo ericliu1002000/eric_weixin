@@ -70,7 +70,7 @@
   </div>
 
   <div class="columns small-2">
-    <%= select_tag :public_account_id, options_from_collection_for_select(@public_accounts, 'id', 'name', (params[:public_account_id].blank? ? 1 : params[:public_account_id])), prompt: '请选择公众账号' %>
+    <%= select_tag :public_account_id, options_from_collection_for_select(@public_accounts, 'id', 'name', (params[:public_account_id].blank? ? '' : params[:public_account_id])), prompt: '请选择公众账号' %>
   </div>
 
   <div class="columns small-2 end">
@@ -82,7 +82,7 @@
     <%= will_paginate @collection, renderer: FoundationPagination::Rails %>
 <table>
   <thead>
-  <th width="150px">openid</th> <th>是否订阅</th> <th>昵称</th> <th>性别</th> <!--<th>语言</th>--> <th>国家 | 省份 | 城市</th> <th>头像</th> <th>关注时间</th> <th>备注</th> <th>最后一次注册渠道</th> <th>第一次注册渠道</th><th>操作</th>
+  <th width="150px">openid</th> <th>是否订阅</th> <th>昵称</th> <th>性别</th> <th>语言</th> <th>城市</th> <th>省份</th> <th>国家</th> <th>头像</th> <th>关注时间</th> <th>备注</th> <th>最后一次注册渠道</th> <th>第一次注册渠道</th><th>操作</th>
   </thead>
   <tbody>
   <% @weixin_users.each do |user| %>
@@ -91,13 +91,15 @@
     <td><%= case user.subscribe when 1 then '是' when 0 then '否' end %></td>
     <td><%= user.nickname %></td>
     <td><%= case user.sex when 1 then '男' when 2 then '女' else '未知' end %></td>
-    <!--<td><%#= case user.language when 'zh_CN' then '简体中文' when 'zh_TW' then '繁体中文' when 'en' then '英文' else '其它' end %></td>-->
-    <td><%= user.country %> <br><%= user.province %> <br><%= user.city %></td>
+    <td><%= case user.language when 'zh_CN' then '简体中文' when 'zh_TW' then '繁体中文' when 'en' then '英文' else '其它' end %></td>
+    <td><%= user.city %></td>
+    <td><%= user.province %></td>
+    <td><%= user.country %></td>
     <td><%= image_tag(user.headimgurl, height: '32', width: '32') %></td>
-    <td><%= Time.at(user.subscribe_time.to_i).strftime('%Y-%m-%d %H:%M') %></td>
+    <td><%= Time.at(user.subscribe_time.to_i).chinese_format %></td>
     <td id="user_remark_<%= user.id %>"><%= user.remark %></td>
-    <td><%= user.translate_register_channel "last_register_channel" %></td>
-    <td><%= user.translate_register_channel "first_register_channel" %></td>
+    <td><%= user.last_register_channel %></td>
+    <td><%= user.first_register_channel %></td>
     <td>
       <%= link_to '备注', "javascript:open_modal(#{user.id})" %>
     </td>
