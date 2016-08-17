@@ -109,7 +109,7 @@ class EricWeixin::WeixinUser < ActiveRecord::Base
       if wx_user_data["subscribe"] == 0
         weixin_user.update_attributes(wx_user_data.select { |k, v| ["subscribe"].include? k })
       else
-        weixin_user.update_attributes(wx_user_data.select { |k, v| ["subscribe", "openid", "nickname", "sex", "language", "city", "province", "country", "headimgurl", "subscribe_time", "remark"].include? k })
+        weixin_user.update_attributes(wx_user_data.select { |k, v| ["subscribe", "openid", "nickname", "sex", "language", "city", "province", "country", "headimgurl", "subscribe_time", "remark", "unionid"].include? k })
       end
     end
 
