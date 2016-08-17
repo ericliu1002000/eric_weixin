@@ -83,9 +83,7 @@
   <tbody>
     <% @orders.each do |order| %>
         <tr>
-
           <td style="word-break:break-all"><%= order.order_id %></td>
-
           <td style="word-break:break-all"><%= order.buyer_nick rescue '' %></td>
           <td style="word-break:break-all"><%= Time.at(order.order_create_time).strftime("%Y-%m-%d %H:%M") %></td>
           <td style="word-break:break-all"><%= order.product.name rescue 'error' %></td>

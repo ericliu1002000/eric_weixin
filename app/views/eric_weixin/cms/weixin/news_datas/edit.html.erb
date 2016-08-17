@@ -5,16 +5,16 @@
         <%= f.label "标题" %>
       </div>
       <div class="large-9 columns">
-        <%= f.text_field :title %>
+        <%= f.text_field :title, name: 'weixin_news[title]' %>
       </div>
     </div>
     <div class="row">
-        <div class="large-3 columns">
-            <%= f.label "关键字" %>
-        </div>
-        <div class="large-9 columns">
-            <%= f.text_field :match_key %>
-        </div>
+      <div class="large-3 columns">
+        <%= f.label "关键字" %>
+      </div>
+      <div class="large-9 columns">
+        <%= f.text_field :match_key, name: 'weixin_news[match_key]' %>
+      </div>
     </div>
     <h2>图文列表：</h2>
     <div style="margin-left: 30px">

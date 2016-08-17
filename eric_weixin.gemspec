@@ -21,6 +21,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "rails", '~> 4.1', '>= 4.1.4'
 
   spec.add_dependency "foundation-rails", "5.4.3"
+<<<<<<< HEAD
   spec.add_dependency "jquery-ui-rails", '~> 5.0', '>= 5.0.5'
   spec.add_dependency "rest-client", '1.8.0'
   spec.add_dependency "tinymce-rails", '~> 4.1', '>= 4.1.3'
@@ -29,6 +30,16 @@ Gem::Specification.new do |spec|
   spec.add_dependency "exception_notification", '~> 4.0', '>= 4.0.1'
   spec.add_dependency "multi_xml", '~>0.5', '>= 0.5.5'
   spec.add_dependency "nokogiri", '~> 1.6', '>= 1.6.3.1'
+=======
+  spec.add_dependency "jquery-ui-rails", "~>5.0.5"
+  spec.add_dependency "rest-client", "1.8.0"
+  spec.add_dependency "tinymce-rails"
+  spec.add_dependency "will_paginate-foundation"
+  spec.add_dependency "eric_tools", "~> 0.0.7"
+  spec.add_dependency "exception_notification"
+  spec.add_dependency "multi_xml"
+  spec.add_dependency "nokogiri"
+>>>>>>> d0e952be6ffcec42f4fdb1e1c79b38d43407ccc3
 
   spec.add_dependency "jquery-rails", '~> 3.1', '>= 3.1.4'
   spec.add_dependency "daemons", '1.2.3'  # delayed_job 使用的延时进程
