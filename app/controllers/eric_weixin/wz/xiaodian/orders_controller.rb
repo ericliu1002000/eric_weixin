@@ -5,4 +5,8 @@ class EricWeixin::Wz::Xiaodian::OrdersController < ApplicationController
     @orders = @orders.paginate(page: params[:page]||1, per_page: 10)
     render :layout => false
   end
+
+  def signin
+    pp params
+  end
 end

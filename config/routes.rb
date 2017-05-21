@@ -8,6 +8,7 @@ EricWeixin::Engine.routes.draw do
   get "/weixin/pay" => "wz/pays#prepay"
 
   get "/weixin/orders" => "wz/xiaodian/orders#index"
+  post "/weixin/orders/signin" => "wz/xiaodian/orders#signin"
 
   namespace :cms do
     namespace :weixin do

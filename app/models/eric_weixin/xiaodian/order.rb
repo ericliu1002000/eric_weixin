@@ -3,7 +3,7 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
   # require 'barby/outputter/png_outputter'
 
   self.table_name = 'weixin_xiaodian_orders'
-  # belongs_to :weixin_user, class_name: "::EricWeixin::WeixinUser"
+
   belongs_to :product, class_name: "::EricWeixin::Xiaodian::Product", foreign_key: 'weixin_product_id'
   belongs_to :weixin_public_account, class_name: "::EricWeixin::PublicAccount", foreign_key: 'weixin_public_account_id'
   # 接收订单
@@ -123,6 +123,14 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
       end
       self.update_attributes order_params.select{|k,v| ['order_id', 'order_status', 'order_total_price', 'order_create_time', 'order_express_price', 'buyer_nick', 'receiver_name', 'receiver_province', 'receiver_city', 'receiver_zone', 'receiver_address', 'receiver_mobile', 'receiver_phone',
                              'product_name', 'product_name', 'product_sku', 'product_count', 'product_img', 'trans_id'].include? k }
+
+      if self.product_name.match(/预售/) or self.product_sku.match(/预售/)
+        self.sign_in_timeout_time = Time.now + 60.days
+      else
+        self.sign_in_timeout_time = Time.now + 9.days
+      end
+      self.save!
+
     else
       pp response
       return

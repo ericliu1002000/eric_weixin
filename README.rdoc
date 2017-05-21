@@ -32,6 +32,7 @@ Gem 中使用了delayed_job 作为队列机制，用来加快响应速度。 在
 * 微信小店订单设置 /eric_weixin/cms/weixin/xiaodian/orders
 * 微信小店商品刷新 /eric_weixin/cms/weixin/xiaodian/products
 * 微信用户展示 /eric_weixin/cms/weixin/weixin_users
+* 媒体消息 /eric_weixin/cms/weixin/media_resources
 
 ===客户展示链接
 * 查看"我的订单" eric_weixin/weixin/orders?openid=<OPENID>
