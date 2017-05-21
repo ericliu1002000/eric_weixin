@@ -91,7 +91,7 @@
                 <div class="delivery_info-list">
                   <div class="delivery_info-part">
 
-                    <%= link_to '确认收货', "/eric_weixin/weixin/orders/signin", method: :post, data: {id: order.id,  confirm: "Are you sure?" } %>
+                    <%= link_to '确认收货', "/eric_weixin/weixin/orders/signin", method: :post, id: order.id, data: {  confirm: "确认签收" } %>
                   </div>
 
                   <div class="delivery_info-part">
