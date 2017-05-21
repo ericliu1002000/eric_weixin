@@ -7,6 +7,12 @@ class EricWeixin::Wz::Xiaodian::OrdersController < ApplicationController
   end
 
   def signin
-    pp params
+    order = EricWeixin::Xiaodian::Order.find params[:orderid].to_i
+    unless order.openid == params[:openid]
+      redirect_to action: :index
+      return
+    end
+    EricWeixin::Xiaodian::Order.sign_in id: params[:orderid]
+    redirect_to action: :index
   end
 end

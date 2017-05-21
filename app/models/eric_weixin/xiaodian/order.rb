@@ -1,6 +1,8 @@
 class EricWeixin::Xiaodian::Order < ActiveRecord::Base
   # require 'barby/barcode/code_128'
   # require 'barby/outputter/png_outputter'
+  SIGIN_IN_TYPE_TIME_OUT = 'timeout'
+  SIGIN_IN_TYPE_MANUAL = 'manual'
 
   self.table_name = 'weixin_xiaodian_orders'
 
@@ -381,6 +383,27 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
     # }
     simple_file_path = "/uploads/barcode/#{file_name}"
     simple_file_path
+  end
+
+
+  #快递签收
+  #
+  def self.sign_in params
+    order = EricWeixin::Xiaodian::Order.find params[:id]
+    order.sign_in_flg = true
+    order.sign_in_time = Time.now
+    order.sign_in_type = params[:sign_in_type] || SIGIN_IN_TYPE_MANUAL
+    order.save!
+    return ::Weixin::Process.order_sign_in params[:id]
+  end
+
+  def self.time_out_sign_in
+    orders = EricWeixin::Xiaodian::Order.where(sign_in_flg: false)
+    orders = order.where("sign_in_timeout_time < ?", Time.now)
+    orders.each do |order|
+      EricWeixin::Xiaodian::Order.sign_in id: order.id,
+                                          sign_in_type: SIGIN_IN_TYPE_TIME_OUT
+    end
   end
 
 end
