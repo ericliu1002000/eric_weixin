@@ -30,8 +30,7 @@ class EricWeixin::RedpackOrder < ActiveRecord::Base
   # total_num
   def self.create_redpack_order options
     self.transaction do
-      options[:total_num] ||= 1
-      return '金额不能低于1元' if options[:total_num] < 100
+      return '不能小于1元' if options[:total_amount].to_i < 100
       weixin_user = ::Weixin::WeixinUser.find_by_openid(options[:re_openid])
       public_account = weixin_user.weixin_public_account||EricWeixin::PublicAccount.find_by_weixin_app_id(params[:wxappid])
       BusinessException.raise '查找不到对应的公众号。' if public_account.blank?
