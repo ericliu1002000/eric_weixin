@@ -225,6 +225,7 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
       end
       true
     else
+      pp response
       false
     end
   end
