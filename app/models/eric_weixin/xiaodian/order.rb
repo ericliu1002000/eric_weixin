@@ -34,7 +34,7 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
       str = sku.split(":")[1]
       return 'error' if str.blank?
       if str.match /^\$/
-        info += str[1,str.size-1]
+        info += str[1, str.size-1]
         info += "、"
       end
       if str.match /^\d/
@@ -123,8 +123,8 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
       ["receiver_zip", "product_id", "buyer_openid"].each do |a|
         order_params.delete a
       end
-      self.update_attributes order_params.select{|k,v| ['order_id', 'order_status', 'order_total_price', 'order_create_time', 'order_express_price', 'buyer_nick', 'receiver_name', 'receiver_province', 'receiver_city', 'receiver_zone', 'receiver_address', 'receiver_mobile', 'receiver_phone',
-                             'product_name', 'product_name', 'product_sku', 'product_count', 'product_img', 'trans_id'].include? k }
+      self.update_attributes order_params.select { |k, v| ['order_id', 'order_status', 'order_total_price', 'order_create_time', 'order_express_price', 'buyer_nick', 'receiver_name', 'receiver_province', 'receiver_city', 'receiver_zone', 'receiver_address', 'receiver_mobile', 'receiver_phone',
+                                                           'product_name', 'product_name', 'product_sku', 'product_count', 'product_img', 'trans_id'].include? k }
 
       if self.product_name.match(/预售/) or self.product_sku.match(/预售/)
         self.sign_in_timeout_time = Time.now + 60.days
@@ -224,6 +224,13 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
         self.update_attributes delivery_id: options["delivery_track_no"], delivery_company: options["delivery_company"]
       end
       true
+    elsif response["errcode"] == -1 and response["errmsg"] == 'system error'
+      if options["need_delivery"].to_s == "0"
+        self.update_attributes delivery_id: "", delivery_company: ""
+      else
+        self.update_attributes delivery_id: options["delivery_track_no"], delivery_company: options["delivery_company"]
+      end
+      false
     else
       pp response
       false
@@ -249,12 +256,14 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
     current_row = 1
     orders.each do |order|
       wx_user = order.weixin_user
-      is_fan =  if !wx_user.blank? && wx_user.subscribe == 1
-                  '是'
-                else
-                  '否'
-                end
-      sheet1.row(current_row).push (begin order.product.name rescue '' end),
+      is_fan = if !wx_user.blank? && wx_user.subscribe == 1
+                 '是'
+               else
+                 '否'
+               end
+      sheet1.row(current_row).push (begin
+        order.product.name rescue ''
+      end),
                                    order.product_count,
                                    order.receiver_name,
                                    order.receiver_mobile,
@@ -275,7 +284,7 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
     end
     dir = Rails.root.join('public', 'downloads')
     Dir.mkdir dir unless Dir.exist? dir
-    file_path = File.join(dir,"#{Time.now.strftime("%Y%m%dT%H%M%S")}订单.xls")
+    file_path = File.join(dir, "#{Time.now.strftime("%Y%m%dT%H%M%S")}订单.xls")
     book.write file_path
     file_path
   end
@@ -292,8 +301,8 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
   #   receiver_city  城市
   def self.order_query options
     orders = self.all
-    orders = orders.where("order_create_time >= ?", options[:start_date].to_time.change(hour:0,min:0,sec:0).to_i) unless options[:start_date].blank?
-    orders = orders.where("order_create_time <= ?", options[:end_date].to_time.change(hour:23,min:59,sec:59).to_i) unless options[:end_date].blank?
+    orders = orders.where("order_create_time >= ?", options[:start_date].to_time.change(hour: 0, min: 0, sec: 0).to_i) unless options[:start_date].blank?
+    orders = orders.where("order_create_time <= ?", options[:end_date].to_time.change(hour: 23, min: 59, sec: 59).to_i) unless options[:end_date].blank?
     orders = orders.where("buyer_nick LIKE ?", "%#{options[:buyer_nick]}%") unless options[:buyer_nick].blank?
     orders = orders.where("receiver_name LIKE ?", "%#{options[:receiver_name]}%") unless options[:receiver_name].blank?
     orders = orders.where("receiver_mobile = ?", options[:receiver_mobile]) unless options[:receiver_mobile].blank?
