@@ -113,7 +113,8 @@ class EricWeixin::MediaResource < ActiveRecord::Base
                                                            when 'image'
                                                              'image'
                                                          end,
-                                                   public_account_id: options[:public_account_id]
+                                                   public_account_id: options[:public_account_id],
+                                                    file_name: file_name
       url = json["url"]
       media_id = json["media_id"]
       resource.local_link = "#{file_path}#{file_name}"
@@ -141,7 +142,11 @@ class EricWeixin::MediaResource < ActiveRecord::Base
     token = ::EricWeixin::AccessToken.get_valid_access_token public_account_id: options[:public_account_id]
     url = "https://api.weixin.qq.com/cgi-bin/material/add_material?access_token=#{token}"
 
-    response = RestClient.post url, :media => options[:media], :type => options[:type]
+    post_data = {:media => options[:media], :type => options[:type]}
+    if options[:type] == 'media'
+      post_data[:description] = {"title"=>options[:file_name], "introduction"=>"INTRODUCTION"}.to_json
+    end
+    response = RestClient.post url, post_data
     pp response
     response_json = JSON.parse(response)
     BusinessException.raise response_json["errmsg"] unless response_json["errmsg"].blank?
