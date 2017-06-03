@@ -143,7 +143,7 @@ class EricWeixin::MediaResource < ActiveRecord::Base
     url = "https://api.weixin.qq.com/cgi-bin/material/add_material?access_token=#{token}"
 
     post_data = {:media => options[:media], :type => options[:type]}
-    if options[:type] == 'media'
+    if options[:type] == 'video'
       post_data[:description] = CGI::escape({"title"=>options[:file_name].split("/")[-1], "introduction"=>"INTRODUCTION"}.to_json)
     end
     pp post_data
