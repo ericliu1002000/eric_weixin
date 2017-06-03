@@ -144,7 +144,7 @@ class EricWeixin::MediaResource < ActiveRecord::Base
 
     post_data = {:media => options[:media], :type => options[:type]}
     if options[:type] == 'media'
-      post_data[:description] = CGI::escape({"title"=>options[:file_name], "introduction"=>"INTRODUCTION"}.to_json)
+      post_data[:description] = CGI::escape({"title"=>options[:file_name].split("/")[-1], "introduction"=>"INTRODUCTION"}.to_json)
     end
     pp post_data
     response = RestClient.post url, post_data
