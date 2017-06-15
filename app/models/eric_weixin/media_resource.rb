@@ -137,6 +137,18 @@ class EricWeixin::MediaResource < ActiveRecord::Base
   #                                          public_account_id: 1,
   #                                          type: 'image'
 
+  def self.x
+    token = ::EricWeixin::AccessToken.get_valid_access_token public_account_id: 1
+    url = "https://api.weixin.qq.com/cgi-bin/material/batchget_material?access_token=#{token}"
+    response = RestClient.post url, {type:'video', offset: 0, count: 20}.to_json
+
+
+
+
+
+
+  end
+
   def self.upload_media options
     BusinessException.raise '资源类型不正确，应该是image  voice  video  thumb 的其中一种' unless ["image", "voice", "video", "thumb"].include? options[:type]
     token = ::EricWeixin::AccessToken.get_valid_access_token public_account_id: options[:public_account_id]

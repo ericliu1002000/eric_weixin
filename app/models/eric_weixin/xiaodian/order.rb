@@ -409,7 +409,7 @@ class EricWeixin::Xiaodian::Order < ActiveRecord::Base
 
   def self.time_out_sign_in
     orders = EricWeixin::Xiaodian::Order.where(sign_in_flg: false)
-    orders = order.where("sign_in_timeout_time < ?", Time.now)
+    orders = orders.where("sign_in_timeout_time < ?", Time.now)
     orders.each do |order|
       EricWeixin::Xiaodian::Order.sign_in id: order.id,
                                           sign_in_type: SIGIN_IN_TYPE_TIME_OUT
